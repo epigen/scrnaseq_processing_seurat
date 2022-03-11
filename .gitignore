@@ -1,0 +1,6 @@
+.vscode/**
+.snakemake/**
+results/**
+logs/**
+.snakemake/**
+**.code-workspace

@@ -1,0 +1,61 @@
+import os
+import sys
+import math
+from snakemake.utils import min_version
+
+min_version("6.0")
+
+SDIR = os.path.realpath(os.path.dirname(srcdir("Snakefile")))
+shell.prefix(f"set -eo pipefail;")
+
+
+report: "report/workflow.rst"
+
+
+configfile: "config/config.yaml"
+
+
+TEMP_DIR = config.pop("tempdir", "temp")
+if TEMP_DIR != "temp":
+    if os.path.exists("temp"):
+        if os.path.islink("temp") and os.path.realpath("temp") == os.path.realpath(
+            TEMP_DIR
+        ):
+            print("The temp dir has already been linked.")
+        else:
+            sys.exit("temp/ already in use, please move it before running.")
+    else:
+        shell("ln -s {TEMP_DIR} temp")
+
+
+rule all:
+    input:
+        [],
+
+
+rule RepeatMasker:
+    input:
+        fasta="a.fasta",
+    output:
+        out="a.out",
+    resources:
+        mem=config.get("mem", 8),
+    threads: config.get("threads", 8)
+    conda:
+        "envs/env.yml"
+    log:
+        "rm.out.log",
+    params:
+        opts=config.get("RepeatMaskerOptions", "-s -xsamll -e ncbi"),
+        species=config.get("RepeatMaskerSpecies", "human"),
+    shell:
+        """
+        RepeatMasker \
+            -s \
+            -xsmall \
+            -e ncbi \
+            -species {params.species} \
+            -dir $(dirname {input.fasta}) \
+            -pa {threads} \
+            {input.fasta}  2> {log}
+        """
