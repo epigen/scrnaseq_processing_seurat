@@ -1,1 +1,94 @@
-sample: "a"
+
+# process output of: https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/feature-bc-analysis
+
+# alwayse use absolute paths
+
+### RESOURCES -> check if applicable for us (eg mem or memory?!)
+mem: '32G'
+threads: 2
+partition: 'shortq'
+
+### GENERAL
+sample_annotation: /research/lab_bock/projects/macroIC/metadata/AKsmall_metadata.csv
+result_path: /nobackup/lab_bock/projects/macroIC/results/AKsmall/
+project_name: AKsmall
+
+# flag if counts after each processing steps of all modalities should be saved as CSV, which is time and storage intense (0=no, 1=yes)
+saveCounts:
+    raw: 0
+    filtered: 0
+    normalized: 0
+    corrected: 1
+    
+# stop flag, options are: RAW, FILTERED, NORMALIZED, CORRECTED (-> only if variables_to_regress is provided!)
+stop_after: 'CORRECTED'
+
+### PREPARE
+
+# names for the Seurat Assays mapped to 10X genomics features (leave empty "" if not applicable)
+modality_flags:
+    Antibody_Capture: "AB"
+    CRISPR_Guide_Capture: "gRNA"
+    Custom: "HTO"
+
+# CRISPR UMI background treshold for gRNA assignment (gRNA counts <= crispr_umi_threshold will be set 0)
+crispr_umi_threshold: 1
+
+# gRNA to gene REGEX for gsub(grna_regex,"",guide_rna_name)
+grna_regex: "\\-."
+
+# REGEX-based metadata extension used with Seurat::PercentageFeatureSet
+# every entry is a new metadata column (use Camel case eg mitoPercent)
+# https://satijalab.org/seurat/reference/percentagefeatureset  
+percentage_regex:
+    mitoPercent: "^MT-"
+    riboPercent: "^RP[SL][[:digit:]]|^RPLP[[:digit:]]|^RPSA"
+
+# eval based metadata column transformations -> eval(parse(text=" ")) -> escape \\ has to be \\\\
+# every entry is a new metadata column (use Camel case eg mitoPercent)
+# metadata dataframe is called "metadata"
+metadata_eval:
+    condition: "gsub('HTO-THP1_._','',metadata$hto_demux)"
+    replicate: "gsub('.*_(.)_.*', '\\\\1', metadata$hto_demux)"
+    condKO: "paste0(metadata$condition,'+', metadata$KO_call)"
+
+### MERGE (no configuration necessary)
+
+### SPLIT
+# needs to be categorical variable in metadata
+# data subsets are only generated for the indicated groups, because we are not always interested in all possible subsets eg negatives/doublets
+# 'batch' denotes samples (ie sample_names from sample_annotation)
+split_by:
+    condition: ['untreated','8h_cytokines','24h_cytokines']
+#     replicate: ['A','B']
+#     batch: ['AK_A_transcriptome','AK_B_transcriptome','AK_C_transcriptome']
+
+### FILTER
+# logical expression for filtering, all variables need to be in metadata (leave empty "" if not applicable)
+filter_expression: "hto_demux != 'Doublet' & hto_demux != 'Negative' & pass_QC == 'True' & guide_call!='Negative' & guide_call!='Multiplet'"
+
+### NORMALIZATION w/ SCTransform defaults (no configuration necessary)
+
+### CELL SCORES are calculated using normalized counts (ie assay="SCT", slot="data")
+
+# perform cell cycle analysis with given gene lists of S and G2/M phase respectively using https://satijalab.org/seurat/reference/cellcyclescoring
+# to use markers loaded with Seurat from Tirosh et al 2015 -> put 'tirosh2015'
+# if not applicable -> leave empty ''
+# adds 3 columns to metadata: S.Score, G2M.Score, and Phase
+cell_cycle:
+    s_phase_genes: 'tirosh2015'
+    g2m_phase_genes: 'tirosh2015'
+
+#provide paths to gene lists in plain .txt to perform scoring using https://satijalab.org/seurat/reference/addmodulescore
+module_gene_lists:
+    M1_genes: "/research/home/sreichl/projects/macroIC/metadata/marker_genes/M1_genes.txt"
+    M2_genes: "/research/home/sreichl/projects/macroIC/metadata/marker_genes/M2_genes.txt"
+    C1QCpos_TAM_genes: "/research/home/sreichl/projects/macroIC/metadata/marker_genes/C1QCpos_TAM_genes.txt"
+    SPP1pos_TAM_genes: "/research/home/sreichl/projects/macroIC/metadata/marker_genes/SPP1pos_TAM_genes.txt"
+
+### CORRECTION performed on filtered raw data (includes normalization and stores the corrected data in assay="SCT", slot="scale.data"
+# need to be variables in metadata post cell scoring (ie normalization step)
+variables_to_regress: ["mitoPercent", "Phase"]
+
+
+

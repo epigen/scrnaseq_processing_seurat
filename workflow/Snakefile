@@ -1,61 +1,70 @@
+##### libraries #####
 import os
 import sys
-import math
+import pandas as pd
 from snakemake.utils import min_version
 
-min_version("6.0")
+##### utility functions #####
+def get_sample_paths(wildcards):
+    return [annot.loc[wildcards.sample,'path'], annot.loc[wildcards.sample,'metadata']]
+
+min_version("6.0.3")
 
 SDIR = os.path.realpath(os.path.dirname(srcdir("Snakefile")))
 shell.prefix(f"set -eo pipefail;")
 
+##### container image #####
+# containerized: "docker://sreichl/..."
 
-report: "report/workflow.rst"
+##### setup report #####
+# report: os.path.join("report", "workflow.rst")
 
+##### load config and sample annotation sheets #####
+configfile: os.path.join("config", "config.yaml")
 
-configfile: "config/config.yaml"
+annot = pd.read_csv(config['sample_annotation'], index_col='sample_name')
 
-
-TEMP_DIR = config.pop("tempdir", "temp")
-if TEMP_DIR != "temp":
-    if os.path.exists("temp"):
-        if os.path.islink("temp") and os.path.realpath("temp") == os.path.realpath(
-            TEMP_DIR
-        ):
-            print("The temp dir has already been linked.")
+data_splits = ['merged']
+extra_splits = []
+if config["split_by"] is not None:
+    for split in config["split_by"]:
+        if split=='batch':
+            data_splits.extend(config["split_by"][split])
         else:
-            sys.exit("temp/ already in use, please move it before running.")
-    else:
-        shell("ln -s {TEMP_DIR} temp")
+            extra_splits.extend([split+"_"+value for value in config["split_by"][split]])
+data_splits = data_splits + extra_splits
 
+# TEMP_DIR = config.pop("tempdir", "temp")
+# if TEMP_DIR != "temp":
+#     if os.path.exists("temp"):
+#         if os.path.islink("temp") and os.path.realpath("temp") == os.path.realpath(
+#             TEMP_DIR
+#         ):
+#             print("The temp dir has already been linked.")
+#         else:
+#             sys.exit("temp/ already in use, please move it before running.")
+#     else:
+#         shell("ln -s {TEMP_DIR} temp")
+
+# necessary to avoid ambiguities between rule prepare (pre merge) and split (post merge)
+ruleorder: prepare > split
 
 rule all:
     input:
-        [],
-
-
-rule RepeatMasker:
-    input:
-        fasta="a.fasta",
-    output:
-        out="a.out",
+#         final_objects = expand(os.path.join(config["result_path"],'{split}','counts','{step}_object.rds'), split=data_splits, step= "CORRECTED" if len(config["variables_to_regress"])>0 else "NORMALIZED"),
+        final_objects = expand(os.path.join(config["result_path"],'{split}','counts','{step}_object.rds'), split=data_splits, step=config["stop_after"]),
+        envs = expand(os.path.join(config["result_path"],'envs','{env}.yaml'),env=['seurat']),
     resources:
-        mem=config.get("mem", 8),
-    threads: config.get("threads", 8)
-    conda:
-        "envs/env.yml"
+        mem=config.get("mem", "16G"),
+    threads: config.get("threads", 1)
     log:
-        "rm.out.log",
+        os.path.join("logs","rules","all.log"),
     params:
-        opts=config.get("RepeatMaskerOptions", "-s -xsamll -e ncbi"),
-        species=config.get("RepeatMaskerSpecies", "human"),
-    shell:
-        """
-        RepeatMasker \
-            -s \
-            -xsmall \
-            -e ncbi \
-            -species {params.species} \
-            -dir $(dirname {input.fasta}) \
-            -pa {threads} \
-            {input.fasta}  2> {log}
-        """
+        partition=config.get("partition"),
+
+        
+##### load rules #####
+include: os.path.join("rules", "process.smk")
+include: os.path.join("rules", "normalize_correct_score.smk")
+include: os.path.join("rules", "envs_export.smk")
+
