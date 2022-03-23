@@ -14,6 +14,7 @@ norm_object_path <- snakemake@output[["norm_object"]]
 saveCounts <- snakemake@params[["saveCounts"]]
 
 confounders <- snakemake@params[["confounders"]]
+min_cells_per_gene <- snakemake@params[["min_cells_per_gene"]]
 
 module_gene_lists <- snakemake@params[["module_gene_lists"]]
 cell_cycle <- snakemake@params[["cell_cycle"]]
@@ -52,7 +53,8 @@ norm_object <- SCTransform(filtered_object,
                            verbose = TRUE,
                            method="glmGamPoi",
                            variable.features.n=NULL,
-                           return.only.var.genes=FALSE
+                           return.only.var.genes=FALSE,
+                           min_cells = min_cells_per_gene
                           )
 
 # normalize AB data (margin=2 -> normalization across cells)
@@ -72,7 +74,7 @@ if(custom_flag!=''){
 
 
 # get higlhy variable genes (HVG)
-hvg <- VariableFeatures(norm_object, assay= "SCT")
+HVG_df <- HVFInfo(object = norm_object, assay = "SCT")
 
 
 ### Cell Scoring on normalized data (ie assay="SCT", slot="data")
@@ -118,4 +120,5 @@ save_seurat_object(seurat_obj=norm_object, result_dir=dirname(file.path(norm_obj
 save_seurat_object(seurat_obj=norm_object, result_dir=dirname(file.path(norm_object_path)), prefix=paste0(prefix,'_'), rna_flag="SCT", ab_flag=ab_flag, crispr_flag=crispr_flag, custom_flag=custom_flag, slot="scale.data", saveCounts=saveCounts)
 
 # save highly variable genes
-write(hvg, file.path(dirname(file.path(norm_object_path)),"highly_variable_genes.txt"))
+write(rownames(HVG_df), file.path(dirname(file.path(norm_object_path)),"highly_variable_genes.txt"))
+write.csv(HVG_df, file=file.path(dirname(file.path(norm_object_path)),"highly_variable_genes.csv"), row.names=TRUE)

@@ -1,14 +1,14 @@
 
-# process output of: https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/feature-bc-analysis
+# process output of: https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/feature-bc-analysis, will be loaded with Seurat::Read10X
 
 # alwayse use absolute paths
 
-### RESOURCES -> check if applicable for us (eg mem or memory?!)
+##### RESOURCES #####
 mem: '32G'
 threads: 2
 partition: 'shortq'
 
-### GENERAL
+##### GENERAL #####
 sample_annotation: /research/lab_bock/projects/macroIC/metadata/AKsmall_metadata.csv
 result_path: /nobackup/lab_bock/projects/macroIC/results/AKsmall/
 project_name: AKsmall
@@ -23,7 +23,7 @@ saveCounts:
 # stop flag, options are: RAW, FILTERED, NORMALIZED, CORRECTED (-> only if variables_to_regress is provided!)
 stop_after: 'CORRECTED'
 
-### PREPARE
+##### PREPARE #####
 
 # names for the Seurat Assays mapped to 10X genomics features (leave empty "" if not applicable)
 modality_flags:
@@ -52,9 +52,10 @@ metadata_eval:
     replicate: "gsub('.*_(.)_.*', '\\\\1', metadata$hto_demux)"
     condKO: "paste0(metadata$condition,'+', metadata$KO_call)"
 
-### MERGE (no configuration necessary)
+##### MERGE #####
+# no configuration necessary
 
-### SPLIT
+##### SPLIT #####
 # needs to be categorical variable in metadata
 # data subsets are only generated for the indicated groups, because we are not always interested in all possible subsets eg negatives/doublets
 # 'batch' denotes samples (ie sample_names from sample_annotation)
@@ -63,13 +64,18 @@ split_by:
 #     replicate: ['A','B']
 #     batch: ['AK_A_transcriptome','AK_B_transcriptome','AK_C_transcriptome']
 
-### FILTER
+##### FILTER #####
 # logical expression for filtering, all variables need to be in metadata (leave empty "" if not applicable)
 filter_expression: "hto_demux != 'Doublet' & hto_demux != 'Negative' & pass_QC == 'True' & guide_call!='Negative' & guide_call!='Multiplet'"
 
-### NORMALIZATION w/ SCTransform defaults (no configuration necessary)
+##### NORMALIZATION #####
+# using SCTransform defaults https://satijalab.org/seurat/reference/sctransform
 
-### CELL SCORES are calculated using normalized counts (ie assay="SCT", slot="data")
+# filter for genes that have been detected in at least min_cells_per_gene cells (default: 5)
+min_cells_per_gene: 5
+
+##### CELL SCORES #####
+# calculated using normalized counts (ie assay="SCT", slot="data")
 
 # perform cell cycle analysis with given gene lists of S and G2/M phase respectively using https://satijalab.org/seurat/reference/cellcyclescoring
 # to use markers loaded with Seurat from Tirosh et al 2015 -> put 'tirosh2015'
@@ -79,16 +85,40 @@ cell_cycle:
     s_phase_genes: 'tirosh2015'
     g2m_phase_genes: 'tirosh2015'
 
-#provide paths to gene lists in plain .txt to perform scoring using https://satijalab.org/seurat/reference/addmodulescore
+# provide paths to gene lists in plain .txt to perform scoring using https://satijalab.org/seurat/reference/addmodulescore
 module_gene_lists:
     M1_genes: "/research/home/sreichl/projects/macroIC/metadata/marker_genes/M1_genes.txt"
     M2_genes: "/research/home/sreichl/projects/macroIC/metadata/marker_genes/M2_genes.txt"
     C1QCpos_TAM_genes: "/research/home/sreichl/projects/macroIC/metadata/marker_genes/C1QCpos_TAM_genes.txt"
     SPP1pos_TAM_genes: "/research/home/sreichl/projects/macroIC/metadata/marker_genes/SPP1pos_TAM_genes.txt"
+    IC_genes: "/research/home/sreichl/projects/macroIC/metadata/marker_genes/IC_genes.txt"
+    immune_genes: "/research/home/sreichl/projects/macroIC/metadata/marker_genes/immune_genes.txt"
 
-### CORRECTION performed on filtered raw data (includes normalization and stores the corrected data in assay="SCT", slot="scale.data"
+
+##### CORRECTION #####
+# performed on filtered raw data (includes normalization) and stores the corrected data in assay="SCT", slot="scale.data" of the Seurat object
+
 # need to be variables in metadata post cell scoring (ie normalization step)
-variables_to_regress: ["mitoPercent", "Phase"]
+variables_to_regress: ["mitoPercent", "S.Score", "G2M.Score"]
 
+##### VISUALIZATION #####
+# of metadata (after each step) and expression data after normalization (slot="data") and correction (slot="scale.data"), respectively
+# ridge plots:
+# violin plots:
+# dot plots: only uses data from slot="data" (-> only generated for step NORMALIZED), averages the values, and then passes them to scale. These are then Min-Maxed based on the col.min and col.max parameter values.
+# heatmaps: always use data from slot="scale.data"
 
+# categorical metadata variables to group cells in plots eg condition
+vis_categories: ['condition','KO_call']
 
+# provide paths to gene lists in plain .txt to plot expression individually (Ridge plots, Violin plots) and grouped (eg Heatmap, Dot plots)
+vis_gene_lists:
+    IC_genes: "/research/home/sreichl/projects/macroIC/metadata/marker_genes/IC_genes.txt"
+    immune_genes: "/research/home/sreichl/projects/macroIC/metadata/marker_genes/immune_genes.txt"
+
+# features per modality (if not applicable, leave empty []), which expression should be plotted, ['all'] plots every feature
+vis_features:
+    Antibody_Capture: ['all']
+    CRISPR_Guide_Capture: ['all']
+    Custom: ['all']
+    Metadata: ['mitoPercent','riboPercent', 'M1_genes1','M2_genes1','C1QCpos_TAM_genes1','SPP1pos_TAM_genes1']

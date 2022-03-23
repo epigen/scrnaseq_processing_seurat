@@ -48,12 +48,42 @@ data_splits = data_splits + extra_splits
 
 # necessary to avoid ambiguities between rule prepare (pre merge) and split (post merge)
 ruleorder: prepare > split
+    
+all_steps = ['RAW','FILTERED','NORMALIZED','CORRECTED']
+    
+if config["stop_after"]=="CORRECTED":
+    plot_steps = ["NORMALIZED","CORRECTED"]
+    metadata_plot_steps = all_steps[:all_steps.index(config["stop_after"])]
+elif config["stop_after"]=="NORMALIZED":
+    plot_steps = ["NORMALIZED"]
+    metadata_plot_steps = all_steps[:all_steps.index(config["stop_after"])+1]
+else:
+    plot_steps = []
+    metadata_plot_steps = all_steps[:all_steps.index(config["stop_after"])+1]
 
 rule all:
     input:
-#         final_objects = expand(os.path.join(config["result_path"],'{split}','counts','{step}_object.rds'), split=data_splits, step= "CORRECTED" if len(config["variables_to_regress"])>0 else "NORMALIZED"),
-        final_objects = expand(os.path.join(config["result_path"],'{split}','counts','{step}_object.rds'), split=data_splits, step=config["stop_after"]),
-        envs = expand(os.path.join(config["result_path"],'envs','{env}.yaml'),env=['seurat']),
+        final_objects = expand(os.path.join(config["result_path"],'{split}','counts','{step}_object.rds'), 
+                               split=data_splits, 
+                               step=config["stop_after"]),
+        metadata_plots = expand(os.path.join(config["result_path"],'{split}','counts','plots','{step}_metadata_{datatype}.png'),
+                             split=data_splits,
+                             step=metadata_plot_steps,
+                             datatype=['numerical','categorical','types']
+                            ),
+        normalized_plots = expand(os.path.join(config["result_path"],'{split}','counts','plots','NORMALIZED_{plot_type}_{category}_{gene_list}.png'), 
+                       split=data_splits,
+                       plot_type=['ridge_plot','violin_plot','dot_plot','heatmap'], 
+                       category=config["vis_categories"],
+                       gene_list=list(config["vis_gene_lists"].keys())
+                      ) if (config["stop_after"]=="CORRECTED")or(config["stop_after"]=="NORMALIZED") else None,
+        corrected_plots = expand(os.path.join(config["result_path"],'{split}','counts','plots','CORRECTED_{plot_type}_{category}_{gene_list}.png'), 
+                       split=data_splits,
+                       plot_type=['ridge_plot','violin_plot','heatmap'], 
+                       category=config["vis_categories"],
+                       gene_list=list(config["vis_gene_lists"].keys())
+                      ) if (config["stop_after"]=="CORRECTED") else None,
+        envs = expand(os.path.join(config["result_path"],'envs','{env}.yaml'),env=['seurat','inspectdf']),
     resources:
         mem=config.get("mem", "16G"),
     threads: config.get("threads", 1)
@@ -66,5 +96,6 @@ rule all:
 ##### load rules #####
 include: os.path.join("rules", "process.smk")
 include: os.path.join("rules", "normalize_correct_score.smk")
+include: os.path.join("rules", "visualize.smk")
 include: os.path.join("rules", "envs_export.smk")
 

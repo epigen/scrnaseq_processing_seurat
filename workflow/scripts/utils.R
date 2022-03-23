@@ -40,3 +40,27 @@ save_seurat_object <- function (seurat_obj, result_dir, prefix, rna_flag="RNA", 
     }
     
 }
+
+
+# extended ggsave
+ggsave_new <- function(filename, results_path, plot, width=5, height=5){
+    # make result directory if not exist
+    if (!dir.exists(results_path)){
+        dir.create(results_path, recursive = TRUE)
+    }
+    
+    for (format in c('png')){
+        ggsave(
+          paste0(filename,'.',format),
+          plot = plot,
+          device = format,
+          path = file.path(results_path),
+          scale = 1,
+          dpi = 300,
+            width = width,
+            height = height,
+          limitsize = FALSE,
+            units="in"
+        )
+    }
+}
