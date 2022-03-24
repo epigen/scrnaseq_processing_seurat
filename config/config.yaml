@@ -38,19 +38,19 @@ crispr_umi_threshold: 1
 grna_regex: "\\-."
 
 # REGEX-based metadata extension used with Seurat::PercentageFeatureSet
-# every entry is a new metadata column (use Camel case eg mitoPercent)
+# every entry is a new metadata column (use Camel case eg mitoPercent, no underlines '_')
 # https://satijalab.org/seurat/reference/percentagefeatureset  
 percentage_regex:
     mitoPercent: "^MT-"
     riboPercent: "^RP[SL][[:digit:]]|^RPLP[[:digit:]]|^RPSA"
 
 # eval based metadata column transformations -> eval(parse(text=" ")) -> escape \\ has to be \\\\
-# every entry is a new metadata column (use Camel case eg mitoPercent)
+# every entry is a new metadata column (use Camel case eg mitoPercent, no underlines '_')
 # metadata dataframe is called "metadata"
 metadata_eval:
     condition: "gsub('HTO-THP1_._','',metadata$hto_demux)"
     replicate: "gsub('.*_(.)_.*', '\\\\1', metadata$hto_demux)"
-    condKO: "paste0(metadata$condition,'+', metadata$KO_call)"
+    condKO: "paste0(metadata$condition,'+', metadata$KOcall)"
 
 ##### MERGE #####
 # no configuration necessary
@@ -61,12 +61,13 @@ metadata_eval:
 # 'batch' denotes samples (ie sample_names from sample_annotation)
 split_by:
     condition: ['untreated','8h_cytokines','24h_cytokines']
+    KOcall: ['NonTargeting']
 #     replicate: ['A','B']
 #     batch: ['AK_A_transcriptome','AK_B_transcriptome','AK_C_transcriptome']
 
 ##### FILTER #####
 # logical expression for filtering, all variables need to be in metadata (leave empty "" if not applicable)
-filter_expression: "hto_demux != 'Doublet' & hto_demux != 'Negative' & pass_QC == 'True' & guide_call!='Negative' & guide_call!='Multiplet'"
+filter_expression: "hto_demux != 'Doublet' & hto_demux != 'Negative' & pass_QC == 'True' & gRNAcall!='Negative' & gRNAcall!='Multiplet'"
 
 ##### NORMALIZATION #####
 # using SCTransform defaults https://satijalab.org/seurat/reference/sctransform
@@ -109,16 +110,21 @@ variables_to_regress: ["mitoPercent", "S.Score", "G2M.Score"]
 # heatmaps: always use data from slot="scale.data"
 
 # categorical metadata variables to group cells in plots eg condition
-vis_categories: ['condition','KO_call']
+vis_categories: ['condition','KOcall']
 
 # provide paths to gene lists in plain .txt to plot expression individually (Ridge plots, Violin plots) and grouped (eg Heatmap, Dot plots)
 vis_gene_lists:
+    M1_genes: "/research/home/sreichl/projects/macroIC/metadata/marker_genes/M1_genes.txt"
+    M2_genes: "/research/home/sreichl/projects/macroIC/metadata/marker_genes/M2_genes.txt"
+    C1QCpos_TAM_genes: "/research/home/sreichl/projects/macroIC/metadata/marker_genes/C1QCpos_TAM_genes.txt"
+    SPP1pos_TAM_genes: "/research/home/sreichl/projects/macroIC/metadata/marker_genes/SPP1pos_TAM_genes.txt"
     IC_genes: "/research/home/sreichl/projects/macroIC/metadata/marker_genes/IC_genes.txt"
     immune_genes: "/research/home/sreichl/projects/macroIC/metadata/marker_genes/immune_genes.txt"
+    KO_genes: "/research/home/sreichl/projects/macroIC/metadata/marker_genes/KO_genes.txt"
 
 # features per modality (if not applicable, leave empty []), which expression should be plotted, ['all'] plots every feature
 vis_features:
     Antibody_Capture: ['all']
     CRISPR_Guide_Capture: ['all']
     Custom: ['all']
-    Metadata: ['mitoPercent','riboPercent', 'M1_genes1','M2_genes1','C1QCpos_TAM_genes1','SPP1pos_TAM_genes1']
+    Metadata: ['mitoPercent','riboPercent', 'M1_genes','M2_genes','C1QCpos_TAM_genes','SPP1pos_TAM_genes']

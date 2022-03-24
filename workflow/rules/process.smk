@@ -4,7 +4,7 @@ rule prepare:
         get_sample_paths,
     output:
         sample_object = os.path.join(config["result_path"],'{sample}','counts','RAW_object.rds'),
-        metadata = os.path.join(config["result_path"],'{sample}','counts','RAW_metadata.csv'),
+        metadata = report(os.path.join(config["result_path"],'{sample}','counts','RAW_metadata.csv'), caption="../report/metadata_sample.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{sample}"),
     resources:
         mem=config.get("mem", "16G"),
     threads: config.get("threads", 1)
@@ -32,7 +32,7 @@ rule merge:
         expand(os.path.join(config["result_path"],'{sample}','counts','RAW_object.rds'), sample=annot.index.tolist()),
     output:
         merged_object = os.path.join(config["result_path"],'merged','counts','RAW_object.rds'),
-        metadata = os.path.join(config["result_path"],'merged','counts','RAW_metadata.csv'),
+        metadata = report(os.path.join(config["result_path"],'merged','counts','RAW_metadata.csv'), caption="../report/metadata_merged.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="merged"),
     resources:
         mem=config.get("mem", "16G"),
     threads: config.get("threads", 1)
@@ -56,7 +56,7 @@ rule split:
         merged_object = os.path.join(config["result_path"],'merged','counts','RAW_object.rds'),
     output:
         split_object = os.path.join(config["result_path"],'{split}','counts','RAW_object.rds'),
-        metadata = os.path.join(config["result_path"],'{split}','counts','RAW_metadata.csv'),
+        metadata = report(os.path.join(config["result_path"],'{split}','counts','RAW_metadata.csv'), caption="../report/metadata.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
     resources:
         mem=config.get("mem", "16G"),
     threads: config.get("threads", 1)
@@ -81,7 +81,7 @@ rule filter_cells:
         raw_object = os.path.join(config["result_path"],'{split}','counts','RAW_object.rds'),
     output:
         filtered_object = os.path.join(config["result_path"],'{split}','counts','FILTERED_object.rds'),
-        metadata = os.path.join(config["result_path"],'{split}','counts','FILTERED_metadata.csv'),
+        metadata = report(os.path.join(config["result_path"],'{split}','counts','FILTERED_metadata.csv'), caption="../report/metadata.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
     resources:
         mem=config.get("mem", "16G"),
     threads: config.get("threads", 1)

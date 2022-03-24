@@ -1,0 +1,1 @@
+A Snakemake workflow for processing (multiomdal) scRNA-seq data generated with 10X Genomics with the R package `Seurat <https://satijalab.org/seurat/index.html>`_.

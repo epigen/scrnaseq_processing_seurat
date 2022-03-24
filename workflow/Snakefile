@@ -17,7 +17,7 @@ shell.prefix(f"set -eo pipefail;")
 # containerized: "docker://sreichl/..."
 
 ##### setup report #####
-# report: os.path.join("report", "workflow.rst")
+report: os.path.join("report", "workflow.rst")
 
 ##### load config and sample annotation sheets #####
 configfile: os.path.join("config", "config.yaml")
@@ -83,7 +83,9 @@ rule all:
                        category=config["vis_categories"],
                        gene_list=list(config["vis_gene_lists"].keys())
                       ) if (config["stop_after"]=="CORRECTED") else None,
-        envs = expand(os.path.join(config["result_path"],'envs','{env}.yaml'),env=['seurat','inspectdf']),
+        envs = report(expand(os.path.join(config["result_path"],'envs','{env}.yaml'),env=['seurat','inspectdf']), caption="report/software.rst", category="Software", subcategory=config["project_name"]),
+        gene_lists = report(set(list(config["module_gene_lists"].values())+list(config["vis_gene_lists"].values())), caption="report/gene_lists.rst", category="Configuration", subcategory=config["project_name"]),
+        configs = report([os.path.join("config", "config.yaml"),config["sample_annotation"]], caption="report/configs.rst", category="Configuration", subcategory=config["project_name"]),
     resources:
         mem=config.get("mem", "16G"),
     threads: config.get("threads", 1)
@@ -98,4 +100,3 @@ include: os.path.join("rules", "process.smk")
 include: os.path.join("rules", "normalize_correct_score.smk")
 include: os.path.join("rules", "visualize.smk")
 include: os.path.join("rules", "envs_export.smk")
-

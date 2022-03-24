@@ -93,32 +93,32 @@ if(crispr_flag!=''){
     }
 
     # perfrom gRNA and KO target assignment
-    protospacer_calls_df <- data.frame(matrix(ncol=2,nrow=0, dimnames=list(c(),c("guide_call", "KO_call"))))
+    protospacer_calls_df <- data.frame(matrix(ncol=2,nrow=0, dimnames=list(c(),c("gRNAcall", "KOcall"))))
 
     for (barcode in colnames(seurat_obj)){
 
         # guide RNA and target gene can be assigned
         if (sum(grna_data[,barcode]>0)==1){
-            protospacer_calls_df[barcode,"guide_call"] <- rownames(grna_data)[grna_data[,barcode]>0]
-            protospacer_calls_df[barcode,"KO_call"] <- gsub(grna_regex,"",protospacer_calls_df[barcode,"guide_call"])
+            protospacer_calls_df[barcode,"gRNAcall"] <- rownames(grna_data)[grna_data[,barcode]>0]
+            protospacer_calls_df[barcode,"KOcall"] <- gsub(grna_regex,"",protospacer_calls_df[barcode,"gRNAcall"])
         }
 
         # multiple guide RNAs have been detected
         if (sum(grna_data[,barcode]>0)>1){
-            protospacer_calls_df[barcode,"guide_call"] <- "Multiplet"
-            protospacer_calls_df[barcode,"KO_call"] <- "Multiplet"
+            protospacer_calls_df[barcode,"gRNAcall"] <- "Multiplet"
+            protospacer_calls_df[barcode,"KOcall"] <- "Multiplet"
         }
 
         # no guide RNAs have been detected
         if (sum(grna_data[,barcode]>0)==0){
-            protospacer_calls_df[barcode,"guide_call"] <- "Negative"
-            protospacer_calls_df[barcode,"KO_call"] <- "Negative"
+            protospacer_calls_df[barcode,"gRNAcall"] <- "Negative"
+            protospacer_calls_df[barcode,"KOcall"] <- "Negative"
         }
     }
 
     # add guide and KO assignment to metadata
-    seurat_obj[["guide_call"]] <- protospacer_calls_df[colnames(seurat_obj), 'guide_call']
-    seurat_obj[["KO_call"]] <- protospacer_calls_df[colnames(seurat_obj), 'KO_call']
+    seurat_obj[["gRNAcall"]] <- protospacer_calls_df[colnames(seurat_obj), 'gRNAcall']
+    seurat_obj[["KOcall"]] <- protospacer_calls_df[colnames(seurat_obj), 'KOcall']
 }
 
 # add eval based metadata columns from config

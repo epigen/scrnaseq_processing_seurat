@@ -54,7 +54,8 @@ norm_object <- SCTransform(filtered_object,
                            method="glmGamPoi",
                            variable.features.n=NULL,
                            return.only.var.genes=FALSE,
-                           min_cells = min_cells_per_gene
+                           min_cells = min_cells_per_gene,
+                           seed.use = 42
                           )
 
 # normalize AB data (margin=2 -> normalization across cells)
@@ -99,6 +100,10 @@ for (gene_list_name in names(gene_lists)){
         seed = 42,
         search = TRUE, #Search for symbol synonyms for features in features that don't match features in object (ie gene symbol synonyms) using HUGO Gene Nomenclature Committee (HGNC)
     )
+    
+    # remove post-fix '1' from metadata column
+    norm_object[[gene_list_name]] <- norm_object[[paste0(gene_list_name,'1')]]
+    norm_object[[paste0(gene_list_name,'1')]] <- NULL
 }
 
 

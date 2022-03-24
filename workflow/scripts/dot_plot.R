@@ -56,7 +56,7 @@ for (cat in vis_categories){
     
     # plot RNA normalized/corrected expression data
     for (gene_list_name in names(gene_lists)){
-        features <- gene_lists[[gene_list_name]]
+        features <- unique(gene_lists[[gene_list_name]])
         
         # plot specs
         width <- width_col*length(features)
@@ -101,7 +101,7 @@ for (cat in vis_categories){
         if(modality_features[[flag]][1]=='all'){
             features <- rownames(GetAssayData(data_object, slot = slot, assay = flag))
         }else{
-            features <- modality_features[[flag]]
+            features <- unique(modality_features[[flag]])
         }
             
         # plot specs
