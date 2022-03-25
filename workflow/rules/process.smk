@@ -4,7 +4,7 @@ rule prepare:
         get_sample_paths,
     output:
         sample_object = os.path.join(config["result_path"],'{sample}','counts','RAW_object.rds'),
-        metadata = report(os.path.join(config["result_path"],'{sample}','counts','RAW_metadata.csv'), caption="../report/metadata_sample.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{sample}"),
+        metadata = report(os.path.join(config["result_path"],'{sample}','counts','RAW_metadata.csv'), caption="../report/metadata_sample.rst", category="processing_{}".format(config["project_name"]), subcategory="{sample}"),
     resources:
         mem=config.get("mem", "16G"),
     threads: config.get("threads", 1)
@@ -14,7 +14,6 @@ rule prepare:
         os.path.join("logs","rules","prepare_{sample}.log"),
     params:
         partition=config.get("partition"),
-        saveCounts = config["saveCounts"],
         sample = lambda w: "{}".format(w.sample),
         ab_flag = config["modality_flags"]['Antibody_Capture'],
         crispr_flag = config["modality_flags"]['CRISPR_Guide_Capture'],
@@ -32,7 +31,7 @@ rule merge:
         expand(os.path.join(config["result_path"],'{sample}','counts','RAW_object.rds'), sample=annot.index.tolist()),
     output:
         merged_object = os.path.join(config["result_path"],'merged','counts','RAW_object.rds'),
-        metadata = report(os.path.join(config["result_path"],'merged','counts','RAW_metadata.csv'), caption="../report/metadata_merged.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="merged"),
+        metadata = report(os.path.join(config["result_path"],'merged','counts','RAW_metadata.csv'), caption="../report/metadata_merged.rst", category="processing_{}".format(config["project_name"]), subcategory="merged"),
     resources:
         mem=config.get("mem", "16G"),
     threads: config.get("threads", 1)
@@ -42,7 +41,6 @@ rule merge:
         os.path.join("logs","rules","merge.log"),
     params:
         partition=config.get("partition"),
-        saveCounts = config["saveCounts"],
         project_name = config["project_name"],
         ab_flag = config["modality_flags"]['Antibody_Capture'],
         crispr_flag = config["modality_flags"]['CRISPR_Guide_Capture'],
@@ -56,7 +54,7 @@ rule split:
         merged_object = os.path.join(config["result_path"],'merged','counts','RAW_object.rds'),
     output:
         split_object = os.path.join(config["result_path"],'{split}','counts','RAW_object.rds'),
-        metadata = report(os.path.join(config["result_path"],'{split}','counts','RAW_metadata.csv'), caption="../report/metadata.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
+        metadata = report(os.path.join(config["result_path"],'{split}','counts','RAW_metadata.csv'), caption="../report/metadata.rst", category="processing_{}".format(config["project_name"]), subcategory="{split}"),
     resources:
         mem=config.get("mem", "16G"),
     threads: config.get("threads", 1)
@@ -66,8 +64,7 @@ rule split:
         os.path.join("logs","rules","split_{split}.log"),
     params:
         partition=config.get("partition"),
-        saveCounts = config["saveCounts"],
-        result_dir = config["result_path"],
+        result_dir = lambda w, input: os.path.splitext(input[0])[0],
         split = lambda w: "{}".format(w.split),
         ab_flag = config["modality_flags"]['Antibody_Capture'],
         crispr_flag = config["modality_flags"]['CRISPR_Guide_Capture'],
@@ -81,7 +78,7 @@ rule filter_cells:
         raw_object = os.path.join(config["result_path"],'{split}','counts','RAW_object.rds'),
     output:
         filtered_object = os.path.join(config["result_path"],'{split}','counts','FILTERED_object.rds'),
-        metadata = report(os.path.join(config["result_path"],'{split}','counts','FILTERED_metadata.csv'), caption="../report/metadata.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
+        metadata = report(os.path.join(config["result_path"],'{split}','counts','FILTERED_metadata.csv'), caption="../report/metadata.rst", category="processing_{}".format(config["project_name"]), subcategory="{split}"),
     resources:
         mem=config.get("mem", "16G"),
     threads: config.get("threads", 1)
@@ -91,7 +88,6 @@ rule filter_cells:
         os.path.join("logs","rules","filter_{split}.log"),
     params:
         partition=config.get("partition"),
-        saveCounts = config["saveCounts"],
         filter_expression = config["filter_expression"],
         ab_flag = config["modality_flags"]['Antibody_Capture'],
         crispr_flag = config["modality_flags"]['CRISPR_Guide_Capture'],

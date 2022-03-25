@@ -12,8 +12,6 @@ sample_object_paths <- snakemake@input #c(file.path("/nobackup/lab_bock/projects
 merged_object <- snakemake@output[["merged_object"]]# "/nobackup/lab_bock/projects/macroIC/results/AKsmall/merged/counts/RAW_object.rds"
 
 # parameters
-saveCounts <- snakemake@params[["saveCounts"]]['raw']
-
 project_name <- snakemake@params[["project_name"]] #"test" 
 result_dir <- dirname(merged_object)
 
@@ -46,4 +44,7 @@ if (length(sample_objects)>1){
 }
 
 ### save merged data
-save_seurat_object(seurat_obj=merged_data, result_dir=result_dir, prefix='RAW_', ab_flag=ab_flag, crispr_flag=crispr_flag, custom_flag=custom_flag, saveCounts=saveCounts)
+save_seurat_object(seurat_obj=merged_data,
+                   result_dir=result_dir,
+                   prefix='RAW_'
+                  )

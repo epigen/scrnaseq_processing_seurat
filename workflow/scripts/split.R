@@ -11,8 +11,6 @@ merged_object_path <- snakemake@input[["merged_object"]]
 split_object_path <- snakemake@output[["split_object"]]
 
 # parameters
-saveCounts <- snakemake@params[["saveCounts"]]['raw']
-
 result_dir <- snakemake@params[["result_dir"]]
 split_by <- snakemake@params[["split"]] #"condition_8h_cytokines"
 # 'flags' for modalities
@@ -36,4 +34,7 @@ tmp_metadata <- subset(metadata, subset= eval(split_expr))
 tmp_object <- merged_object[,rownames(tmp_metadata)]
 
 ### save data
-save_seurat_object(seurat_obj=tmp_object, result_dir=dirname(split_object_path), prefix='RAW_', ab_flag=ab_flag, crispr_flag=crispr_flag, custom_flag=custom_flag, saveCounts=saveCounts)
+save_seurat_object(seurat_obj=tmp_object,
+                   result_dir=dirname(split_object_path),
+                   prefix='RAW_'
+                  )

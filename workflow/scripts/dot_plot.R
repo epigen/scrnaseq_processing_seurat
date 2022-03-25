@@ -50,8 +50,8 @@ for (cat in vis_categories){
     # plot specs
     height <- length(levels(data_object))*height_row + 1
     # make sure that at least the legend fits
-    if (height<4){
-        height <- 4
+    if (height<5){
+        height <- 5
     }
     
     # plot RNA normalized/corrected expression data
@@ -59,7 +59,7 @@ for (cat in vis_categories){
         features <- unique(gene_lists[[gene_list_name]])
         
         # plot specs
-        width <- width_col*length(features)
+        width <- width_col*length(features) + 3
         
         # plot
         tmp_plot <- DotPlot(object = data_object,
@@ -105,7 +105,7 @@ for (cat in vis_categories){
         }
             
         # plot specs
-        width <- width_col*length(features)
+        width <- width_col*length(features) + 3
         
         # plot
         tmp_plot <- DotPlot(object = data_object,

@@ -5,7 +5,7 @@ rule metadata_plots:
     output:
         metadata_plots = report(expand(os.path.join(config["result_path"],'{{split}}','counts','plots','{{step}}_metadata_{datatype}.png'),
                              datatype=['numerical','categorical','types']
-                            ), caption="../report/metadata_vis.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
+                            ), caption="../report/metadata_vis.rst", category="visualization_{}".format(config["project_name"]), subcategory="{split}"),
     resources:
         mem=config.get("mem", "16G"),
     threads: config.get("threads", 1)
@@ -27,19 +27,19 @@ rule ridge_plot_normalized:
         ridge_plots_expression = report(expand(os.path.join(config["result_path"],'{{split}}','counts','plots','NORMALIZED_ridge_plot_{category}_{gene_list}.png'),
                              category=config["vis_categories"],
                              gene_list=list(config["vis_gene_lists"].keys())
-                            ), caption="../report/ridge_plot.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
+                            ), caption="../report/ridge_plot.rst", category="visualization_{}".format(config["project_name"]), subcategory="{split}"),
         ridge_plots_Antibody_Capture = report(expand(os.path.join(config["result_path"],'{{split}}','counts','plots','NORMALIZED_ridge_plot_{category}_{modality}.png'),
                              category=config["vis_categories"],
-                             modality=config["modality_flags"]["Antibody_Capture"]) if (config["modality_flags"]["Antibody_Capture"]!="")and(len(config["vis_features"]["Antibody_Capture"])>0) else None, caption="../report/ridge_plot.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
+                             modality=config["modality_flags"]["Antibody_Capture"]) if (config["modality_flags"]["Antibody_Capture"]!="")and(len(config["vis_features"]["Antibody_Capture"])>0) else None, caption="../report/ridge_plot.rst", category="visualization_{}".format(config["project_name"]), subcategory="{split}"),
         ridge_plots_CRISPR_Guide_Capture = report(expand(os.path.join(config["result_path"],'{{split}}','counts','plots','NORMALIZED_ridge_plot_{category}_{modality}.png'),
                              category=config["vis_categories"],
-                             modality=config["modality_flags"]["CRISPR_Guide_Capture"]) if (config["modality_flags"]["CRISPR_Guide_Capture"]!="")and(len(config["vis_features"]["CRISPR_Guide_Capture"])>0) else None, caption="../report/ridge_plot.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
+                             modality=config["modality_flags"]["CRISPR_Guide_Capture"]) if (config["modality_flags"]["CRISPR_Guide_Capture"]!="")and(len(config["vis_features"]["CRISPR_Guide_Capture"])>0) else None, caption="../report/ridge_plot.rst", category="visualization_{}".format(config["project_name"]), subcategory="{split}"),
         ridge_plots_Custom = report(expand(os.path.join(config["result_path"],'{{split}}','counts','plots','NORMALIZED_ridge_plot_{category}_{modality}.png'),
                              category=config["vis_categories"],
-                             modality=config["modality_flags"]["Custom"]) if (config["modality_flags"]["Custom"]!="")and(len(config["vis_features"]["Custom"])>0) else None, caption="../report/ridge_plot.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
+                             modality=config["modality_flags"]["Custom"]) if (config["modality_flags"]["Custom"]!="")and(len(config["vis_features"]["Custom"])>0) else None, caption="../report/ridge_plot.rst", category="visualization_{}".format(config["project_name"]), subcategory="{split}"),
         ridge_plots_Metadata = report(expand(os.path.join(config["result_path"],'{{split}}','counts','plots','NORMALIZED_ridge_plot_{category}_{modality}.png'),
                              category=config["vis_categories"],
-                             modality="Metadata") if (len(config["vis_features"]["Metadata"])>0) else None, caption="../report/ridge_plot.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
+                             modality="Metadata") if (len(config["vis_features"]["Metadata"])>0) else None, caption="../report/ridge_plot.rst", category="visualization_{}".format(config["project_name"]), subcategory="{split}"),
     resources:
         mem=config.get("mem", "16G"),
     threads: config.get("threads", 1)
@@ -69,7 +69,7 @@ rule ridge_plot_corrected:
         ridge_plots_expression = report(expand(os.path.join(config["result_path"],'{{split}}','counts','plots','CORRECTED_ridge_plot_{category}_{gene_list}.png'),
                              category=config["vis_categories"],
                              gene_list=list(config["vis_gene_lists"].keys())
-                            ), caption="../report/ridge_plot.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
+                            ), caption="../report/ridge_plot.rst", category="visualization_{}".format(config["project_name"]), subcategory="{split}"),
     resources:
         mem=config.get("mem", "16G"),
     threads: config.get("threads", 1)
@@ -100,19 +100,19 @@ rule violin_plot_normalized:
         violin_plots_expression = report(expand(os.path.join(config["result_path"],'{{split}}','counts','plots','NORMALIZED_violin_plot_{category}_{gene_list}.png'),
                              category=config["vis_categories"],
                              gene_list=list(config["vis_gene_lists"].keys())
-                            ), caption="../report/violin_plot.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
+                            ), caption="../report/violin_plot.rst", category="visualization_{}".format(config["project_name"]), subcategory="{split}"),
         violin_plots_Antibody_Capture = report(expand(os.path.join(config["result_path"],'{{split}}','counts','plots','NORMALIZED_violin_plot_{category}_{modality}.png'),
                              category=config["vis_categories"],
-                             modality=config["modality_flags"]["Antibody_Capture"]) if (config["modality_flags"]["Antibody_Capture"]!="")and(len(config["vis_features"]["Antibody_Capture"])>0) else None, caption="../report/violin_plot.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
+                             modality=config["modality_flags"]["Antibody_Capture"]) if (config["modality_flags"]["Antibody_Capture"]!="")and(len(config["vis_features"]["Antibody_Capture"])>0) else None, caption="../report/violin_plot.rst", category="visualization_{}".format(config["project_name"]), subcategory="{split}"),
         violin_plots_CRISPR_Guide_Capture = report(expand(os.path.join(config["result_path"],'{{split}}','counts','plots','NORMALIZED_violin_plot_{category}_{modality}.png'),
                              category=config["vis_categories"],
-                             modality=config["modality_flags"]["CRISPR_Guide_Capture"]) if (config["modality_flags"]["CRISPR_Guide_Capture"]!="")and(len(config["vis_features"]["CRISPR_Guide_Capture"])>0) else None, caption="../report/violin_plot.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
+                             modality=config["modality_flags"]["CRISPR_Guide_Capture"]) if (config["modality_flags"]["CRISPR_Guide_Capture"]!="")and(len(config["vis_features"]["CRISPR_Guide_Capture"])>0) else None, caption="../report/violin_plot.rst", category="visualization_{}".format(config["project_name"]), subcategory="{split}"),
         violin_plots_Custom = report(expand(os.path.join(config["result_path"],'{{split}}','counts','plots','NORMALIZED_violin_plot_{category}_{modality}.png'),
                              category=config["vis_categories"],
-                             modality=config["modality_flags"]["Custom"]) if (config["modality_flags"]["Custom"]!="")and(len(config["vis_features"]["Custom"])>0) else None, caption="../report/violin_plot.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
+                             modality=config["modality_flags"]["Custom"]) if (config["modality_flags"]["Custom"]!="")and(len(config["vis_features"]["Custom"])>0) else None, caption="../report/violin_plot.rst", category="visualization_{}".format(config["project_name"]), subcategory="{split}"),
         violin_plots_Metadata = report(expand(os.path.join(config["result_path"],'{{split}}','counts','plots','NORMALIZED_violin_plot_{category}_{modality}.png'),
                              category=config["vis_categories"],
-                             modality="Metadata") if (len(config["vis_features"]["Metadata"])>0) else None, caption="../report/violin_plot.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
+                             modality="Metadata") if (len(config["vis_features"]["Metadata"])>0) else None, caption="../report/violin_plot.rst", category="visualization_{}".format(config["project_name"]), subcategory="{split}"),
     resources:
         mem=config.get("mem", "16G"),
     threads: config.get("threads", 1)
@@ -142,7 +142,7 @@ rule violin_plot_corrected:
         violin_plots_expression = report(expand(os.path.join(config["result_path"],'{{split}}','counts','plots','CORRECTED_violin_plot_{category}_{gene_list}.png'),
                              category=config["vis_categories"],
                              gene_list=list(config["vis_gene_lists"].keys())
-                            ), caption="../report/violin_plot.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
+                            ), caption="../report/violin_plot.rst", category="visualization_{}".format(config["project_name"]), subcategory="{split}"),
     resources:
         mem=config.get("mem", "16G"),
     threads: config.get("threads", 1)
@@ -172,16 +172,16 @@ rule heatmap_normalized:
         heatmaps_expression = report(expand(os.path.join(config["result_path"],'{{split}}','counts','plots','NORMALIZED_heatmap_{category}_{gene_list}.png'),
                              category=config["vis_categories"],
                              gene_list=list(config["vis_gene_lists"].keys())+['HVG100']
-                            ), caption="../report/heatmap.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
+                            ), caption="../report/heatmap.rst", category="visualization_{}".format(config["project_name"]), subcategory="{split}"),
         heatmaps_Antibody_Capture = report(expand(os.path.join(config["result_path"],'{{split}}','counts','plots','NORMALIZED_heatmap_{category}_{modality}.png'),
                              category=config["vis_categories"],
-                             modality=config["modality_flags"]["Antibody_Capture"]) if (config["modality_flags"]["Antibody_Capture"]!="")and(len(config["vis_features"]["Antibody_Capture"])>0) else None, caption="../report/heatmap.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
+                             modality=config["modality_flags"]["Antibody_Capture"]) if (config["modality_flags"]["Antibody_Capture"]!="")and(len(config["vis_features"]["Antibody_Capture"])>0) else None, caption="../report/heatmap.rst", category="visualization_{}".format(config["project_name"]), subcategory="{split}"),
         heatmaps_CRISPR_Guide_Capture = report(expand(os.path.join(config["result_path"],'{{split}}','counts','plots','NORMALIZED_heatmap_{category}_{modality}.png'),
                              category=config["vis_categories"],
-                             modality=config["modality_flags"]["CRISPR_Guide_Capture"]) if (config["modality_flags"]["CRISPR_Guide_Capture"]!="")and(len(config["vis_features"]["CRISPR_Guide_Capture"])>0) else None, caption="../report/heatmap.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
+                             modality=config["modality_flags"]["CRISPR_Guide_Capture"]) if (config["modality_flags"]["CRISPR_Guide_Capture"]!="")and(len(config["vis_features"]["CRISPR_Guide_Capture"])>0) else None, caption="../report/heatmap.rst", category="visualization_{}".format(config["project_name"]), subcategory="{split}"),
         heatmaps_Custom = report(expand(os.path.join(config["result_path"],'{{split}}','counts','plots','NORMALIZED_heatmap_{category}_{modality}.png'),
                              category=config["vis_categories"],
-                             modality=config["modality_flags"]["Custom"]) if (config["modality_flags"]["Custom"]!="")and(len(config["vis_features"]["Custom"])>0) else None, caption="../report/heatmap.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
+                             modality=config["modality_flags"]["Custom"]) if (config["modality_flags"]["Custom"]!="")and(len(config["vis_features"]["Custom"])>0) else None, caption="../report/heatmap.rst", category="visualization_{}".format(config["project_name"]), subcategory="{split}"),
     resources:
         mem=config.get("mem", "16G"),
     threads: config.get("threads", 1)
@@ -210,7 +210,7 @@ rule heatmap_corrected:
         heatmaps_expression = report(expand(os.path.join(config["result_path"],'{{split}}','counts','plots','CORRECTED_heatmap_{category}_{gene_list}.png'),
                              category=config["vis_categories"],
                              gene_list=list(config["vis_gene_lists"].keys())+['HVG100']
-                            ), caption="../report/heatmap.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
+                            ), caption="../report/heatmap.rst", category="visualization_{}".format(config["project_name"]), subcategory="{split}"),
     resources:
         mem=config.get("mem", "16G"),
     threads: config.get("threads", 1)
@@ -240,16 +240,16 @@ rule dot_plot:
         dot_plots_expression = report(expand(os.path.join(config["result_path"],'{{split}}','counts','plots','NORMALIZED_dot_plot_{category}_{gene_list}.png'),
                              category=config["vis_categories"],
                              gene_list=list(config["vis_gene_lists"].keys())
-                            ), caption="../report/dot_plot.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
+                            ), caption="../report/dot_plot.rst", category="visualization_{}".format(config["project_name"]), subcategory="{split}"),
         dot_plots_Antibody_Capture = report(expand(os.path.join(config["result_path"],'{{split}}','counts','plots','NORMALIZED_dot_plot_{category}_{modality}.png'),
                              category=config["vis_categories"],
-                             modality=config["modality_flags"]["Antibody_Capture"]) if (config["modality_flags"]["Antibody_Capture"]!="")and(len(config["vis_features"]["Antibody_Capture"])>0) else None, caption="../report/dot_plot.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
+                             modality=config["modality_flags"]["Antibody_Capture"]) if (config["modality_flags"]["Antibody_Capture"]!="")and(len(config["vis_features"]["Antibody_Capture"])>0) else None, caption="../report/dot_plot.rst", category="visualization_{}".format(config["project_name"]), subcategory="{split}"),
         dot_plots_CRISPR_Guide_Capture = report(expand(os.path.join(config["result_path"],'{{split}}','counts','plots','NORMALIZED_dot_plot_{category}_{modality}.png'),
                              category=config["vis_categories"],
-                             modality=config["modality_flags"]["CRISPR_Guide_Capture"]) if (config["modality_flags"]["CRISPR_Guide_Capture"]!="")and(len(config["vis_features"]["CRISPR_Guide_Capture"])>0) else None, caption="../report/dot_plot.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
+                             modality=config["modality_flags"]["CRISPR_Guide_Capture"]) if (config["modality_flags"]["CRISPR_Guide_Capture"]!="")and(len(config["vis_features"]["CRISPR_Guide_Capture"])>0) else None, caption="../report/dot_plot.rst", category="visualization_{}".format(config["project_name"]), subcategory="{split}"),
         dot_plots_Custom = report(expand(os.path.join(config["result_path"],'{{split}}','counts','plots','NORMALIZED_dot_plot_{category}_{modality}.png'),
                              category=config["vis_categories"],
-                             modality=config["modality_flags"]["Custom"]) if (config["modality_flags"]["Custom"]!="")and(len(config["vis_features"]["Custom"])>0) else None, caption="../report/dot_plot.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
+                             modality=config["modality_flags"]["Custom"]) if (config["modality_flags"]["Custom"]!="")and(len(config["vis_features"]["Custom"])>0) else None, caption="../report/dot_plot.rst", category="visualization_{}".format(config["project_name"]), subcategory="{split}"),
     resources:
         mem=config.get("mem", "16G"),
     threads: config.get("threads", 1)

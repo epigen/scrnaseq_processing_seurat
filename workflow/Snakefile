@@ -4,10 +4,6 @@ import sys
 import pandas as pd
 from snakemake.utils import min_version
 
-##### utility functions #####
-def get_sample_paths(wildcards):
-    return [annot.loc[wildcards.sample,'path'], annot.loc[wildcards.sample,'metadata']]
-
 min_version("6.0.3")
 
 SDIR = os.path.realpath(os.path.dirname(srcdir("Snakefile")))
@@ -31,7 +27,7 @@ if config["split_by"] is not None:
         if split=='batch':
             data_splits.extend(config["split_by"][split])
         else:
-            extra_splits.extend([split+"_"+value for value in config["split_by"][split]])
+            extra_splits.extend(["{}_{}".format(split, value) for value in config["split_by"][split]])
 data_splits = data_splits + extra_splits
 
 # TEMP_DIR = config.pop("tempdir", "temp")
@@ -66,6 +62,9 @@ rule all:
         final_objects = expand(os.path.join(config["result_path"],'{split}','counts','{step}_object.rds'), 
                                split=data_splits, 
                                step=config["stop_after"]),
+        counts = expand(os.path.join(config["result_path"],'{split}','counts','{step}_RNA.csv'), 
+                               split=data_splits, 
+                               step=config["save_counts"]) if (len(config["save_counts"])>0) else None,
         metadata_plots = expand(os.path.join(config["result_path"],'{split}','counts','plots','{step}_metadata_{datatype}.png'),
                              split=data_splits,
                              step=metadata_plot_steps,
@@ -96,6 +95,7 @@ rule all:
 
         
 ##### load rules #####
+include: os.path.join("rules", "common.smk")
 include: os.path.join("rules", "process.smk")
 include: os.path.join("rules", "normalize_correct_score.smk")
 include: os.path.join("rules", "visualize.smk")

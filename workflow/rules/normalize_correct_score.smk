@@ -5,7 +5,7 @@ rule normalize:
         filtered_object = os.path.join(config["result_path"],'{split}','counts','FILTERED_object.rds'),
     output:
         norm_object = os.path.join(config["result_path"],'{split}','counts','NORMALIZED_object.rds'),
-        metadata = report(os.path.join(config["result_path"],'{split}','counts','NORMALIZED_metadata.csv'), caption="../report/metadata.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
+        metadata = report(os.path.join(config["result_path"],'{split}','counts','NORMALIZED_metadata.csv'), caption="../report/metadata.rst", category="processing_{}".format(config["project_name"]), subcategory="{split}"),
     resources:
         mem=config.get("mem", "16G"),
     threads: config.get("threads", 1)
@@ -15,7 +15,6 @@ rule normalize:
         os.path.join("logs","rules","filter_{split}.log"),
     params:
         partition=config.get("partition"),
-        saveCounts = config["saveCounts"],
         min_cells_per_gene = config["min_cells_per_gene"],
         confounders = [],
         module_gene_lists = config["module_gene_lists"],
@@ -35,7 +34,7 @@ if len(config["variables_to_regress"])>0:
             filtered_object = os.path.join(config["result_path"],'{split}','counts','NORMALIZED_object.rds'),
         output:
             norm_object = os.path.join(config["result_path"],'{split}','counts','CORRECTED_object.rds'),
-            metadata = report(os.path.join(config["result_path"],'{split}','counts','CORRECTED_metadata.csv'), caption="../report/metadata.rst", category="scRNAseq_{}".format(config["project_name"]), subcategory="{split}"),
+            metadata = report(os.path.join(config["result_path"],'{split}','counts','CORRECTED_metadata.csv'), caption="../report/metadata.rst", category="processing_{}".format(config["project_name"]), subcategory="{split}"),
         resources:
             mem=config.get("mem", "16G"),
         threads: config.get("threads", 1)
@@ -45,7 +44,6 @@ if len(config["variables_to_regress"])>0:
             os.path.join("logs","rules","filter_{split}.log"),
         params:
             partition=config.get("partition"),
-            saveCounts = config["saveCounts"],
             min_cells_per_gene = config["min_cells_per_gene"],
             confounders = config["variables_to_regress"],
             module_gene_lists = config["module_gene_lists"],

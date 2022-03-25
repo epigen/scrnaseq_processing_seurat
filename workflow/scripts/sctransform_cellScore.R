@@ -11,8 +11,6 @@ filtered_object_path <- snakemake@input[["filtered_object"]]
 norm_object_path <- snakemake@output[["norm_object"]]
 
 # parameters
-saveCounts <- snakemake@params[["saveCounts"]]
-
 confounders <- snakemake@params[["confounders"]]
 min_cells_per_gene <- snakemake@params[["min_cells_per_gene"]]
 
@@ -109,21 +107,20 @@ for (gene_list_name in names(gene_lists)){
 
 ### save data
 
-# select correct prefix
+# select correct prefix and save HVGs
 if(length(confounders)==0){
-    prefix <- 'NORMALIZED'
-    saveCounts <- saveCounts['normalized']
+    prefix <- 'NORMALIZED_'
+    
+    # save highly variable genes
+    write(rownames(HVG_df), file.path(dirname(file.path(norm_object_path)),"highly_variable_genes.txt"))
+    write.csv(HVG_df, file=file.path(dirname(file.path(norm_object_path)),"highly_variable_genes.csv"), row.names=TRUE)
 }else{
-    prefix <- 'CORRECTED'
-    saveCounts <- saveCounts['corrected']
+    prefix <- 'CORRECTED_'
 }
 
-# save only corrected count matrices
-save_seurat_object(seurat_obj=norm_object, result_dir=dirname(file.path(norm_object_path)), prefix=paste0(prefix,'counts_'), ab_flag=ab_flag, crispr_flag=crispr_flag, custom_flag=custom_flag, slot="counts", saveCounts=saveCounts)
-
 # save all corrected data
-save_seurat_object(seurat_obj=norm_object, result_dir=dirname(file.path(norm_object_path)), prefix=paste0(prefix,'_'), rna_flag="SCT", ab_flag=ab_flag, crispr_flag=crispr_flag, custom_flag=custom_flag, slot="scale.data", saveCounts=saveCounts)
+save_seurat_object(seurat_obj=norm_object,
+                   result_dir=dirname(file.path(norm_object_path)),
+                   prefix=prefix
+                  )
 
-# save highly variable genes
-write(rownames(HVG_df), file.path(dirname(file.path(norm_object_path)),"highly_variable_genes.txt"))
-write.csv(HVG_df, file=file.path(dirname(file.path(norm_object_path)),"highly_variable_genes.csv"), row.names=TRUE)

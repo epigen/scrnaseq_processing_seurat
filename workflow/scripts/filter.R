@@ -12,8 +12,6 @@ raw_object_path <- snakemake@input[["raw_object"]]
 filtered_object_path <- snakemake@output[["filtered_object"]]
 
 # parameters
-saveCounts <- snakemake@params[["saveCounts"]]['filtered']
-
 result_dir <- dirname(filtered_object_path)
 filter_expression <- snakemake@params[["filter_expression"]] # "hto_demux != 'Doublet' & hto_demux != 'Negative' & pass_QC == 'True' & guide_call!='Negative' & guide_call!='Multiplet'"
 # 'flags' for modalities
@@ -38,4 +36,7 @@ if (filter_expression!=""){
 
 
 ### save data
-save_seurat_object(seurat_obj=filtered_object, result_dir=dirname(file.path(filtered_object_path)), prefix='FILTERED_', ab_flag=ab_flag, crispr_flag=crispr_flag, custom_flag=custom_flag, saveCounts=saveCounts)
+save_seurat_object(seurat_obj=filtered_object,
+                   result_dir=dirname(file.path(filtered_object_path)),
+                   prefix='FILTERED_'
+                  )

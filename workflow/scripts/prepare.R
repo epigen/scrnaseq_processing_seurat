@@ -14,8 +14,6 @@ metadata_path <- snakemake@input[[2]]#file.path("/research/lab_bock/projects/mac
 result_object <- snakemake@output[["sample_object"]]# file.path("/nobackup/lab_bock/projects/macroIC/results/AK_A_transcriptome/counts/RAW_object.rds")
 
 # parameters
-saveCounts <- snakemake@params[["saveCounts"]]['raw']
-
 sample_name <- snakemake@params[["sample"]]#"AK_A_transcriptome"
 result_dir <- dirname(result_object)
 # 'flags' for modalities
@@ -128,5 +126,8 @@ for (name in names(metadata_eval)){
 }
 
 #### SAVE RESULTS
-save_seurat_object(seurat_obj=seurat_obj, result_dir=result_dir, prefix='RAW_', ab_flag=ab_flag, crispr_flag=crispr_flag, custom_flag=custom_flag, saveCounts=saveCounts)
+save_seurat_object(seurat_obj=seurat_obj,
+                   result_dir=result_dir,
+                   prefix='RAW_'
+                  )
 

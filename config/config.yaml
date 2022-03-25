@@ -13,12 +13,8 @@ sample_annotation: /research/lab_bock/projects/macroIC/metadata/AKsmall_metadata
 result_path: /nobackup/lab_bock/projects/macroIC/results/AKsmall/
 project_name: AKsmall
 
-# flag if counts after each processing steps of all modalities should be saved as CSV, which is time and storage intense (0=no, 1=yes)
-saveCounts:
-    raw: 0
-    filtered: 0
-    normalized: 0
-    corrected: 1
+# flag if counts after each processing steps (of all modalities) should be saved as CSV, which is time and storage intense options are: RAW, FILTERED, NORMALIZED, CORRECTED, if no count matrices are desired leave empty []
+save_counts: ['RAW', 'FILTERED', 'NORMALIZED', 'CORRECTED']
     
 # stop flag, options are: RAW, FILTERED, NORMALIZED, CORRECTED (-> only if variables_to_regress is provided!)
 stop_after: 'CORRECTED'
@@ -34,7 +30,7 @@ modality_flags:
 # CRISPR UMI background treshold for gRNA assignment (gRNA counts <= crispr_umi_threshold will be set 0)
 crispr_umi_threshold: 1
 
-# gRNA to gene REGEX for gsub(grna_regex,"",guide_rna_name)
+# gRNA to gene-symbol REGEX for gene_symbol <- gsub(grna_regex,"",guide_rna_name)
 grna_regex: "\\-."
 
 # REGEX-based metadata extension used with Seurat::PercentageFeatureSet
@@ -104,8 +100,7 @@ variables_to_regress: ["mitoPercent", "S.Score", "G2M.Score"]
 
 ##### VISUALIZATION #####
 # of metadata (after each step) and expression data after normalization (slot="data") and correction (slot="scale.data"), respectively
-# ridge plots:
-# violin plots:
+# ridge plots & violin plots for other modalities are only generated after normalization (using slot="data")
 # dot plots: only uses data from slot="data" (-> only generated for step NORMALIZED), averages the values, and then passes them to scale. These are then Min-Maxed based on the col.min and col.max parameter values.
 # heatmaps: always use data from slot="scale.data"
 
@@ -121,6 +116,7 @@ vis_gene_lists:
     IC_genes: "/research/home/sreichl/projects/macroIC/metadata/marker_genes/IC_genes.txt"
     immune_genes: "/research/home/sreichl/projects/macroIC/metadata/marker_genes/immune_genes.txt"
     KO_genes: "/research/home/sreichl/projects/macroIC/metadata/marker_genes/KO_genes.txt"
+    EM_TAM_genes: "/research/home/sreichl/projects/macroIC/metadata/marker_genes/EM_TAM_genes.txt"
 
 # features per modality (if not applicable, leave empty []), which expression should be plotted, ['all'] plots every feature
 vis_features:
