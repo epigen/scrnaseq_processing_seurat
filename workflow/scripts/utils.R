@@ -14,7 +14,7 @@ save_seurat_object <- function (seurat_obj, result_dir, prefix){
     write.csv(seurat_obj[[]], file=file.path(result_dir, paste0(prefix,"metadata",".csv")), row.names=TRUE)
     # save stats
     stats <- paste0("cells: ",ncol(seurat_obj),"\nfeatures: ",nrow(seurat_obj))
-    write(stats, file=file.path(result_dir, paste0(prefix,"stats",".txt"))
+    write(stats, file=file.path(result_dir, paste0(prefix,"stats",".txt")))
 }
 
 
