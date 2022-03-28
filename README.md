@@ -104,3 +104,9 @@ The following steps are performed on each data split separately.
 - Save counts
   - functionality to save all counts should be saved as CSV after each processing steps for of all modalities. Useful for downstream analyses that are incompatible with Seurat.
 
+# Usage
+Here are some tips for the usage of this workflow:
+- when generating the sample_annotation sheet use short sample names (they will be the prefix for each barcode in the merged & split datasets)
+- run the workflow for each step of processing (with the stop_after parameter) and investigate the results (eg using the report function)
+- start with a low complexity in the configuration
+- try to finish the analysis of the "merged" data set and later split the data by using the split_by parameter
