@@ -13,11 +13,7 @@ Table of contents
   * [Methods](#methods)
   * [Features](#features)
   * [Usage](#usage)
-  * [Installation](#installation)
   * [Configuration](#configuration)
-  * [Execution](#execution)
-  * [Report](#report)
-  * [Results](#results)
   * [Examples](#examples)
 
 # Authors
@@ -103,6 +99,11 @@ The following steps are performed on each data split separately.
   - visualization_{project_name}: all supported visualizations by data split
 - Save counts
   - functionality to save all counts should be saved as CSV after each processing steps for of all modalities. Useful for downstream analyses that are incompatible with Seurat.
+- Results
+  - all results will be saved in the result_path as configured where for each data(sub)set a directory with the following structure is created:
+  -  counts (for all the .rds object files and .CSV files)
+     -  plots (for all visualizations)
+     -  stats (for all metadata derived statistics)
 
 # Usage
 Here are some tips for the usage of this workflow:
@@ -110,3 +111,9 @@ Here are some tips for the usage of this workflow:
 - run the workflow for each step of processing (with the stop_after parameter) and investigate the results (eg using the report function)
 - start with a low complexity in the configuration
 - try to finish the analysis of the "merged" data set and later split the data by using the split_by parameter
+
+# Configuration
+Detailed specifications can be found here [./config/README.md](./config/README.md)
+
+# Examples
+--- COMING SOON ---
