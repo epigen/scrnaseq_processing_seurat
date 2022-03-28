@@ -5,7 +5,7 @@ rule metadata_plots:
     output:
         metadata_plots = report(expand(os.path.join(config["result_path"],'{{split}}','counts','plots','{{step}}_metadata_{datatype}.png'),
                              datatype=['numerical','categorical','types']
-                            ), caption="../report/metadata_vis.rst", category="visualization_{}".format(config["project_name"]), subcategory="{split}"),
+                            ), caption="../report/metadata_vis.rst", category="processing_{}".format(config["project_name"]), subcategory="{split}"),
     resources:
         mem=config.get("mem", "16G"),
     threads: config.get("threads", 1)
