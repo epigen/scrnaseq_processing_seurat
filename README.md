@@ -1,6 +1,6 @@
 # scRNA-seq Data Processing Snakemake Workflow powered by Seurat
 
-A Snakemake workflow for processing and visualizing (multimodal) scRNA-seq data generated with [10X Genomics Kits](https://www.10xgenomics.com/) powered by the R package [Seurat](https://satijalab.org/seurat/index.html).
+A [Snakemake](https://snakemake.readthedocs.io/en/stable/) workflow for processing and visualizing (multimodal) scRNA-seq data generated with [10X Genomics Kits](https://www.10xgenomics.com/) powered by the R package [Seurat](https://satijalab.org/seurat/index.html).
 
 **If you use this workflow in a publication, don't forget to give credits to the authors by citing the URL of this (original) repository (and its DOI, see Zenodo badge above -> coming soon).**
 
@@ -39,13 +39,46 @@ This is a template for the Methods section of a scientific publication and is in
 ---COMING SOON---
 
 # Features
-- Preparation
-- Merge & Split into subsets
-- Filtering
-- Normalization
-- Correction
-- Visualization
-- Reporting
+The workflow perfroms the following steps. Outputs are always indicated by the respective prefix.
+- Preparation (prefix: RAW)
+  - Load (mutlimodal) data per 10X sample from Cell Ranger output
+  - Load metadata
+  - Extend metadata with Seurat::PercentageFeatureSet
+  - Assign guide-RNA and KO target gene, if applicable
+  - Add metadata columns based on config
+  - Create and save Seurat object per sample
+- Merge & Split into subsets (prefix: RAW)
+  - Merge all samples into one large object, including metadata, called "merged"
+  - Split into subsets according to configuration
 
+The following steps are performed on each data split separately.
 
+- Filtering (prefix: FILTERED)
+  - Filter cells by a combination of logical-expressions using the metadata
+- Normalization (prefix: NORMALIZED)
+  - Normalization of expression data using SCTransform, returning normalized values for all expressed genes
+  - Normalization of multimodal data using Centered Log-Ratio (CLR)
+  - Dynamic highly variable gene (HVG) determination using a residual variance threshold of 1.3 (default)
+- Cell Scoring
+  - Cell cycle scoring using Seurat::CellCycleScoring and provided S2- and G2M genes
+  - Gene module scoring using Seurat::AddModuleScore and provided gene lists
+- Correction (prefix: CORRECTED)
+  - Normalization and correction for the list of provieded confounders using SCTransform, returning scaled values for all expressed genes
+- Visualization by Ridge-, Violin-, Dot-plots and Heatmaps
+  - Gene- and feature-lists for plotting can be provided
+  - Metadata
+    - after each step using inspectdf for all numerical and categorical data
+    - ridge- and violin-plots if configured (eg useful for module scores)
+  - All expression (RNA) data is plotted after normalization (slot="data") and correction (slot="scale.data"), respectively
+  - Ridge plots for other modalities are only generated after normalization (using slot="data")
+  - Violin plots for other modalities are only generated after normalization (using slot="data")
+  - Dot plots only of normalized data (slot="data"). Performs averaging and scaling (Min-Maxed based) of the values before plotting.
+  - Heatmaps always on scaled data (slot="scale.data"). Top 100 HVG are always plotted.
+- Reporting (split into categories)
+  - Configuration: input configuration, metadata and gene-list files
+  - Software: conda environment export to document the installed and used software including versions and build
+  - processing_{project_name}: metadata CSV files and visualizations of all processing steps by data split
+  - visualization_{project_name}: all supported visualizations by data split
+- Save counts
+  - functionality to save all counts should be saved as CSV after each processing steps for of all modalities. Useful for downstream analyses that are incompatible with Seurat.
 
