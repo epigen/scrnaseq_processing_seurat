@@ -36,7 +36,29 @@ This project wouldn't be possible without the following software
 # Methods
 This is a template for the Methods section of a scientific publication and is intended to serve as a starting point. Only retain paragraphs relevant to your analysis. References [ref] to the respective publications are curated in the software table above. Versions (ver) have to be read out from the respective conda environment specifications (.yaml file) or post execution. Parameters that have to be adapted depending on the data or workflow configurations are denoted in squared brackets e.g. [X].
 
----COMING SOON---
+The outlined analyses were performed using the R package Seurat (ver) [ref] unless stated otherwise.
+
+**Merge.** The preprocessed samples were merged using the function Seurat::merge that concatenates the individual samples and their metadata into one Seurat object.
+
+**Metadata.** Metadata was extended with Seurat::PercentageFeatureSet using [X] and by recombination of existing metadata rules [X].
+
+**Guide RNA assignment.** The guide RNA (gRNA) assignment was performed using the protospacer call information provided by the CRISPR functionality of 10x Genomics Cell Ranger (ver). To avoid combinatorial knockout effects and focus on single-gene knockouts only cells with exactly one called protospacer were annotated accordingly, others were labeled as multiplets. 
+
+**Split.** The merged data set was split into subsets by the metadata column(s) [X].
+
+**Filtering.** The cells were filtered by the [X], which resulted in [X] high-quality cells with confident condition and gRNA assignment.
+
+**Normalization.** Filtered count data was normalized using Seurat::SCTransform [ref] with the method parameter glmGamPoi to increase computational efficiency. Other modalities [X] were normalized with Seurat::NormalizeData using method CLR  (Centered Log-Ratio) and margin 2.
+
+**Cell Cycle Scoring.** Cell-cycle scores were determined using the function Seurat::CellCycleScoring using gene lists for M and G2M phase provided by Seurat::cc.genes (Tirosh et al 2015) or [gene lists].
+
+**Cell Scoring.** Cell-module scores were determined using the function Seurat::AddModuleScore using provided gene lists [gene lists].
+
+**Correction.** Filtered count data was first normalized using Seurat::SCTransform [ref] with the method parameter glmGamPoi to increase computational efficiency and identified confounders [X] as covariates to be regressed out.
+
+**Visualization.** To visualize the metadata after each processing step inspectdf (ver) [ref] was used. For the visualization of expression and multimodal [X] data the Seurat functions RidgePlot for ridge-plots, VlnPlot for violin-plots, DotPlot for dot-plots and DoHeatmap for heatmaps were used. Metadata like module scores, were also visualized using RidgePlot for ridge-plots and VlnPlot for violin-plots.
+
+**The processing and analysis described here was performed using a publicly available Snakemake [ver] (ref) workflow [ref - cite this workflow here].**
 
 # Features
 The workflow perfroms the following steps. Outputs are always indicated by the respective prefix.
