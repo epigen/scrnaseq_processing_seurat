@@ -111,6 +111,7 @@ Here are some tips for the usage of this workflow:
 - run the workflow for each step of processing (with the stop_after parameter) and investigate the results (eg using the report function)
 - start with a low complexity in the configuration
 - try to finish the analysis of the "merged" data set and later split the data by using the split_by parameter
+- in case you want to repeat your analysis on a subset that emerged from downstream analyses (eg clustering, cell-type annotation, perturbation classification) you have to extend the initial sample-wise metadata-files with the new metadata (additional columns). Take care to remove the prefix that was added to the barcodes during the merge-process
 
 # Configuration
 Detailed specifications can be found here [./config/README.md](./config/README.md)
