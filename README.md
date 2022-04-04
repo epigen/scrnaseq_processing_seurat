@@ -1,6 +1,6 @@
-# scRNA-seq Data Processing Snakemake Workflow powered by Seurat
+# sc/snRNA-seq Data Processing Snakemake Workflow powered by Seurat
 
-A [Snakemake](https://snakemake.readthedocs.io/en/stable/) workflow for processing and visualizing (multimodal) scRNA-seq data generated with [10X Genomics Kits](https://www.10xgenomics.com/) powered by the R package [Seurat](https://satijalab.org/seurat/index.html).
+A [Snakemake](https://snakemake.readthedocs.io/en/stable/) workflow for processing and visualizing (multimodal) sc/snRNA-seq data generated with [10X Genomics Kits](https://www.10xgenomics.com/) powered by the R package [Seurat](https://satijalab.org/seurat/index.html).
 
 **If you use this workflow in a publication, don't forget to give credits to the authors by citing the URL of this (original) repository (and its DOI, see Zenodo badge above -> coming soon).**
 
@@ -25,9 +25,10 @@ This project wouldn't be possible without the following software
 
 | Software       | Reference (DOI)                                   |
 | :------------: | :-----------------------------------------------: |
-| Seurat         | https://doi.org/10.1016/j.cell.2021.04.048        |
-| SCTransform    | https://doi.org/10.1186/s13059-019-1874-1         |
 | inspectdf      | https://github.com/alastairrushworth/inspectdf/   |
+| SCTransform    | https://doi.org/10.1186/s13059-019-1874-1         |
+| Seurat         | https://doi.org/10.1016/j.cell.2021.04.048        |
+| Snakemake      | https://doi.org/10.12688/f1000research.29032.2    |
 
 # Methods
 This is a template for the Methods section of a scientific publication and is intended to serve as a starting point. Only retain paragraphs relevant to your analysis. References [ref] to the respective publications are curated in the software table above. Versions (ver) have to be read out from the respective conda environment specifications (.yaml file) or post execution. Parameters that have to be adapted depending on the data or workflow configurations are denoted in squared brackets e.g. [X].
