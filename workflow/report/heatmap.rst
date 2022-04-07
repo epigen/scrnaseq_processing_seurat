@@ -1,1 +1,1 @@
-Heatmap of the data split {{snakemake.wildcards["split"]}} after the respective processing step.
+Heatmap of the {{snakemake.params["step"]}}  data split {{snakemake.wildcards["split"]}}.

@@ -20,6 +20,8 @@ configfile: os.path.join("config", "config.yaml")
 
 annot = pd.read_csv(config['sample_annotation'], index_col='sample_name')
 
+result_path = os.path.join(config["result_path"],'scrnaseq_processing_seurat')
+
 data_splits = ['merged']
 extra_splits = []
 if config["split_by"] is not None:
@@ -29,18 +31,6 @@ if config["split_by"] is not None:
         else:
             extra_splits.extend(["{}_{}".format(split, value) for value in config["split_by"][split]])
 data_splits = data_splits + extra_splits
-
-# TEMP_DIR = config.pop("tempdir", "temp")
-# if TEMP_DIR != "temp":
-#     if os.path.exists("temp"):
-#         if os.path.islink("temp") and os.path.realpath("temp") == os.path.realpath(
-#             TEMP_DIR
-#         ):
-#             print("The temp dir has already been linked.")
-#         else:
-#             sys.exit("temp/ already in use, please move it before running.")
-#     else:
-#         shell("ln -s {TEMP_DIR} temp")
 
 # necessary to avoid ambiguities between rule prepare (pre merge) and split (post merge)
 ruleorder: prepare > split
@@ -59,34 +49,34 @@ else:
 
 rule all:
     input:
-        final_objects = expand(os.path.join(config["result_path"],'{split}','counts','{step}_object.rds'), 
+        final_objects = expand(os.path.join(result_path,'{split}','{step}_object.rds'), 
                                split=data_splits, 
                                step=config["stop_after"]),
-        counts = expand(os.path.join(config["result_path"],'{split}','counts','{step}_RNA.csv'), 
+        counts = expand(os.path.join(result_path,'{split}','{step}_RNA.csv'), 
                                split=data_splits, 
                                step=config["save_counts"]) if (len(config["save_counts"])>0) else None,
-        metadata_plots = expand(os.path.join(config["result_path"],'{split}','counts','plots','{step}_metadata_{datatype}.png'),
+        metadata_plots = expand(os.path.join(result_path,'{split}','plots','{step}_metadata_{datatype}.png'),
                              split=data_splits,
                              step=metadata_plot_steps,
                              datatype=['numerical','categorical','types']
                             ),
-        normalized_plots = expand(os.path.join(config["result_path"],'{split}','counts','plots','NORMALIZED_{plot_type}_{category}_{gene_list}.png'), 
+        normalized_plots = expand(os.path.join(result_path,'{split}','plots','NORMALIZED_{plot_type}_{category}_{gene_list}.png'), 
                        split=data_splits,
                        plot_type=['ridge_plot','violin_plot','dot_plot','heatmap'], 
                        category=config["vis_categories"],
                        gene_list=list(config["vis_gene_lists"].keys())
                       ) if (config["stop_after"]=="CORRECTED")or(config["stop_after"]=="NORMALIZED") else None,
-        corrected_plots = expand(os.path.join(config["result_path"],'{split}','counts','plots','CORRECTED_{plot_type}_{category}_{gene_list}.png'), 
+        corrected_plots = expand(os.path.join(result_path,'{split}','plots','CORRECTED_{plot_type}_{category}_{gene_list}.png'), 
                        split=data_splits,
                        plot_type=['ridge_plot','violin_plot','heatmap'], 
                        category=config["vis_categories"],
                        gene_list=list(config["vis_gene_lists"].keys())
                       ) if (config["stop_after"]=="CORRECTED") else None,
-        envs = report(expand(os.path.join(config["result_path"],'envs','{env}.yaml'),env=['seurat','inspectdf']), caption="report/software.rst", category="Software", subcategory=config["project_name"]),
-        gene_lists = report(set(list(config["module_gene_lists"].values())+list(config["vis_gene_lists"].values())), caption="report/gene_lists.rst", category="Configuration", subcategory=config["project_name"]),
-        configs = report([os.path.join("config", "config.yaml"),config["sample_annotation"]], caption="report/configs.rst", category="Configuration", subcategory=config["project_name"]),
+        envs = expand(os.path.join(config["result_path"],'envs','scrnaseq_processing_seurat','{env}.yaml'),env=['seurat','inspectdf']),
+        gene_lists = set(list(config["module_gene_lists"].values())+list(config["vis_gene_lists"].values())),
+        configs = [os.path.join("config", "config.yaml"),config["sample_annotation"]],
     resources:
-        mem=config.get("mem", "16G"),
+        mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 1)
     log:
         os.path.join("logs","rules","all.log"),

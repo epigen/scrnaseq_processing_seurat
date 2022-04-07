@@ -1,1 +1,1 @@
-Metadata visualizations of the data split {{snakemake.wildcards["split"]}} after the processing step {{snakemake.wildcards["step"]}}.
+Metadata visualizations of the {{snakemake.wildcards["step"]}} data split {{snakemake.wildcards["split"]}}.

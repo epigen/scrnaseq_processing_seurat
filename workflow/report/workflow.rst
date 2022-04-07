@@ -1,1 +1,1 @@
-A `Snakemake workflow for processing (multimodal) scRNA-seq data <https://github.com/epigen/scrnaseq_processing_seurat>`_ generated with `10X Genomics <https://www.10xgenomics.com/>`_ with the R package `Seurat <https://satijalab.org/seurat/index.html>`_.
+A `Snakemake workflow for processing (multimodal) sc/snRNA-seq data <https://github.com/epigen/scrnaseq_processing_seurat>`_ generated with `10X Genomics <https://www.10xgenomics.com/>`_ with the R package `Seurat <https://satijalab.org/seurat/index.html>`_.

@@ -3,10 +3,13 @@ rule prepare:
     input:
         get_sample_paths,
     output:
-        sample_object = os.path.join(config["result_path"],'{sample}','counts','RAW_object.rds'),
-        metadata = report(os.path.join(config["result_path"],'{sample}','counts','RAW_metadata.csv'), caption="../report/metadata_sample.rst", category="processing_{}".format(config["project_name"]), subcategory="{sample}"),
+        sample_object = os.path.join(result_path,'{sample}','RAW_object.rds'),
+        metadata = report(os.path.join(result_path,'{sample}','RAW_metadata.csv'), 
+                          caption="../report/metadata_sample.rst", 
+                          category="{}_scrnaseq_processing_seurat".format(config["project_name"]), 
+                          subcategory="{sample}"),
     resources:
-        mem=config.get("mem", "16G"),
+        mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 1)
     conda:
         "../envs/seurat.yaml"
@@ -28,12 +31,15 @@ rule prepare:
 # merge into one dataset
 rule merge:
     input:
-        expand(os.path.join(config["result_path"],'{sample}','counts','RAW_object.rds'), sample=annot.index.tolist()),
+        expand(os.path.join(result_path,'{sample}','RAW_object.rds'), sample=annot.index.tolist()),
     output:
-        merged_object = os.path.join(config["result_path"],'merged','counts','RAW_object.rds'),
-        metadata = report(os.path.join(config["result_path"],'merged','counts','RAW_metadata.csv'), caption="../report/metadata_merged.rst", category="processing_{}".format(config["project_name"]), subcategory="merged"),
+        merged_object = os.path.join(result_path,'merged','RAW_object.rds'),
+        metadata = report(os.path.join(result_path,'merged','RAW_metadata.csv'), 
+                          caption="../report/metadata_merged.rst", 
+                          category="{}_scrnaseq_processing_seurat".format(config["project_name"]), 
+                          subcategory="merged"),
     resources:
-        mem=config.get("mem", "16G"),
+        mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 1)
     conda:
         "../envs/seurat.yaml"
@@ -41,6 +47,7 @@ rule merge:
         os.path.join("logs","rules","merge.log"),
     params:
         partition=config.get("partition"),
+        step = "RAW",
         project_name = config["project_name"],
         ab_flag = config["modality_flags"]['Antibody_Capture'],
         crispr_flag = config["modality_flags"]['CRISPR_Guide_Capture'],
@@ -51,12 +58,15 @@ rule merge:
 # split into subsets by metadata
 rule split:
     input:
-        merged_object = os.path.join(config["result_path"],'merged','counts','RAW_object.rds'),
+        merged_object = os.path.join(result_path,'merged','RAW_object.rds'),
     output:
-        split_object = os.path.join(config["result_path"],'{split}','counts','RAW_object.rds'),
-        metadata = report(os.path.join(config["result_path"],'{split}','counts','RAW_metadata.csv'), caption="../report/metadata.rst", category="processing_{}".format(config["project_name"]), subcategory="{split}"),
+        split_object = os.path.join(result_path,'{split}','RAW_object.rds'),
+        metadata = report(os.path.join(result_path,'{split}','RAW_metadata.csv'), 
+                          caption="../report/metadata.rst", 
+                          category="{}_scrnaseq_processing_seurat".format(config["project_name"]), 
+                          subcategory="{split}"),
     resources:
-        mem=config.get("mem", "16G"),
+        mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 1)
     conda:
         "../envs/seurat.yaml"
@@ -64,6 +74,7 @@ rule split:
         os.path.join("logs","rules","split_{split}.log"),
     params:
         partition=config.get("partition"),
+        step = "RAW",
         result_dir = lambda w, input: os.path.splitext(input[0])[0],
         split = lambda w: "{}".format(w.split),
         ab_flag = config["modality_flags"]['Antibody_Capture'],
@@ -75,12 +86,15 @@ rule split:
 # filter cells according to metadata
 rule filter_cells:
     input:
-        raw_object = os.path.join(config["result_path"],'{split}','counts','RAW_object.rds'),
+        raw_object = os.path.join(result_path,'{split}','RAW_object.rds'),
     output:
-        filtered_object = os.path.join(config["result_path"],'{split}','counts','FILTERED_object.rds'),
-        metadata = report(os.path.join(config["result_path"],'{split}','counts','FILTERED_metadata.csv'), caption="../report/metadata.rst", category="processing_{}".format(config["project_name"]), subcategory="{split}"),
+        filtered_object = os.path.join(result_path,'{split}','FILTERED_object.rds'),
+        metadata = report(os.path.join(result_path,'{split}','FILTERED_metadata.csv'), 
+                          caption="../report/metadata.rst", 
+                          category="{}_scrnaseq_processing_seurat".format(config["project_name"]), 
+                          subcategory="{split}"),
     resources:
-        mem=config.get("mem", "16G"),
+        mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 1)
     conda:
         "../envs/seurat.yaml"
@@ -88,6 +102,7 @@ rule filter_cells:
         os.path.join("logs","rules","filter_{split}.log"),
     params:
         partition=config.get("partition"),
+        step = "FILTERED",
         filter_expression = config["filter_expression"],
         ab_flag = config["modality_flags"]['Antibody_Capture'],
         crispr_flag = config["modality_flags"]['CRISPR_Guide_Capture'],
@@ -99,11 +114,11 @@ rule filter_cells:
 # save counts as CSV of seurat object
 rule save_counts:
     input:
-        seurat_object = os.path.join(config["result_path"],'{split}','counts','{step}_object.rds'),
+        seurat_object = os.path.join(result_path,'{split}','{step}_object.rds'),
     output:
-        counts = os.path.join(config["result_path"],'{split}','counts','{step}_RNA.csv'),
+        counts = os.path.join(result_path,'{split}','{step}_RNA.csv'),
     resources:
-        mem=config.get("mem", "16G"),
+        mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 1)
     conda:
         "../envs/seurat.yaml"

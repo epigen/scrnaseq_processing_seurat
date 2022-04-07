@@ -4,7 +4,7 @@
 # alwayse use absolute paths
 
 ##### RESOURCES #####
-mem: '32G'
+mem: '32000'
 threads: 2
 partition: 'shortq'
 

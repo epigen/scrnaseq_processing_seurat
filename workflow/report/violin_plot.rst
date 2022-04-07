@@ -1,1 +1,1 @@
-Violin plots of the data split {{snakemake.wildcards["split"]}} after the respective processing step.
+Violin plots of the {{snakemake.params["step"]}} data split {{snakemake.wildcards["split"]}}

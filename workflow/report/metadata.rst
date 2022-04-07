@@ -1,1 +1,1 @@
-Metadata CSV file of the data split {{snakemake.wildcards["split"]}} after the respective processing step.
+Metadata CSV file of the {{snakemake.params["step"]}} data split {{snakemake.wildcards["split"]}}.

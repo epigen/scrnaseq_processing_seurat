@@ -1,1 +1,1 @@
-Metadata CSV file of the merged data after the respective processing step.
+Metadata CSV file of the {{snakemake.params["step"]}} merged data.
