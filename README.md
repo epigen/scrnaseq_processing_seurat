@@ -15,6 +15,7 @@ Table of contents
   * [Usage](#usage)
   * [Configuration](#configuration)
   * [Examples](#examples)
+  * [Links](#links)
 
 # Authors
 - [Stephan Reichl](https://github.com/sreichl)
@@ -119,3 +120,9 @@ Detailed specifications can be found here [./config/README.md](./config/README.m
 
 # Examples
 --- COMING SOON ---
+
+# Links
+- [GitHub Repository](https://github.com/epigen/scrnaseq_processing_seurat/)
+- [GitHub Page](https://epigen.github.io/scrnaseq_processing_seurat/)
+- [Zenodo Repository (coming soon)]()
+- [Snakemake Workflow Catalog Entry](https://snakemake.github.io/snakemake-workflow-catalog?usage=epigen/scrnaseq_processing_seurat)
