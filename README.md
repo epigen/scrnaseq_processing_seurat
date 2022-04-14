@@ -1,4 +1,4 @@
-# sc/snRNA-seq Data Processing Snakemake Workflow powered by Seurat
+# sc/snRNA-seq Data Processing & Visualization Snakemake Workflow powered by Seurat
 
 A [Snakemake](https://snakemake.readthedocs.io/en/stable/) workflow for processing and visualizing (multimodal) sc/snRNA-seq data generated with [10X Genomics Kits](https://www.10xgenomics.com/) powered by the R package [Seurat](https://satijalab.org/seurat/index.html).
 
