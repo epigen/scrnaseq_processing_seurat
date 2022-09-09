@@ -53,6 +53,9 @@ for (cat in vis_categories){
     Idents(object = data_object) <- cat
     Idents(object = data_object) <- factor(x = Idents(data_object), levels = sort(levels(data_object)))
     
+    # check if metadata is all NA (can happen on data subset that does not contain the visualization category)
+    skip <- all(is.na(levels(data_object)))
+    
     # plot specs
     height_plot <- length(levels(data_object))*heigth_row + 1
     
@@ -62,22 +65,27 @@ for (cat in vis_categories){
         height <- height_plot*ceiling(length(features)/ncols)
         
         # plot
-        tmp_plot <- RidgePlot(object = data_object,
-                              features = features,
-                              cols = NULL,
-                              idents = NULL,
-                              sort = FALSE,
-                              assay = "SCT",
-                              group.by = NULL,
-                              y.max = NULL,
-                              same.y.lims = TRUE,
-                              log = FALSE,
-                              ncol = ncols,
-                              slot = slot,
-                              stack = FALSE,
-                              combine = TRUE,
-                              fill.by = "feature"
-                             )
+        if(skip==FALSE){
+            tmp_plot <- RidgePlot(object = data_object,
+                                  features = features,
+                                  cols = NULL,
+                                  idents = NULL,
+                                  sort = FALSE,
+                                  assay = "SCT",
+                                  group.by = NULL,
+                                  y.max = NULL,
+                                  same.y.lims = TRUE,
+                                  log = FALSE,
+                                  ncol = ncols,
+                                  slot = slot,
+                                  stack = FALSE,
+                                  combine = TRUE,
+                                  fill.by = "feature"
+                                 )
+        }else{
+            tmp_plot <- ggplot() + theme_void()
+        }
+        
         # save plot
         ggsave_new(filename=paste0(step,"_ridge_plot_",cat,"_",{gene_list_name}), 
                    results_path=result_dir, 
@@ -122,22 +130,27 @@ for (cat in vis_categories){
         height <- height_plot*ceiling(length(features)/ncols)
         
         # plot
-        tmp_plot <- RidgePlot(object = data_object,
-                              features = features,
-                              cols = NULL,
-                              idents = NULL,
-                              sort = FALSE,
-                              assay = assay,
-                              group.by = NULL,
-                              y.max = NULL,
-                              same.y.lims = same.y.lims,
-                              log = FALSE,
-                              ncol = ncols,
-                              slot = slot,
-                              stack = FALSE,
-                              combine = TRUE,
-                              fill.by = "feature"
-                             )
+        if(skip==FALSE){
+            tmp_plot <- RidgePlot(object = data_object,
+                                  features = features,
+                                  cols = NULL,
+                                  idents = NULL,
+                                  sort = FALSE,
+                                  assay = assay,
+                                  group.by = NULL,
+                                  y.max = NULL,
+                                  same.y.lims = same.y.lims,
+                                  log = FALSE,
+                                  ncol = ncols,
+                                  slot = slot,
+                                  stack = FALSE,
+                                  combine = TRUE,
+                                  fill.by = "feature"
+                                 )
+        }else{
+            tmp_plot <- ggplot() + theme_void()
+        }
+        
         # save plot
         ggsave_new(filename=paste0(step,"_ridge_plot_",cat,"_",flag), 
                    results_path=result_dir, 
@@ -146,115 +159,4 @@ for (cat in vis_categories){
                    height=height
                   )
     }
-    
-#     # plot AB data
-#     if((ab_flag!='')&(length(ab_features)>0)&(slot="data")){
-        
-#         if(ab_features[1]=='all'){
-#             features <- rownames(GetAssayData(data_object, slot = "data", assay = ab_flag))
-#         }else{
-#             features <- ab_features
-#         }
-        
-#         # plot specs
-#         height <- height_plot*ceiling(length(features)/ncols)
-#         # plot
-#         tmp_plot <- RidgePlot(object = data_object,
-#                               features = features,
-#                               cols = NULL,
-#                               idents = NULL,
-#                               sort = FALSE,
-#                               assay = ab_flag,
-#                               group.by = NULL,
-#                               y.max = NULL,
-#                               same.y.lims = TRUE,
-#                               log = FALSE,
-#                               ncol = ncols,
-#                               slot = "data",
-#                               stack = FALSE,
-#                               combine = TRUE,
-#                               fill.by = "feature"
-#                              )
-#         # save plot
-#         ggsave_new(filename=paste0(step,"_ridge_plot_",cat,"_",ab_flag), 
-#                    results_path=result_dir, 
-#                    plot=tmp_plot, 
-#                    width=width, 
-#                    height=height
-#                   )
-#     }
-
-#     # plot CRISPR data
-#     if((crispr_flag!='')&(length(crispr_features)>0)&(slot="data")){
-        
-#         if(crispr_features[1]=='all'){
-#             features <- rownames(GetAssayData(data_object, slot = "data", assay = crispr_flag))
-#         }else{
-#             features <- crispr_features
-#         }
-        
-#         # plot specs
-#         height <- height_plot*ceiling(length(features)/ncols)
-#         # plot
-#         tmp_plot <- RidgePlot(object = data_object,
-#                               features = features,
-#                               cols = NULL,
-#                               idents = NULL,
-#                               sort = FALSE,
-#                               assay = crispr_flag,
-#                               group.by = NULL,
-#                               y.max = NULL,
-#                               same.y.lims = TRUE,
-#                               log = FALSE,
-#                               ncol = ncols,
-#                               slot = "data",
-#                               stack = FALSE,
-#                               combine = TRUE,
-#                               fill.by = "feature"
-#                              )
-#         # save plot
-#         ggsave_new(filename=paste0(step,"_ridge_plot_",cat,"_",crispr_flag), 
-#                    results_path=result_dir, 
-#                    plot=tmp_plot, 
-#                    width=width, 
-#                    height=height
-#                   )
-#     }
-
-#     # plot Custom data
-#     if((custom_flag!='')&(length(custom_features)>0)&(slot="data")){
-        
-#         if(custom_features[1]=='all'){
-#             features <- rownames(GetAssayData(data_object, slot = "data", assay = custom_flag))
-#         }else{
-#             features <- custom_features
-#         }
-        
-#         # plot specs
-#         height <- height_plot*ceiling(length(features)/ncols)
-#         # plot
-#         tmp_plot <- RidgePlot(object = data_object,
-#                               features = features,
-#                               cols = NULL,
-#                               idents = NULL,
-#                               sort = FALSE,
-#                               assay = custom_flag,
-#                               group.by = NULL,
-#                               y.max = NULL,
-#                               same.y.lims = TRUE,
-#                               log = FALSE,
-#                               ncol = ncols,
-#                               slot = "data",
-#                               stack = FALSE,
-#                               combine = TRUE,
-#                               fill.by = "feature"
-#                              )
-#         # save plot
-#         ggsave_new(filename=paste0(step,"_ridge_plot_",cat,"_",custom_flag), 
-#                    results_path=result_dir, 
-#                    plot=tmp_plot, 
-#                    width=width, 
-#                    height=height
-#                   )
-#     }
 }

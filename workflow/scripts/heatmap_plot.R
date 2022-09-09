@@ -48,6 +48,12 @@ for (cat in vis_categories){
     Idents(object = data_object) <- cat
     Idents(object = data_object) <- factor(x = Idents(data_object), levels = sort(levels(data_object)))
     
+    # check if metadata is all NA (can happen on data subset that does not contain the visualization category)
+    skip <- all(is.na(levels(data_object)))
+    if(!skip){
+        skip <- any(is.na(Idents(object = data_object)))
+    }
+    
     # plot specs
     width <- length(colnames(data_object))*width_col + 2
     
@@ -64,26 +70,30 @@ for (cat in vis_categories){
         }
         
         # plot
-        tmp_plot <- DoHeatmap(object = data_object,
-                              features = features,
-                              cells = NULL,
-                              group.by = "ident",
-                              group.bar = TRUE,
-                              group.colors = NULL,
-                              disp.min = -2.5,
-                              disp.max = NULL,
-                              slot = slot,
-                              assay = "SCT",
-                              label = TRUE,
-                              size = 2,
-                              hjust = 0.5,
-                              angle = 45,
-                              raster = TRUE,
-                              draw.lines = TRUE,
-                              lines.width = NULL,
-                              group.bar.height = 0.02,
-                              combine = TRUE
-                            )
+        if(skip){
+            tmp_plot <- ggplot() + theme_void()
+        }else{
+            tmp_plot <- DoHeatmap(object = data_object,
+                                  features = features,
+                                  cells = NULL,
+                                  group.by = "ident",
+                                  group.bar = TRUE,
+                                  group.colors = NULL,
+                                  disp.min = -2.5,
+                                  disp.max = NULL,
+                                  slot = slot,
+                                  assay = "SCT",
+                                  label = TRUE,
+                                  size = 2,
+                                  hjust = 0.5,
+                                  angle = 45,
+                                  raster = TRUE,
+                                  draw.lines = TRUE,
+                                  lines.width = NULL,
+                                  group.bar.height = 0.02,
+                                  combine = TRUE
+                                )
+        }
         
         # save plot
         ggsave_new(filename=paste0(step,"_heatmap_",cat,"_",gene_list_name), 
@@ -123,26 +133,30 @@ for (cat in vis_categories){
         
         
         # plot
-        tmp_plot <- DoHeatmap(object = data_object,
-                              features = features,
-                              cells = NULL,
-                              group.by = "ident",
-                              group.bar = TRUE,
-                              group.colors = NULL,
-                              disp.min = -2.5,
-                              disp.max = NULL,
-                              slot = slot,
-                              assay = flag,
-                              label = TRUE,
-                              size = 3,
-                              hjust = 0.5,
-                              angle = 45,
-                              raster = TRUE,
-                              draw.lines = TRUE,
-                              lines.width = NULL,
-                              group.bar.height = 0.02,
-                              combine = TRUE
-                            )
+        if(skip){
+            tmp_plot <- ggplot() + theme_void()
+        }else{
+            tmp_plot <- DoHeatmap(object = data_object,
+                                  features = features,
+                                  cells = NULL,
+                                  group.by = "ident",
+                                  group.bar = TRUE,
+                                  group.colors = NULL,
+                                  disp.min = -2.5,
+                                  disp.max = NULL,
+                                  slot = slot,
+                                  assay = flag,
+                                  label = TRUE,
+                                  size = 3,
+                                  hjust = 0.5,
+                                  angle = 45,
+                                  raster = TRUE,
+                                  draw.lines = TRUE,
+                                  lines.width = NULL,
+                                  group.bar.height = 0.02,
+                                  combine = TRUE
+                                )
+        }
         
         # save plot
         ggsave_new(filename=paste0(step,"_heatmap_",cat,"_",flag), 

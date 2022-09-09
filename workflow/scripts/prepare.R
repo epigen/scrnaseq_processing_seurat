@@ -128,6 +128,6 @@ for (name in names(metadata_eval)){
 #### SAVE RESULTS
 save_seurat_object(seurat_obj=seurat_obj,
                    result_dir=result_dir,
-                   prefix='RAW_'
+                   prefix='prep_'
                   )
 

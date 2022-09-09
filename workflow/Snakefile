@@ -10,9 +10,6 @@ min_version("6.0.3")
 SDIR = os.path.realpath(os.path.dirname(srcdir("Snakefile")))
 shell.prefix(f"set -eo pipefail;")
 
-##### container image #####
-# containerized: "docker://sreichl/..."
-
 ##### setup report #####
 report: os.path.join("report", "workflow.rst")
 
@@ -24,18 +21,10 @@ annot = pd.read_csv(config['sample_annotation'], index_col='sample_name')
 result_path = os.path.join(config["result_path"],'scrnaseq_processing_seurat')
 
 data_splits = ['merged']
-extra_splits = []
 if config["split_by"] is not None:
     for split in config["split_by"]:
-        if split=='batch':
-            data_splits.extend(config["split_by"][split])
-        else:
-            extra_splits.extend(["{}_{}".format(split, value) for value in config["split_by"][split]])
-data_splits = data_splits + extra_splits
+        data_splits.extend(["{}_{}".format(split, value) for value in config["split_by"][split]])
 
-# necessary to avoid ambiguities between rule prepare (pre merge) and split (post merge)
-ruleorder: prepare > split
-    
 all_steps = ['RAW','FILTERED','NORMALIZED','CORRECTED']
     
 if config["stop_after"]=="CORRECTED":
@@ -55,7 +44,7 @@ rule all:
                                step=config["stop_after"]),
         counts = expand(os.path.join(result_path,'{split}','{step}_RNA.csv'), 
                                split=data_splits, 
-                               step=config["save_counts"]) if (len(config["save_counts"])>0) else None,
+                               step=config["save_counts"]) if (len(config["save_counts"])>0) else [],
         metadata_plots = expand(os.path.join(result_path,'{split}','plots','{step}_metadata_{datatype}.png'),
                              split=data_splits,
                              step=metadata_plot_steps,
@@ -66,13 +55,13 @@ rule all:
                        plot_type=['ridge_plot','violin_plot','dot_plot','heatmap'], 
                        category=config["vis_categories"],
                        gene_list=list(config["vis_gene_lists"].keys())
-                      ) if (config["stop_after"]=="CORRECTED")or(config["stop_after"]=="NORMALIZED") else None,
+                      ) if (config["stop_after"]=="CORRECTED")or(config["stop_after"]=="NORMALIZED") else [],
         corrected_plots = expand(os.path.join(result_path,'{split}','plots','CORRECTED_{plot_type}_{category}_{gene_list}.png'), 
                        split=data_splits,
                        plot_type=['ridge_plot','violin_plot','heatmap'], 
                        category=config["vis_categories"],
                        gene_list=list(config["vis_gene_lists"].keys())
-                      ) if (config["stop_after"]=="CORRECTED") else None,
+                      ) if (config["stop_after"]=="CORRECTED") else [],
         envs = expand(os.path.join(config["result_path"],'envs','scrnaseq_processing_seurat','{env}.yaml'),env=['seurat','inspectdf']),
         gene_lists = set(list(config["module_gene_lists"].values())+list(config["vis_gene_lists"].values())),
         configs = os.path.join(config["result_path"],'configs','scrnaseq_processing_seurat','{}_config.yaml'.format(config["project_name"])),

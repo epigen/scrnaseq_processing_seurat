@@ -49,15 +49,17 @@ metadata_eval:
     
 
 ##### MERGE #####
-# no configuration necessary
+# specify additional metadata file path (CSV) with rows as cells/barcodes (as first column) and columns as metadata. eg clustering results emerged from downstream analyses
+# (leave empty "" if not applicable) this will trigger a rerun starting from the merge step to include the new metadata downstream (only if the metadata file is newer than the previous results)
+extra_metadata: ""
 
 ##### SPLIT #####
 # needs to be categorical variable in metadata
 # data subsets are only generated for the indicated groups, because we are not always interested in all possible subsets eg negatives/doublets
 # 'batch' denotes samples (ie sample_names from sample_annotation)
-# example: replicate: ['A','B']
+# example: replicate: ['A','B'] OR condition: ['untreated','treated']
 split_by:
-    condition: ['untreated','8h_cytokines','24h_cytokines']
+    batch: ['sampleA','sampleB']
 
 
 ##### FILTER #####

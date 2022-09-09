@@ -3,8 +3,8 @@ rule prepare:
     input:
         get_sample_paths,
     output:
-        sample_object = os.path.join(result_path,'{sample}','RAW_object.rds'),
-        metadata = report(os.path.join(result_path,'{sample}','RAW_metadata.csv'), 
+        sample_object = os.path.join(result_path,'batch_{sample}','prep_object.rds'),
+        metadata = report(os.path.join(result_path,'batch_{sample}','prep_metadata.csv'), 
                           caption="../report/metadata_sample.rst", 
                           category="{}_scrnaseq_processing_seurat".format(config["project_name"]), 
                           subcategory="{sample}"),
@@ -31,7 +31,8 @@ rule prepare:
 # merge into one dataset
 rule merge:
     input:
-        expand(os.path.join(result_path,'{sample}','RAW_object.rds'), sample=annot.index.tolist()),
+        expand(os.path.join(result_path,'batch_{sample}','prep_object.rds'), sample=annot.index.tolist()),
+        config["extra_metadata"] if config["extra_metadata"]!="" else [],
     output:
         merged_object = os.path.join(result_path,'merged','RAW_object.rds'),
         metadata = report(os.path.join(result_path,'merged','RAW_metadata.csv'), 
@@ -52,6 +53,7 @@ rule merge:
         ab_flag = config["modality_flags"]['Antibody_Capture'],
         crispr_flag = config["modality_flags"]['CRISPR_Guide_Capture'],
         custom_flag = config["modality_flags"]['Custom'],
+        extra_metadata = config["extra_metadata"],
     script:
         "../scripts/merge.R"
 

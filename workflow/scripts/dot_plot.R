@@ -47,6 +47,12 @@ for (cat in vis_categories){
     Idents(object = data_object) <- cat
     Idents(object = data_object) <- factor(x = Idents(data_object), levels = sort(levels(data_object)))
     
+    # check if metadata is all NA (can happen on data subset that does not contain the visualization category)
+    skip <- all(is.na(levels(data_object)))
+    if(!skip){
+        skip <- any(is.na(Idents(object = data_object)))
+    }
+    
     # plot specs
     height <- length(levels(data_object))*height_row + 1
     # make sure that at least the legend fits
@@ -62,23 +68,27 @@ for (cat in vis_categories){
         width <- width_col*length(features) + 3
         
         # plot
-        tmp_plot <- DotPlot(object = data_object,
-                              assay = "SCT",
-                              features = features,
-                              cols = c("lightgrey", "blue"),
-                              col.min = -2.5,
-                              col.max = 2.5,
-                              dot.min = 0,
-                              dot.scale = 6,
-                              idents = NULL,
-                              group.by = NULL,
-                              split.by = NULL,
-                              cluster.idents = FALSE,
-                              scale = TRUE,
-                              scale.by = "radius",
-                              scale.min = NA,
-                              scale.max = NA
-                            )+ theme(axis.text.x = element_text(angle = 45, hjust=1))
+        if(skip){
+            tmp_plot <- ggplot() + theme_void()
+        }else{
+            tmp_plot <- DotPlot(object = data_object,
+                                  assay = "SCT",
+                                  features = features,
+                                  cols = c("lightgrey", "blue"),
+                                  col.min = -2.5,
+                                  col.max = 2.5,
+                                  dot.min = 0,
+                                  dot.scale = 6,
+                                  idents = NULL,
+                                  group.by = NULL,
+                                  split.by = NULL,
+                                  cluster.idents = FALSE,
+                                  scale = TRUE,
+                                  scale.by = "radius",
+                                  scale.min = NA,
+                                  scale.max = NA
+                                )+ theme(axis.text.x = element_text(angle = 45, hjust=1))
+        }
 
         
         # save plot
@@ -108,23 +118,27 @@ for (cat in vis_categories){
         width <- width_col*length(features) + 3
         
         # plot
-        tmp_plot <- DotPlot(object = data_object,
-                              assay = flag,
-                              features = features,
-                              cols = c("lightgrey", "blue"),
-                              col.min = -2.5,
-                              col.max = 2.5,
-                              dot.min = 0,
-                              dot.scale = 6,
-                              idents = NULL,
-                              group.by = NULL,
-                              split.by = NULL,
-                              cluster.idents = FALSE,
-                              scale = TRUE,
-                              scale.by = "radius",
-                              scale.min = NA,
-                              scale.max = NA
-                            )+ theme(axis.text.x = element_text(angle = 45, hjust=1))
+        if(skip){
+            tmp_plot <- ggplot() + theme_void()
+        }else{
+            tmp_plot <- DotPlot(object = data_object,
+                                  assay = flag,
+                                  features = features,
+                                  cols = c("lightgrey", "blue"),
+                                  col.min = -2.5,
+                                  col.max = 2.5,
+                                  dot.min = 0,
+                                  dot.scale = 6,
+                                  idents = NULL,
+                                  group.by = NULL,
+                                  split.by = NULL,
+                                  cluster.idents = FALSE,
+                                  scale = TRUE,
+                                  scale.by = "radius",
+                                  scale.min = NA,
+                                  scale.max = NA
+                                )+ theme(axis.text.x = element_text(angle = 45, hjust=1))
+        }
         
         # save plot
         ggsave_new(filename=paste0(step,"_dot_plot_",cat,"_",flag), 

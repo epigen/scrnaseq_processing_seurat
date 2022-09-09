@@ -28,7 +28,7 @@ modality_features[["Metadata"]] <- snakemake@params[["metadata_features"]]
 
 # violin plot configs
 pt.size <- 0 #0.1
-ncols <- 5 #number of columns
+ncols <- 10 #number of columns
 height_plot <- 4 # height of each subplot
 width_col <- 0.5 # width of each col in the violin plot
 result_dir <- file.path(dirname(object_path),'plots')
@@ -50,8 +50,12 @@ if (step=="NORMALIZED"){
 
 # make violin plots
 for (cat in vis_categories){
+    print(cat)
     Idents(object = data_object) <- cat
     Idents(object = data_object) <- factor(x = Idents(data_object), levels = sort(levels(data_object)))
+    
+    # check if metadata is all NA (can happen on data subset that does not contain the visualization category)
+    skip <- all(is.na(levels(data_object)))
     
     # plot specs
     width_plot <- length(levels(data_object))*width_col + 1
@@ -59,13 +63,17 @@ for (cat in vis_categories){
     
     # plot RNA normalized/corrected expression data
     for (gene_list_name in names(gene_lists)){
+        print(gene_list_name)
         features <- gene_lists[[gene_list_name]]
         
         # plot specs
         height <- height_plot*ceiling(length(features)/ncols)
         
         # plot
-        tmp_plot <- VlnPlot(object = data_object,
+        if(skip){
+            tmp_plot <- ggplot() + theme_void()
+        }else{
+            tmp_plot <- VlnPlot(object = data_object,
                             features = features,
                             cols = NULL,
                             pt.size = pt.size,
@@ -86,6 +94,7 @@ for (cat in vis_categories){
                             fill.by = "feature",
                             flip = FALSE
                             )
+        }
         
         # save plot
         ggsave_new(filename=paste0(step,"_violin_plot_",cat,"_",gene_list_name), 
@@ -103,6 +112,7 @@ for (cat in vis_categories){
     
     # plot other modalities
     for (flag in c(ab_flag, crispr_flag, custom_flag, "Metadata")){
+        print(flag)
         # check if modality is used
         if(flag==''){
             next
@@ -131,27 +141,32 @@ for (cat in vis_categories){
         height <- height_plot*ceiling(length(features)/ncols)
         
         # plot
-        tmp_plot <- VlnPlot(object = data_object,
-                            features = features,
-                            cols = NULL,
-                            pt.size = pt.size,
-                            idents = NULL,
-                            sort = FALSE,
-                            assay = assay,
-                            group.by = NULL,
-                            split.by = NULL,
-                            adjust = 1,
-                            y.max = NULL,
-                            same.y.lims = same.y.lims,
-                            log = FALSE,
-                            ncol = ncols,
-                            slot = slot,
-                            split.plot = FALSE,
-                            stack = FALSE,
-                            combine = TRUE,
-                            fill.by = "feature",
-                            flip = FALSE
-                            )
+        if(skip){
+            tmp_plot <- ggplot() + theme_void()
+        }else{
+            tmp_plot <- VlnPlot(object = data_object,
+                                features = features,
+                                cols = NULL,
+                                pt.size = pt.size,
+                                idents = NULL,
+                                sort = FALSE,
+                                assay = assay,
+                                group.by = NULL,
+                                split.by = NULL,
+                                adjust = 1,
+                                y.max = NULL,
+                                same.y.lims = same.y.lims,
+                                log = FALSE,
+                                ncol = ncols,
+                                slot = slot,
+                                split.plot = FALSE,
+                                stack = FALSE,
+                                combine = TRUE,
+                                fill.by = "feature",
+                                flip = FALSE
+                                )
+        }
+        
         # save plot
         ggsave_new(filename=paste0(step,"_violin_plot_",cat,"_",flag), 
                    results_path=result_dir, 
