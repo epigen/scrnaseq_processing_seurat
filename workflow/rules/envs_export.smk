@@ -55,21 +55,21 @@ rule annot_export:
     params:
         partition=config.get("partition"),
 
-# export used gene lists for documentation and reproducibility          
-rule gene_list_export:
-    output:
-        gene_lists = report(set(list(config["module_gene_lists"].values())+list(config["vis_gene_lists"].values())), 
-                            caption="../report/gene_lists.rst", 
-                            category="Configuration", 
-                            subcategory="{}_scrnaseq_processing_seurat".format(config["project_name"])
-                           ),
-    resources:
-        mem_mb=config.get("mem", "16000"),
-    threads: config.get("threads", 1)
-    log:
-        os.path.join("logs","rules","gene_list_export.log"),
-    params:
-        partition=config.get("partition"),
+# # export used gene lists for documentation and reproducibility -> problems: 1) if error occurs they get deleted as they are an output. 2) if mutliple modules use the same gene lists in a project, the report can not be generated due to an AmbiguousRuleException.
+# rule gene_list_export:
+#     output:
+#         gene_lists = report(set(list(config["module_gene_lists"].values())+list(config["vis_gene_lists"].values())), 
+#                             caption="../report/gene_lists.rst", 
+#                             category="Configuration", 
+#                             subcategory="{}_scrnaseq_processing_seurat".format(config["project_name"])
+#                            ),
+#     resources:
+#         mem_mb=config.get("mem", "16000"),
+#     threads: config.get("threads", 1)
+#     log:
+#         os.path.join("logs","rules","gene_list_export.log"),
+#     params:
+#         partition=config.get("partition"),
 
         
 

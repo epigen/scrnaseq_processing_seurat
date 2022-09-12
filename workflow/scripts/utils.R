@@ -25,6 +25,14 @@ ggsave_new <- function(filename, results_path, plot, width=5, height=5){
         dir.create(results_path, recursive = TRUE)
     }
     
+    if (width > 50){
+        width <- 50
+    }
+    
+    if (height > 50){
+        height <- 50
+    }
+    
     for (format in c('png')){
         ggsave(
           paste0(filename,'.',format),

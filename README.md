@@ -69,9 +69,10 @@ The workflow perfroms the following steps. Outputs are always indicated by the r
   - Create and save Seurat object per sample
 - Merge & Split into subsets (prefix: RAW)
   - Merge all samples into one large object, including metadata, called "merged"
+  - optional: externally provided metadata (eg labels from downstream cluster analysis) can be added as CSV (see config/config.yaml)
   - Split into subsets according to configuration
 
-The following steps are performed on each data split separately.
+The following steps are performed on each data split separately (including the "merged" split).
 
 - Filtering (prefix: FILTERED)
   - Filter cells by a combination of logical-expressions using the metadata
@@ -100,7 +101,7 @@ The following steps are performed on each data split separately.
   - processing_{project_name}: metadata CSV files and visualizations of all processing steps by data split
   - visualization_{project_name}: all supported visualizations by data split
 - Save counts
-  - functionality to save all counts should be saved as CSV after each processing steps for of all modalities. Useful for downstream analyses that are incompatible with Seurat.
+  - functionality to save all counts should be saved as CSV after each processing step for of all modalities. Useful for downstream analyses that are independent of Seurat.
 - Results
   - all results will be saved in the result_path as configured where for each data(sub)set a directory with the following structure is created:
   -  counts (for all the .rds object files and .CSV files)
@@ -109,11 +110,11 @@ The following steps are performed on each data split separately.
 
 # Usage
 Here are some tips for the usage of this workflow:
-- when generating the sample_annotation sheet use short sample names (they will be the prefix for each barcode in the merged & split datasets)
+- when generating the sample_annotation sheet use short sample names (they will be the prefix for each barcode/cell in the merged & split datasets)
 - run the workflow for each step of processing (with the stop_after parameter) and investigate the results (eg using the report function)
 - start with a low complexity in the configuration
 - try to finish the analysis of the "merged" data set and later split the data by using the split_by parameter
-- in case you want to repeat your analysis on a subset that emerged from downstream analyses (eg clustering, cell-type annotation, perturbation classification) you have to extend the initial sample-wise metadata-files with the new metadata (additional columns). Take care to remove the prefix that was added to the barcodes during the merge-process
+- in case you want to repeat your analysis based on metadata that emerged from downstream analyses (eg clustering, cell-type annotation, perturbation classification) you can provide an incomplete metadatafile in the configuration (ie not all cells/barcodes present in the metadata). Changes in this file will trigger a rerun of the workflow starting with the merging step to ensure the added metadta is considered in all downstream steps (eg splitting, visualization, etc).
 
 # Configuration
 Detailed specifications can be found here [./config/README.md](./config/README.md)

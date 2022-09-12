@@ -63,7 +63,7 @@ rule all:
                        gene_list=list(config["vis_gene_lists"].keys())
                       ) if (config["stop_after"]=="CORRECTED") else [],
         envs = expand(os.path.join(config["result_path"],'envs','scrnaseq_processing_seurat','{env}.yaml'),env=['seurat','inspectdf']),
-        gene_lists = set(list(config["module_gene_lists"].values())+list(config["vis_gene_lists"].values())),
+        #gene_lists = set(list(config["module_gene_lists"].values())+list(config["vis_gene_lists"].values())),
         configs = os.path.join(config["result_path"],'configs','scrnaseq_processing_seurat','{}_config.yaml'.format(config["project_name"])),
         annotations = config["sample_annotation"],
     resources:
