@@ -23,11 +23,11 @@ custom_flag <- snakemake@params[["custom_flag"]]#'HTO'
 # gRNA assignment threshold
 crispr_umi_threshold <- snakemake@params[["crispr_umi_threshold"]]#1
 # gRNA to gene REGEX
-grna_regex = snakemake@params[["grna_regex"]]#"\\-."
+grna_regex <- snakemake@params[["grna_regex"]]#"\\-."
 # REGEX-based metadata extension for Seurat::PercentageFeatureSet()
-percentage_regex = snakemake@params[["percentage_regex"]]#list(mito.percent="^MT-")
+percentage_regex <- snakemake@params[["percentage_regex"]]#list(mito.percent="^MT-")
 # eval based metadata column transformations
-metadata_eval = snakemake@params[["metadata_eval"]]
+metadata_eval <- snakemake@params[["metadata_eval"]]
 
 
 # make result directory if not exist
@@ -35,11 +35,32 @@ if (!dir.exists(result_dir)){
     dir.create(result_dir, recursive = TRUE)
 }
 
-#### load data (future: check here for 10X/count matrix flag)
-data <- Read10X(data.dir = file.path(sample_dir, "filtered_feature_bc_matrix"))
+#### load data & Initialize the Seurat object with the raw data
+if (dir.exists(file.path(sample_dir, "filtered_feature_bc_matrix"))){
+    print("Load 10X data")
+    data <- Read10X(data.dir = file.path(sample_dir, "filtered_feature_bc_matrix"))
+    seurat_obj <- CreateSeuratObject(counts = data$'Gene Expression', project=sample_name)
+}else{
+    print("Load mtx data")
+    data <- ReadMtx(
+        mtx = file.path(sample_dir, "matrix.mtx"),
+        cells = file.path(sample_dir, "barcodes.tsv"),
+        features = file.path(sample_dir, "features.tsv"),
+        cell.column = 1,
+        feature.column = 1,
+        cell.sep = "\t",
+        feature.sep = "\t",
+        skip.cell = 0,
+        skip.feature = 0,
+        mtx.transpose = FALSE,
+        unique.features = TRUE,
+        strip.suffix = FALSE
+    )
+    seurat_obj <- CreateSeuratObject(counts = data, project=sample_name)
+}
 
-# Initialize the Seurat object with the raw data
-seurat_obj <- CreateSeuratObject(counts = data$'Gene Expression', project=sample_name)
+print(seurat_obj)
+
 
 if(ab_flag!=''){
     # create a new assay to store Antibody information
@@ -57,13 +78,21 @@ if(custom_flag!=''){
 }
 
 
-#### load & add metadata
-metadata <- read.csv(metadata_path, row.names = 1, header= TRUE)
-metadata$batch <- sample_name
+#### load & add metadata (if exists)
+if (length(metadata_path) > 0 ){
+    if (file.exists(file.path(metadata_path))){
+        print("load & add metadata")
+        
+        metadata <- read.csv(file.path(metadata_path), row.names = 1, header= TRUE)
 
-for (col in colnames(metadata)){
-    seurat_obj[[col]] <- metadata[colnames(seurat_obj),col]
+        for (col in colnames(metadata)){
+            seurat_obj[[col]] <- metadata[colnames(seurat_obj),col]
+        }
+    }
 }
+
+# add batch info to metadata
+seurat_obj$batch <- sample_name
 
 # extend metadata with Seurat::PercentageFeatureSet
 for (name in names(percentage_regex)){

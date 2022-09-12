@@ -1,6 +1,6 @@
 # sc/snRNA-seq Data Processing & Visualization Snakemake Workflow powered by Seurat
 
-A [Snakemake](https://snakemake.readthedocs.io/en/stable/) workflow for processing and visualizing (multimodal) sc/snRNA-seq data generated with [10X Genomics Kits](https://www.10xgenomics.com/) powered by the R package [Seurat](https://satijalab.org/seurat/index.html).
+A [Snakemake](https://snakemake.readthedocs.io/en/stable/) workflow for processing and visualizing (multimodal) sc/snRNA-seq data generated with [10X Genomics Kits](https://www.10xgenomics.com/) or in the MTX file format powered by the R package [Seurat](https://satijalab.org/seurat/index.html).
 
 **If you use this workflow in a publication, don't forget to give credits to the authors by citing the URL of this (original) repository (and its DOI, see Zenodo badge above -> coming soon).**
 
@@ -61,7 +61,7 @@ The outlined analyses were performed using the R package Seurat (ver) [ref] unle
 # Features
 The workflow perfroms the following steps. Outputs are always indicated by the respective prefix.
 - Preparation (prefix: RAW)
-  - Load (mutlimodal) data per 10X sample from Cell Ranger output
+  - Load (mutlimodal) data per 10X sample from Cell Ranger output OR count matrices in the MTX format
   - Load metadata
   - Extend metadata with Seurat::PercentageFeatureSet
   - Assign guide-RNA and KO target gene, if applicable

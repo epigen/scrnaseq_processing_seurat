@@ -45,7 +45,7 @@ percentage_regex:
 # metadata dataframe is called "metadata"
 # example: condKO: "paste0(metadata$condition,'+', metadata$KOcall)"
 metadata_eval:
-    condition: "gsub('HTO-THP1_._','',metadata$hto_demux)"
+    patient: "gsub('HTO-THP1_._','',metadata$hto_demux)"
     
 
 ##### MERGE #####
