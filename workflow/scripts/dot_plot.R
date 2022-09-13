@@ -44,6 +44,8 @@ slot <- "data"
 
 # make dot plots
 for (cat in vis_categories){
+    print(cat)
+    
     Idents(object = data_object) <- cat
     Idents(object = data_object) <- factor(x = Idents(data_object), levels = sort(levels(data_object)))
     
@@ -51,6 +53,11 @@ for (cat in vis_categories){
     skip <- all(is.na(levels(data_object)))
     if(!skip){
         skip <- any(is.na(Idents(object = data_object)))
+    }
+    
+    if (any(levels(data_object)=="")){
+        cells.use <- WhichCells(data_object, idents = '')
+        data_object <- SetIdent(data_object, cells = cells.use, value = 'Unknown')
     }
     
     # plot specs
