@@ -3,8 +3,10 @@
 library("inspectdf")
 library(tibble)
 library("ggplot2")
+
 # source utility functions
-source("workflow/scripts/utils.R")
+# source("workflow/scripts/utils.R")
+snakemake@source("./utils.R")
 
 # inputs
 metadata_path <- snakemake@input[["metadata"]] # "/nobackup/lab_bock/projects/macroIC/results/AKsmall/merged/counts/NORMALIZED_metadata.csv"

@@ -1,8 +1,10 @@
 
 #### load libraries & utility function 
 library(Seurat)
+
 # source utility functions
-source("workflow/scripts/utils.R")
+# source("workflow/scripts/utils.R")
+snakemake@source("./utils.R")
 
 #### configs
 
