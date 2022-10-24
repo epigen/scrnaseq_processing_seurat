@@ -20,6 +20,10 @@ annot = pd.read_csv(config['sample_annotation'], index_col='sample_name')
 
 result_path = os.path.join(config["result_path"],'scrnaseq_processing_seurat')
 
+# gene list dictionary
+gene_list_dict = config["module_gene_lists"] | config["vis_gene_lists"]
+
+
 data_splits = ['merged']
 if config["split_by"] is not None:
     for split in config["split_by"]:
@@ -63,9 +67,9 @@ rule all:
                        gene_list=list(config["vis_gene_lists"].keys())
                       ) if (config["stop_after"]=="CORRECTED") else [],
         envs = expand(os.path.join(config["result_path"],'envs','scrnaseq_processing_seurat','{env}.yaml'),env=['seurat','inspectdf']),
-        #gene_lists = set(list(config["module_gene_lists"].values())+list(config["vis_gene_lists"].values())),
+        gene_lists = expand(os.path.join(config["result_path"],'configs','scrnaseq_processing_seurat','{gene_list}.txt'),gene_list=list(gene_list_dict.keys())),
         configs = os.path.join(config["result_path"],'configs','scrnaseq_processing_seurat','{}_config.yaml'.format(config["project_name"])),
-        annotations = config["sample_annotation"],
+        annotations = os.path.join(config["result_path"],'configs','scrnaseq_processing_seurat','{}_annot.csv'.format(config["project_name"])),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 1)

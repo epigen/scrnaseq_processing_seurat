@@ -38,38 +38,50 @@ rule config_export:
     run:
         with open(output["configs"], 'w') as outfile:
             yaml.dump(config, outfile)
-
-# export used annotation file for documentation and reproducibility            
+        
+# export used annotation file for documentation and reproducibility         
 rule annot_export:
+    input:
+        config["sample_annotation"],
     output:
-        configs = report(config["sample_annotation"], 
+        annot = report(os.path.join(config["result_path"],'configs','scrnaseq_processing_seurat','{}_annot.csv'.format(config["project_name"])), 
                          caption="../report/configs.rst", 
                          category="Configuration", 
                          subcategory="{}_scrnaseq_processing_seurat".format(config["project_name"])
                         )
     resources:
-        mem_mb=config.get("mem_small", "16000"),
+        mem_mb=1000, #config.get("mem_small", "16000"),
     threads: config.get("threads", 1)
     log:
         os.path.join("logs","rules","annot_export.log"),
     params:
         partition=config.get("partition"),
+    shell:
+        """
+        cp {input} {output}
+        """
 
-# # export used gene lists for documentation and reproducibility -> problems: 1) if error occurs they get deleted as they are an output. 2) if mutliple modules use the same gene lists in a project, the report can not be generated due to an AmbiguousRuleException.
-# rule gene_list_export:
-#     output:
-#         gene_lists = report(set(list(config["module_gene_lists"].values())+list(config["vis_gene_lists"].values())), 
-#                             caption="../report/gene_lists.rst", 
-#                             category="Configuration", 
-#                             subcategory="{}_scrnaseq_processing_seurat".format(config["project_name"])
-#                            ),
-#     resources:
-#         mem_mb=config.get("mem", "16000"),
-#     threads: config.get("threads", 1)
-#     log:
-#         os.path.join("logs","rules","gene_list_export.log"),
-#     params:
-#         partition=config.get("partition"),
+# export used gene lists for documentation and reproducibility
+rule gene_list_export:
+    input:
+        get_gene_list_path,
+    output:
+        gene_lists = report(os.path.join(config["result_path"],'configs','scrnaseq_processing_seurat','{gene_list}.txt'), 
+                            caption="../report/gene_lists.rst", 
+                            category="Configuration", 
+                            subcategory="{}_scrnaseq_processing_seurat".format(config["project_name"])
+                           ),
+    resources:
+        mem_mb=1000, #config.get("mem_small", "16000"),config.get("mem", "16000"),
+    threads: config.get("threads", 1)
+    log:
+        os.path.join("logs","rules","gene_list_export_{gene_list}.log"),
+    params:
+        partition=config.get("partition"),
+    shell:
+        """
+        cp {input} {output}
+        """
 
         
 
