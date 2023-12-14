@@ -17,6 +17,7 @@ rule prepare:
         os.path.join("logs","rules","prepare_{sample}.log"),
     params:
         partition=config.get("partition"),
+        metadata = lambda w: "" if pd.isna(annot.loc["{}".format(w.sample),'metadata']) else annot.loc["{}".format(w.sample),'metadata'],
         sample = lambda w: "{}".format(w.sample),
         ab_flag = config["modality_flags"]['Antibody_Capture'],
         crispr_flag = config["modality_flags"]['CRISPR_Guide_Capture'],

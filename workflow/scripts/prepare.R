@@ -10,7 +10,7 @@ snakemake@source("./utils.R")
 
 # inputs
 sample_dir <- snakemake@input[[1]]#file.path("/research/lab_bock/projects/macroIC/data/BSA_0560_MF_AK_MPH/OUT/COUNT/AK_A_transcriptome/")
-metadata_path <- snakemake@input[[2]]#file.path("/research/lab_bock/projects/macroIC/data/BSA_0560_MF_AK_MPH/OUT/COUNT/AK_A_transcriptome/", "QC_categories.csv")
+metadata_path <- snakemake@params[["metadata"]] #file.path("/research/lab_bock/projects/macroIC/data/BSA_0560_MF_AK_MPH/OUT/COUNT/AK_A_transcriptome/", "QC_categories.csv")
 
 # outputs
 result_object <- snakemake@output[["sample_object"]]# file.path("/nobackup/lab_bock/projects/macroIC/results/AK_A_transcriptome/counts/RAW_object.rds")
