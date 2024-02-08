@@ -1,7 +1,7 @@
 
 #### load libraries & utility function 
 library("inspectdf")
-library(tibble)
+library("tibble")
 library("ggplot2")
 
 # source utility functions
@@ -16,7 +16,8 @@ step <- snakemake@params[["step"]] #"NORMALIZED"
 
 
 # load data
-metadata <- read.csv(metadata_path, row.names = 1, header= TRUE)
+# metadata <- read.csv(metadata_path, row.names = 1, header= TRUE)
+metadata <- data.frame(fread(file.path(metadata_path), header=TRUE), row.names=1)
 metadata <- as_tibble(metadata)
 
 ### plot metadata types
@@ -81,10 +82,12 @@ if (!dir.exists(result_dir)){
 }
 
 for (cat in names(metadata_cat_stats$levels)){
-    write.csv(metadata_cat_stats$levels[[cat]], file=file.path(result_dir, paste0(step,"_metadata_",cat,".csv")), row.names=FALSE)
+#     write.csv(metadata_cat_stats$levels[[cat]], file=file.path(result_dir, paste0(step,"_metadata_",cat,".csv")), row.names=FALSE)
+    fwrite(as.data.frame(metadata_cat_stats$levels[[cat]]), file=file.path(result_dir, paste0(step,"_metadata_",cat,".csv")), row.names=FALSE)
 }
 
-write.csv(metadata_num_stats[,-ncol(metadata_num_stats)], file=file.path(result_dir, paste0(step,"_metadata_","numerical",".csv")), row.names=FALSE)
+# write.csv(metadata_num_stats[,-ncol(metadata_num_stats)], file=file.path(result_dir, paste0(step,"_metadata_","numerical",".csv")), row.names=FALSE)
+fwrite(as.data.frame(metadata_num_stats[,-ncol(metadata_num_stats)]), file=file.path(result_dir, paste0(step,"_metadata_","numerical",".csv")), row.names=FALSE)
 
 # library(openxlsx)
 # write.xlsx(metadata_cat_stats$levels, file = file.path(result_dir, paste0(step,"_metadata_stats",".xlsx")))

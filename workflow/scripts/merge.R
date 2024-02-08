@@ -1,5 +1,5 @@
 #### load libraries
-library(Seurat)
+library("Seurat")
 
 # source utility functions
 # source("workflow/scripts/utils.R")
@@ -54,7 +54,8 @@ if (length(sample_objects)>1){
 # if extra metadata is provided add it to the merged object
 if (extra_metadata_path != ""){
     print("extra metadata is added")
-    extra_metadata <- read.csv(extra_metadata_path, row.names = 1, header= TRUE)
+#     extra_metadata <- read.csv(extra_metadata_path, row.names = 1, header= TRUE)
+    extra_metadata <- data.frame(fread(file.path(extra_metadata_path), header=TRUE), row.names=1)
     
     for (col in colnames(extra_metadata)){
         metadata_tmp <- data.frame(matrix(nrow=ncol(merged_data), ncol=1, dimnames=list(colnames(merged_data), c(col))))

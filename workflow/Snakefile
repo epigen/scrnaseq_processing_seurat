@@ -5,9 +5,7 @@ import pandas as pd
 import yaml
 from snakemake.utils import min_version
 
-min_version("6.0.3")
-
-SDIR = os.path.realpath(os.path.dirname(srcdir("Snakefile")))
+min_version("7.15.2")
 shell.prefix(f"set -eo pipefail;")
 
 ##### setup report #####

@@ -115,7 +115,8 @@ if(length(confounders)==0){
     
     # save highly variable genes
     write(rownames(HVG_df), file.path(dirname(file.path(norm_object_path)),"highly_variable_genes.txt"))
-    write.csv(HVG_df, file=file.path(dirname(file.path(norm_object_path)),"highly_variable_genes.csv"), row.names=TRUE)
+#     write.csv(HVG_df, file=file.path(dirname(file.path(norm_object_path)),"highly_variable_genes.csv"), row.names=TRUE)
+    fwrite(as.data.frame(HVG_df), file=file.path(dirname(file.path(norm_object_path)), row.names=TRUE)
 }else{
     prefix <- 'CORRECTED_'
 }

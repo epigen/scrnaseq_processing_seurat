@@ -85,7 +85,8 @@ if (length(metadata_path) > 0 ){
     if (file.exists(file.path(metadata_path))){
         print("load & add metadata")
         
-        metadata <- read.csv(file.path(metadata_path), row.names = 1, header= TRUE)
+#         metadata <- read.csv(file.path(metadata_path), row.names = 1, header= TRUE)
+        metadata <- data.frame(fread(file.path(metadata_path), header=TRUE), row.names=1)
 
         for (col in colnames(metadata)){
             seurat_obj[[col]] <- metadata[colnames(seurat_obj),col]
@@ -106,7 +107,8 @@ if(crispr_flag!=''){
     grna_data <- GetAssayData(object = seurat_obj, slot = "counts", assay = crispr_flag)
 
     # load threshold data from cellranger
-    thresholds <- read.csv(file.path(sample_dir, "crispr_analysis", "protospacer_umi_thresholds.csv"), row.names = 1, header= TRUE)
+#     thresholds <- read.csv(file.path(sample_dir, "crispr_analysis", "protospacer_umi_thresholds.csv"), row.names = 1, header= TRUE)
+    thresholds <- data.frame(fread(file.path(sample_dir, "crispr_analysis", "protospacer_umi_thresholds.csv"), header=TRUE), row.names=1)
 
     # substitute '_' with '-' (R constraint: “Feature names cannot have underscores ('_'), replacing with dashes ('-')”)
     rownames(thresholds) <- gsub("_", "-", rownames(thresholds))
