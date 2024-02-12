@@ -1,6 +1,6 @@
 
 #### load libraries & utility function 
-library(Seurat)
+library("Seurat")
 
 # source utility functions
 # source("workflow/scripts/utils.R")
@@ -14,11 +14,11 @@ split_object_path <- snakemake@output[["split_object"]]
 
 # parameters
 result_dir <- snakemake@params[["result_dir"]]
-split_by <- snakemake@params[["split"]] #"condition_8h_cytokines"
+split_by <- snakemake@params[["split"]]
 # 'flags' for modalities
-ab_flag <- snakemake@params[["ab_flag"]]#'AB'
-crispr_flag <- snakemake@params[["crispr_flag"]]#'gRNA'
-custom_flag <- snakemake@params[["custom_flag"]]#'HTO'
+ab_flag <- snakemake@params[["ab_flag"]]
+crispr_flag <- snakemake@params[["crispr_flag"]]
+custom_flag <- snakemake@params[["custom_flag"]]
 
 ### load merged data
 merged_object <- readRDS(file = file.path(merged_object_path))
@@ -37,6 +37,5 @@ tmp_object <- merged_object[,rownames(tmp_metadata)]
 
 ### save data
 save_seurat_object(seurat_obj=tmp_object,
-                   result_dir=dirname(split_object_path),
-                   prefix='RAW_'
+                   result_dir=dirname(split_object_path)
                   )

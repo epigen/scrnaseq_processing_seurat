@@ -9,25 +9,25 @@ snakemake@source("./utils.R")
 #### configs
 
 # inputs
-sample_dir <- snakemake@input[[1]]#file.path("/research/lab_bock/projects/macroIC/data/BSA_0560_MF_AK_MPH/OUT/COUNT/AK_A_transcriptome/")
-metadata_path <- snakemake@params[["metadata"]] #file.path("/research/lab_bock/projects/macroIC/data/BSA_0560_MF_AK_MPH/OUT/COUNT/AK_A_transcriptome/", "QC_categories.csv")
+sample_dir <- snakemake@input[[1]]
+metadata_path <- snakemake@params[["metadata"]]
 
 # outputs
-result_object <- snakemake@output[["sample_object"]]# file.path("/nobackup/lab_bock/projects/macroIC/results/AK_A_transcriptome/counts/RAW_object.rds")
+result_object <- snakemake@output[["sample_object"]]
 
 # parameters
-sample_name <- snakemake@params[["sample"]]#"AK_A_transcriptome"
+sample_name <- snakemake@params[["sample"]]
 result_dir <- dirname(result_object)
 # 'flags' for modalities
-ab_flag <- snakemake@params[["ab_flag"]]#'AB'
-crispr_flag <- snakemake@params[["crispr_flag"]]#'gRNA'
-custom_flag <- snakemake@params[["custom_flag"]]#'HTO'
+ab_flag <- snakemake@params[["ab_flag"]]
+crispr_flag <- snakemake@params[["crispr_flag"]]
+custom_flag <- snakemake@params[["custom_flag"]]
 # gRNA assignment threshold
-crispr_umi_threshold <- snakemake@params[["crispr_umi_threshold"]]#1
+crispr_umi_threshold <- snakemake@params[["crispr_umi_threshold"]]
 # gRNA to gene REGEX
-grna_regex <- snakemake@params[["grna_regex"]]#"\\-."
+grna_regex <- snakemake@params[["grna_regex"]]
 # REGEX-based metadata extension for Seurat::PercentageFeatureSet()
-percentage_regex <- snakemake@params[["percentage_regex"]]#list(mito.percent="^MT-")
+percentage_regex <- snakemake@params[["percentage_regex"]]
 # eval based metadata column transformations
 metadata_eval <- snakemake@params[["metadata_eval"]]
 
@@ -160,7 +160,6 @@ for (name in names(metadata_eval)){
 
 #### SAVE RESULTS
 save_seurat_object(seurat_obj=seurat_obj,
-                   result_dir=result_dir,
-                   prefix='prep_'
+                   result_dir=result_dir
                   )
 

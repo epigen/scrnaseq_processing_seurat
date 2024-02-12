@@ -1,6 +1,6 @@
 
 #### load libraries & utility function 
-library(Seurat)
+library("Seurat")
 
 # source utility functions
 # source("workflow/scripts/utils.R")
@@ -19,9 +19,9 @@ min_cells_per_gene <- snakemake@params[["min_cells_per_gene"]]
 module_gene_lists <- snakemake@params[["module_gene_lists"]]
 cell_cycle <- snakemake@params[["cell_cycle"]]
 
-ab_flag <- snakemake@params[["ab_flag"]]#'AB'
-crispr_flag <- snakemake@params[["crispr_flag"]]#'gRNA'
-custom_flag <- snakemake@params[["custom_flag"]]#'HTO'
+ab_flag <- snakemake@params[["ab_flag"]]
+crispr_flag <- snakemake@params[["crispr_flag"]]
+custom_flag <- snakemake@params[["custom_flag"]]
 
 
 ### load filtered data
@@ -108,22 +108,12 @@ for (gene_list_name in names(gene_lists)){
 
 
 ### save data
-
-# select correct prefix and save HVGs
-if(length(confounders)==0){
-    prefix <- 'NORMALIZED_'
     
-    # save highly variable genes
-    write(rownames(HVG_df), file.path(dirname(file.path(norm_object_path)),"highly_variable_genes.txt"))
+# save highly variable genes
+write(rownames(HVG_df), file.path(dirname(file.path(norm_object_path)),"highly_variable_genes.txt"))
 #     write.csv(HVG_df, file=file.path(dirname(file.path(norm_object_path)),"highly_variable_genes.csv"), row.names=TRUE)
-    fwrite(as.data.frame(HVG_df), file=file.path(dirname(file.path(norm_object_path)), row.names=TRUE)
-}else{
-    prefix <- 'CORRECTED_'
-}
+fwrite(as.data.frame(HVG_df), file=file.path(dirname(file.path(norm_object_path)),"highly_variable_genes.csv"), row.names=TRUE)
 
 # save all corrected data
-save_seurat_object(seurat_obj=norm_object,
-                   result_dir=dirname(file.path(norm_object_path)),
-                   prefix=prefix
-                  )
+save_seurat_object(seurat_obj=norm_object, result_dir=dirname(file.path(norm_object_path)))
 

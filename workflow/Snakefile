@@ -6,7 +6,10 @@ import yaml
 from snakemake.utils import min_version
 
 min_version("7.15.2")
-shell.prefix(f"set -eo pipefail;")
+# shell.prefix(f"set -eo pipefail;")
+
+##### module name #####
+module_name = "scrnaseq_processing_seurat"
 
 ##### setup report #####
 report: os.path.join("report", "workflow.rst")
@@ -28,7 +31,7 @@ if config["split_by"] is not None:
         data_splits.extend(["{}_{}".format(split, value) for value in config["split_by"][split]])
 
 all_steps = ['RAW','FILTERED','NORMALIZED','CORRECTED']
-    
+
 if config["stop_after"]=="CORRECTED":
     plot_steps = ["NORMALIZED","CORRECTED"]
     metadata_plot_steps = all_steps[:all_steps.index(config["stop_after"])]
@@ -39,31 +42,59 @@ else:
     plot_steps = []
     metadata_plot_steps = all_steps[:all_steps.index(config["stop_after"])+1]
 
+### visualization feature lists
+# normalized plots
+vis_features_normalized = list(config["vis_gene_lists"].keys()) + ["HVG"]
+
+for modality in ["Antibody_Capture", "CRISPR_Guide_Capture", "Custom"]:
+    if (config["modality_flags"][modality]!="")and(len(config["vis_features"][modality])>0):
+        vis_features_normalized.append(modality)
+        
+if len(config["vis_features"]["Metadata"])>0:
+        vis_features_normalized.append("Metadata")
+
+# corrected plots
+vis_features_corrected = list(config["vis_gene_lists"].keys())
+
 rule all:
     input:
-        final_objects = expand(os.path.join(result_path,'{split}','{step}_object.rds'), 
+        final_objects = expand(os.path.join(result_path,'{split}','{step}','object.rds'), 
                                split=data_splits, 
                                step=config["stop_after"]),
-        counts = expand(os.path.join(result_path,'{split}','{step}_RNA.csv'), 
+        counts = expand(os.path.join(result_path,'{split}','{step}','RNA.csv'), 
                                split=data_splits, 
                                step=config["save_counts"]) if (len(config["save_counts"])>0) else [],
-        metadata_plots = expand(os.path.join(result_path,'{split}','plots','{step}_metadata_{datatype}.png'),
+        metadata_plots = expand(os.path.join(result_path,'{split}','{step}','plots','metadata'),#,'{datatype}.png'),
                              split=data_splits,
                              step=metadata_plot_steps,
-                             datatype=['numerical','categorical','types']
+                             #datatype=['numerical','categorical','types']
                             ),
-        normalized_plots = expand(os.path.join(result_path,'{split}','plots','NORMALIZED_{plot_type}_{category}_{gene_list}.png'), 
-                       split=data_splits,
-                       plot_type=['ridge_plot','violin_plot','dot_plot','heatmap'], 
+#         normalized_plots = expand(os.path.join(result_path,'{split}','NORMALIZED','plots','{plot_type}','{category}_{gene_list}.png'), 
+#                        split=data_splits,
+#                        plot_type=['RidgePlot','VlnPlot','DotPlot','Heatmap'], 
+#                        category=config["vis_categories"],
+#                        gene_list=list(config["vis_gene_lists"].keys())
+#                       ) if (config["stop_after"]=="CORRECTED")or(config["stop_after"]=="NORMALIZED") else [],
+#         corrected_heatmaps = expand(os.path.join(result_path,'{split}','CORRECTED','plots','{plot_type}','{category}_{gene_list}.png'), 
+#                        split=data_splits,
+#                        plot_type=['Heatmap'], 
+#                        category=config["vis_categories"],
+#                        gene_list=list(config["vis_gene_lists"].keys())
+#                       ) if (config["stop_after"]=="CORRECTED") else [],
+        normalized_plot_dirs = (expand(os.path.join(result_path,'{split}','{step}','plots','{plot_type}','{category}','{feature_list}'), 
+                                      split=data_splits,
+                                      step=["NORMALIZED"],
+                                      plot_type=['VlnPlot', 'RidgePlot', 'DotPlot', 'Heatmap'],
                        category=config["vis_categories"],
-                       gene_list=list(config["vis_gene_lists"].keys())
-                      ) if (config["stop_after"]=="CORRECTED")or(config["stop_after"]=="NORMALIZED") else [],
-        corrected_plots = expand(os.path.join(result_path,'{split}','plots','CORRECTED_{plot_type}_{category}_{gene_list}.png'), 
-                       split=data_splits,
-                       plot_type=['ridge_plot','violin_plot','heatmap'], 
+                       feature_list=vis_features_normalized,
+                      )) if (config["stop_after"]=="CORRECTED") else [],
+        corrected_plot_dirs = (expand(os.path.join(result_path,'{split}','{step}','plots','{plot_type}','{category}','{feature_list}'), 
+                                      split=data_splits,
+                                      step=["CORRECTED"],
+                                      plot_type=['VlnPlot', 'RidgePlot', 'Heatmap'],
                        category=config["vis_categories"],
-                       gene_list=list(config["vis_gene_lists"].keys())
-                      ) if (config["stop_after"]=="CORRECTED") else [],
+                       feature_list=vis_features_corrected,
+                      )) if (config["stop_after"]=="CORRECTED") else [],
         envs = expand(os.path.join(config["result_path"],'envs','scrnaseq_processing_seurat','{env}.yaml'),env=['seurat','inspectdf']),
         gene_lists = expand(os.path.join(config["result_path"],'configs','scrnaseq_processing_seurat','{gene_list}.txt'),gene_list=list(gene_list_dict.keys())),
         configs = os.path.join(config["result_path"],'configs','scrnaseq_processing_seurat','{}_config.yaml'.format(config["project_name"])),

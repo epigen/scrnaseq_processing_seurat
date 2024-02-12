@@ -3,3 +3,4 @@ channels:
   - defaults
 dependencies:
   - r-inspectdf=0.0.11
+  - r-data.table=1.14.8

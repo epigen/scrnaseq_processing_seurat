@@ -3,18 +3,25 @@ rule prepare:
     input:
         get_sample_paths,
     output:
-        sample_object = os.path.join(result_path,'batch_{sample}','prep_object.rds'),
-        metadata = report(os.path.join(result_path,'batch_{sample}','prep_metadata.csv'), 
+        sample_object = os.path.join(result_path,'batch_{sample}','PREP','object.rds'),
+        metadata = report(os.path.join(result_path,'batch_{sample}','PREP','metadata.csv'), 
                           caption="../report/metadata_sample.rst", 
                           category="{}_scrnaseq_processing_seurat".format(config["project_name"]), 
-                          subcategory="{sample}"),
+                          subcategory="{sample}",
+                          labels={
+                              "step": "PREP",
+                              "type": "CSV",
+                              "category": "All",
+                              "list": "Metadata",
+                              "feature": "",
+                                }),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 1)
     conda:
         "../envs/seurat.yaml"
     log:
-        os.path.join("logs","rules","prepare_{sample}.log"),
+        os.path.join("logs","rules","PREP_{sample}.log"),
     params:
         partition=config.get("partition"),
         metadata = lambda w: "" if pd.isna(annot.loc["{}".format(w.sample),'metadata']) else annot.loc["{}".format(w.sample),'metadata'],
@@ -32,14 +39,21 @@ rule prepare:
 # merge into one dataset
 rule merge:
     input:
-        expand(os.path.join(result_path,'batch_{sample}','prep_object.rds'), sample=annot.index.tolist()),
+        expand(os.path.join(result_path,'batch_{sample}','PREP','object.rds'), sample=annot.index.tolist()),
         config["extra_metadata"] if config["extra_metadata"]!="" else [],
     output:
-        merged_object = os.path.join(result_path,'merged','RAW_object.rds'),
-        metadata = report(os.path.join(result_path,'merged','RAW_metadata.csv'), 
+        merged_object = os.path.join(result_path,'merged','RAW','object.rds'),
+        metadata = report(os.path.join(result_path,'merged','RAW','metadata.csv'), 
                           caption="../report/metadata_merged.rst", 
                           category="{}_scrnaseq_processing_seurat".format(config["project_name"]), 
-                          subcategory="merged"),
+                          subcategory="merged",
+                          labels={
+                              "step": "RAW",
+                              "type": "CSV",
+                              "category": "All",
+                              "list": "Metadata",
+                              "feature": "",
+                                }),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 1)
@@ -61,13 +75,20 @@ rule merge:
 # split into subsets by metadata
 rule split:
     input:
-        merged_object = os.path.join(result_path,'merged','RAW_object.rds'),
+        merged_object = os.path.join(result_path,'merged','RAW','object.rds'),
     output:
-        split_object = os.path.join(result_path,'{split}','RAW_object.rds'),
-        metadata = report(os.path.join(result_path,'{split}','RAW_metadata.csv'), 
+        split_object = os.path.join(result_path,'{split}','RAW','object.rds'),
+        metadata = report(os.path.join(result_path,'{split}','RAW','metadata.csv'), 
                           caption="../report/metadata.rst", 
                           category="{}_scrnaseq_processing_seurat".format(config["project_name"]), 
-                          subcategory="{split}"),
+                          subcategory="{split}",
+                          labels={
+                              "step": "RAW",
+                              "type": "CSV",
+                              "category": "All",
+                              "list": "Metadata",
+                              "feature": "",
+                                }),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 1)
@@ -89,13 +110,20 @@ rule split:
 # filter cells according to metadata
 rule filter_cells:
     input:
-        raw_object = os.path.join(result_path,'{split}','RAW_object.rds'),
+        raw_object = os.path.join(result_path,'{split}','RAW','object.rds'),
     output:
-        filtered_object = os.path.join(result_path,'{split}','FILTERED_object.rds'),
-        metadata = report(os.path.join(result_path,'{split}','FILTERED_metadata.csv'), 
+        filtered_object = os.path.join(result_path,'{split}','FILTERED','object.rds'),
+        metadata = report(os.path.join(result_path,'{split}','FILTERED','metadata.csv'), 
                           caption="../report/metadata.rst", 
                           category="{}_scrnaseq_processing_seurat".format(config["project_name"]), 
-                          subcategory="{split}"),
+                          subcategory="{split}",
+                          labels={
+                              "step": "FILTERED",
+                              "type": "CSV",
+                              "category": "All",
+                              "list": "Metadata",
+                              "feature": "",
+                                }),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 1)
@@ -117,9 +145,9 @@ rule filter_cells:
 # save counts as CSV of seurat object
 rule save_counts:
     input:
-        seurat_object = os.path.join(result_path,'{split}','{step}_object.rds'),
+        seurat_object = os.path.join(result_path,'{split}','{step}','object.rds'),
     output:
-        counts = os.path.join(result_path,'{split}','{step}_RNA.csv'),
+        counts = os.path.join(result_path,'{split}','{step}','RNA.csv'),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 1)

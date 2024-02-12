@@ -1,11 +1,15 @@
 # one rule per used conda environment to document the exact versions and builds of the used software        
 rule env_export:
     output:
-        report(os.path.join(config["result_path"],'envs','scrnaseq_processing_seurat','{env}.yaml'),
-                      caption="../report/software.rst", 
-                      category="Software", 
-                      subcategory="{}_scrnaseq_processing_seurat".format(config["project_name"])
-                     ),
+        report(os.path.join(config["result_path"],'envs',module_name,'{env}.yaml'),
+               caption="../report/software.rst",
+               category="Software",
+               subcategory="{}_{}".format(config["project_name"], module_name),
+               labels={
+                   "name": config["project_name"],
+                   "module": module_name,
+                   "env": "{env}",
+               }),
     conda:
         "../envs/{env}.yaml"
     resources:
@@ -23,11 +27,15 @@ rule env_export:
 # add configuration files to report        
 rule config_export:
     output:
-        configs = report(os.path.join(config["result_path"],'configs','scrnaseq_processing_seurat','{}_config.yaml'.format(config["project_name"])), 
+        configs = report(os.path.join(config["result_path"],'configs',module_name,'{}_config.yaml'.format(config["project_name"])), 
                          caption="../report/configs.rst", 
                          category="Configuration", 
-                         subcategory="{}_scrnaseq_processing_seurat".format(config["project_name"])
-                        )
+                         subcategory="{}_{}".format(config["project_name"], module_name),
+                         labels={
+                             "name": config["project_name"],
+                             "module": module_name,
+                             "type": "config"
+                         })
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 1)
@@ -44,11 +52,15 @@ rule annot_export:
     input:
         config["sample_annotation"],
     output:
-        annot = report(os.path.join(config["result_path"],'configs','scrnaseq_processing_seurat','{}_annot.csv'.format(config["project_name"])), 
+        annot = report(os.path.join(config["result_path"],'configs',module_name,'{}_annot.csv'.format(config["project_name"])), 
                          caption="../report/configs.rst", 
                          category="Configuration", 
-                         subcategory="{}_scrnaseq_processing_seurat".format(config["project_name"])
-                        )
+                       subcategory="{}_{}".format(config["project_name"], module_name),
+                       labels={
+                           "name": config["project_name"],
+                           "module": module_name,
+                           "type": "annotation",
+                       })
     resources:
         mem_mb=1000, #config.get("mem_small", "16000"),
     threads: config.get("threads", 1)
@@ -66,11 +78,15 @@ rule gene_list_export:
     input:
         get_gene_list_path,
     output:
-        gene_lists = report(os.path.join(config["result_path"],'configs','scrnaseq_processing_seurat','{gene_list}.txt'), 
+        gene_lists = report(os.path.join(config["result_path"],'configs',module_name,'{gene_list}.txt'), 
                             caption="../report/gene_lists.rst", 
                             category="Configuration", 
-                            subcategory="{}_scrnaseq_processing_seurat".format(config["project_name"])
-                           ),
+                            subcategory="{}_{}".format(config["project_name"], module_name),
+                            labels={
+                                "name": config["project_name"],
+                                "module": module_name,
+                                "type": "{gene_list} genes",
+                            }),
     resources:
         mem_mb=1000, #config.get("mem_small", "16000"),config.get("mem", "16000"),
     threads: config.get("threads", 1)

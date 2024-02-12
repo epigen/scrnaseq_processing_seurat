@@ -1,6 +1,6 @@
 
 #### load libraries & utility function 
-library(Seurat)
+library("Seurat")
 library("ggplot2")
 
 # source utility functions
@@ -8,30 +8,28 @@ library("ggplot2")
 snakemake@source("./utils.R")
 
 # inputs
-object_path <- snakemake@input[["norm_object"]] # "/nobackup/lab_bock/projects/macroIC/results/AKsmall/merged/counts/NORMALIZED_object.rds"
+object_path <- snakemake@input[["norm_object"]]
 
 # parameters
-step <- snakemake@params[["step"]] #"NORMALIZED"
+step <- snakemake@params[["step"]]
 
-ab_flag <- snakemake@params[["ab_flag"]]#'AB'
-crispr_flag <- snakemake@params[["crispr_flag"]]#'gRNA'
-custom_flag <- snakemake@params[["custom_flag"]]#'HTO'
+ab_flag <- snakemake@params[["ab_flag"]]
+crispr_flag <- snakemake@params[["crispr_flag"]]
+custom_flag <- snakemake@params[["custom_flag"]]
 
-vis_categories <- snakemake@params[["vis_categories"]] #c('condition','KO_call')#,'condKO')
-vis_gene_lists <- snakemake@params[["vis_gene_lists"]] #list(IC_genes = "/research/home/sreichl/projects/macroIC/metadata/marker_genes/IC_genes.txt", immune_genes = "/research/home/sreichl/projects/macroIC/metadata/marker_genes/immune_genes.txt")
+vis_categories <- snakemake@params[["vis_categories"]]
+vis_gene_lists <- snakemake@params[["vis_gene_lists"]]
 
 modality_features <- list()
 modality_features[[ab_flag]] <- snakemake@params[["ab_features"]] #c('all')
 modality_features[[crispr_flag]] <- snakemake@params[["crispr_features"]] #c('all')
 modality_features[[custom_flag]] <- snakemake@params[["custom_features"]] #c('HTO-THP1-A-untreated','HTO-THP1-A-8h-cytokines','HTO-THP1-A-24h-cytokines') #c('all')
 
-# options(repr.plot.width=width, repr.plot.height=height)
-
 # heatmap plot configs
 
 height_row <- 0.1 # height of each row in the heatmap plot
 width_col <- 0.001 # width of each col in the heatmap plot
-result_dir <- file.path(dirname(object_path),'plots')
+result_dir <- file.path(dirname(object_path),'plots','Heatmap')
 
 ### load data
 data_object <- readRDS(file = file.path(object_path))
@@ -98,7 +96,7 @@ for (cat in vis_categories){
         }
         
         # save plot
-        ggsave_new(filename=paste0(step,"_heatmap_",cat,"_",gene_list_name), 
+        ggsave_new(filename=paste0(cat,"_",gene_list_name), 
                    results_path=result_dir, 
                    plot=tmp_plot, 
                    width=width, 
@@ -161,7 +159,7 @@ for (cat in vis_categories){
         }
         
         # save plot
-        ggsave_new(filename=paste0(step,"_heatmap_",cat,"_",flag), 
+        ggsave_new(filename=paste0(cat,"_",flag), 
                    results_path=result_dir, 
                    plot=tmp_plot, 
                    width=width, 

@@ -31,7 +31,7 @@ modality_features[[custom_flag]] <- snakemake@params[["custom_features"]] #c('HT
 
 height_row <- 0.5 # height of each row in the dot plot
 width_col <- 0.5 # width of each col in the dot plot
-result_dir <- file.path(dirname(object_path),'plots')
+result_dir <- file.path(dirname(object_path),'plots','DotPlot')
 
 ### load data
 data_object <- readRDS(file = file.path(object_path))
@@ -101,7 +101,7 @@ for (cat in vis_categories){
 
         
         # save plot
-        ggsave_new(filename=paste0(step,"_dot_plot_",cat,"_",gene_list_name), 
+        ggsave_new(filename=paste0(cat,"_",gene_list_name), 
                    results_path=result_dir, 
                    plot=tmp_plot, 
                    width=width, 
@@ -150,7 +150,7 @@ for (cat in vis_categories){
         }
         
         # save plot
-        ggsave_new(filename=paste0(step,"_dot_plot_",cat,"_",flag), 
+        ggsave_new(filename=paste0(cat,"_",flag), 
                    results_path=result_dir, 
                    plot=tmp_plot, 
                    width=width, 

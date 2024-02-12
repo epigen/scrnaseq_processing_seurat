@@ -8,10 +8,10 @@ snakemake@source("./utils.R")
 #### configs
 
 # inputs
-sample_object_paths <- snakemake@input #c(file.path("/nobackup/lab_bock/projects/macroIC/results/AKsmall/AK_A_transcriptome/counts/RAW_object.rds"), file.path("/nobackup/lab_bock/projects/macroIC/results/AKsmall/AK_B_transcriptome/counts/RAW_object.rds"), file.path("/nobackup/lab_bock/projects/macroIC/results/AKsmall/AK_C_transcriptome/counts/RAW_object.rds"))
+sample_object_paths <- snakemake@input
 
 # outputs
-merged_object <- snakemake@output[["merged_object"]]# "/nobackup/lab_bock/projects/macroIC/results/AKsmall/merged/counts/RAW_object.rds"
+merged_object <- snakemake@output[["merged_object"]]
 
 # parameters
 project_name <- snakemake@params[["project_name"]] #"test" 
@@ -70,9 +70,7 @@ if (extra_metadata_path != ""){
     }
 }
 
-
 ### save merged data
 save_seurat_object(seurat_obj=merged_data,
-                   result_dir=result_dir,
-                   prefix='RAW_'
+                   result_dir=result_dir
                   )

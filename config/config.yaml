@@ -85,8 +85,9 @@ cell_cycle:
     g2m_phase_genes: 'tirosh2015'
 
 # provide paths to gene lists in plain .txt to perform scoring using https://satijalab.org/seurat/reference/addmodulescore
+# names have to be in CamelCase e.g., TcellMarkers and not T_cell_markers
 module_gene_lists:
-    Cytokine_genes: "/path/to/Cytokine_genes.txt"
+    Cytokines: "/path/to/Cytokine_genes.txt"
 
 
 ##### CORRECTION #####
@@ -106,8 +107,9 @@ variables_to_regress: []
 vis_categories: ['batch']
 
 # provide paths to gene lists in plain .txt to plot expression individually (Ridge plots, Violin plots) and grouped (eg Heatmap, Dot plots)
+# names have to be in CamelCase e.g., TcellMarkers and not T_cell_markers
 vis_gene_lists:
-    Cytokine_genes: "/path/to/Cytokine_genes.txt"
+    Cytokines: "/path/to/Cytokine_genes.txt"
 
 # features per modality (if not applicable, leave empty []), which expression should be plotted, ['all'] plots every feature
 vis_features:

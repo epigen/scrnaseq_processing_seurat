@@ -1,7 +1,7 @@
 
 
 #### load libraries & utility function 
-library(Seurat)
+library("Seurat")
 
 # source utility functions
 # source("workflow/scripts/utils.R")
@@ -14,8 +14,7 @@ raw_object_path <- snakemake@input[["raw_object"]]
 filtered_object_path <- snakemake@output[["filtered_object"]]
 
 # parameters
-result_dir <- dirname(filtered_object_path)
-filter_expression <- snakemake@params[["filter_expression"]] # "hto_demux != 'Doublet' & hto_demux != 'Negative' & pass_QC == 'True' & guide_call!='Negative' & guide_call!='Multiplet'"
+filter_expression <- snakemake@params[["filter_expression"]]
 # 'flags' for modalities
 ab_flag <- snakemake@params[["ab_flag"]]#'AB'
 crispr_flag <- snakemake@params[["crispr_flag"]]#'gRNA'
@@ -39,6 +38,5 @@ if (filter_expression!=""){
 
 ### save data
 save_seurat_object(seurat_obj=filtered_object,
-                   result_dir=dirname(file.path(filtered_object_path)),
-                   prefix='FILTERED_'
+                   result_dir=dirname(file.path(filtered_object_path))
                   )

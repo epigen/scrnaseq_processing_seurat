@@ -1,0 +1,1 @@
+{{snakemake.wildcards["plot_type"]}} of the {{snakemake.wildcards["step"]}} data split {{snakemake.wildcards["split"]}} showing {{snakemake.wildcards["feature_list"]}} features by groups in {{snakemake.wildcards["category"]}}.
