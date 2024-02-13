@@ -153,11 +153,17 @@ if(plot_type=="Heatmap" & feature_list=="Metadata"){
 if (plot_type=="Heatmap"){
     # Heatmap specs
     height <- max(5, height_row*length(features) + 1)
+    
     # cluster features (rows) using hclust
+    tmp_data <- as.data.frame(GetAssayData(object = data_object, slot = slot, assay = assay))
+    # subset by features
+    tmp_data <- tmp_data[features,]
+    # cluster using hclust
+    hc <- hclust(dist(tmp_data)) 
     
     # make Heatmap
     tmp_plot <- DoHeatmap(object = data_object,
-                                  features = features,
+                                  features = features[hc$order],# reorder features by hclust result
                                   cells = NULL,
                                   group.by = "ident",
                                   group.bar = TRUE,
@@ -175,7 +181,9 @@ if (plot_type=="Heatmap"){
                                   lines.width = NULL,
                                   group.bar.height = 0.02,
                                   combine = TRUE
-                                ) + guides(colour=FALSE)
+                                ) + guides(colour="none") + 
+    scale_fill_gradientn(colors = c("royalblue4", "white", "firebrick2"), na.value = "white")
+
     # save plot
     ggsave_new(filename=feature_list,
                results_path=result_dir, 
