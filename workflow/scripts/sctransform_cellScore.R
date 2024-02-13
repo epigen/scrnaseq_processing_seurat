@@ -74,13 +74,9 @@ if(custom_flag!=''){
 }
 
 
-# get higlhy variable genes (HVG)
-HVG_df <- HVFInfo(object = norm_object, assay = "SCT")
-
-
 ### Cell Scoring on normalized data (ie assay="SCT", slot="data")
 
-# Cell Cycle scoring with integrated Seurat function
+# Cell Cycle scoring with Seurat function
 # (presumably) running on SCT assay, as it is the default Assay post normalization
 if (cell_cycle['s_phase_genes']!=""){
     norm_object <- CellCycleScoring(object = norm_object, s.features = s_genes, g2m.features = g2m_genes, search=TRUE) 
@@ -108,11 +104,15 @@ for (gene_list_name in names(gene_lists)){
 
 
 ### save data
-    
-# save highly variable genes
-write(rownames(HVG_df), file.path(dirname(file.path(norm_object_path)),"highly_variable_genes.txt"))
-#     write.csv(HVG_df, file=file.path(dirname(file.path(norm_object_path)),"highly_variable_genes.csv"), row.names=TRUE)
-fwrite(as.data.frame(HVG_df), file=file.path(dirname(file.path(norm_object_path)),"highly_variable_genes.csv"), row.names=TRUE)
+
+# higlhy variable genes (HVG)
+if(length(confounders)==0){
+    # get higlhy variable genes (HVG)
+    HVG_df <- HVFInfo(object = norm_object, assay = "SCT")
+    # save highly variable genes
+    write(rownames(HVG_df), file.path(dirname(file.path(norm_object_path)),"highly_variable_genes.txt"))
+    fwrite(as.data.frame(HVG_df), file=file.path(dirname(file.path(norm_object_path)),"highly_variable_genes.csv"), row.names=TRUE)
+}
 
 # save all corrected data
 save_seurat_object(seurat_obj=norm_object, result_dir=dirname(file.path(norm_object_path)))

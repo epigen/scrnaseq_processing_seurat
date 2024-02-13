@@ -53,7 +53,7 @@ for modality in ["Antibody_Capture", "CRISPR_Guide_Capture", "Custom"]:
 if len(config["vis_features"]["Metadata"])>0:
         vis_features_normalized.append("Metadata")
 
-# corrected plots
+# corrected plots (only plots of scale.data i.e., gene expression)
 vis_features_corrected = list(config["vis_gene_lists"].keys())
 
 rule all:
@@ -64,23 +64,10 @@ rule all:
         counts = expand(os.path.join(result_path,'{split}','{step}','RNA.csv'), 
                                split=data_splits, 
                                step=config["save_counts"]) if (len(config["save_counts"])>0) else [],
-        metadata_plots = expand(os.path.join(result_path,'{split}','{step}','plots','metadata'),#,'{datatype}.png'),
+        metadata_plots = expand(os.path.join(result_path,'{split}','{step}','plots','metadata'),
                              split=data_splits,
                              step=metadata_plot_steps,
-                             #datatype=['numerical','categorical','types']
                             ),
-#         normalized_plots = expand(os.path.join(result_path,'{split}','NORMALIZED','plots','{plot_type}','{category}_{gene_list}.png'), 
-#                        split=data_splits,
-#                        plot_type=['RidgePlot','VlnPlot','DotPlot','Heatmap'], 
-#                        category=config["vis_categories"],
-#                        gene_list=list(config["vis_gene_lists"].keys())
-#                       ) if (config["stop_after"]=="CORRECTED")or(config["stop_after"]=="NORMALIZED") else [],
-#         corrected_heatmaps = expand(os.path.join(result_path,'{split}','CORRECTED','plots','{plot_type}','{category}_{gene_list}.png'), 
-#                        split=data_splits,
-#                        plot_type=['Heatmap'], 
-#                        category=config["vis_categories"],
-#                        gene_list=list(config["vis_gene_lists"].keys())
-#                       ) if (config["stop_after"]=="CORRECTED") else [],
         normalized_plot_dirs = (expand(os.path.join(result_path,'{split}','{step}','plots','{plot_type}','{category}','{feature_list}'), 
                                       split=data_splits,
                                       step=["NORMALIZED"],

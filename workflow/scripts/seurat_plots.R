@@ -32,17 +32,21 @@ if (plot_type=="VlnPlot"){
     height <- 4 # height of each subplot
     width_col <- 0.5 # width of each col in the violin plot
     same.y.lims <- TRUE
+    sorting_flag <- FALSE
 } else if (plot_type=="RidgePlot"){
     # ridge
     width <- 4 # width of each subplot
     heigth_row <- 0.5 # height of each row in the ridge plot
     same.y.lims <- TRUE
+    sorting_flag <- TRUE
 } else if (plot_type=="DotPlot"){
     height_row <- 0.5 # height of each row in the dot plot
     width_col <- 0.5 # width of each col in the dot plot
+    sorting_flag <- TRUE
 } else if (plot_type=="Heatmap"){
     height_row <- 0.1 # height of each row in the heatmap plot
     width_col <- 0.001 # width of each col in the heatmap plot
+    sorting_flag <- FALSE
 }
 
 # general configs (default assay)
@@ -53,7 +57,7 @@ print(category)
 ### load data
 data_object <- readRDS(file = file.path(object_path))
 Idents(object = data_object) <- category
-Idents(object = data_object) <- factor(x = Idents(data_object), levels = sort(levels(data_object)))
+Idents(object = data_object) <- factor(x = Idents(data_object), levels = sort(levels(data_object), decreasing = sorting_flag))
 
 # check if categorical metadata is all NA (can happen on data subset that does not contain the visualization category)
 if(all(is.na(levels(data_object))) | ((plot_type=="DotPlot" | plot_type=="Heatmap")&(any(is.na(Idents(object = data_object)))))){
@@ -119,8 +123,6 @@ if (step=="CORRECTED"){
     }
 }
 
-
-
 print(feature_list)
 # extract all features from the object
 if(feature_list=="Metadata"){
@@ -138,6 +140,8 @@ if (length(features)==1){
 
 # plot only features present in the data
 features <- intersect(features, data_features)
+# sort features
+features <- sort(features)
 
 # workaround for Metadata Heatmap from here: https://github.com/satijalab/seurat/issues/3366
 if(plot_type=="Heatmap" & feature_list=="Metadata"){
@@ -149,6 +153,8 @@ if(plot_type=="Heatmap" & feature_list=="Metadata"){
 if (plot_type=="Heatmap"){
     # Heatmap specs
     height <- max(5, height_row*length(features) + 1)
+    # cluster features (rows) using hclust
+    
     # make Heatmap
     tmp_plot <- DoHeatmap(object = data_object,
                                   features = features,
@@ -197,7 +203,9 @@ if (plot_type=="Heatmap"){
                                   scale.by = "radius",
                                   scale.min = NA,
                                   scale.max = NA
-                                )+ theme(axis.text.x = element_text(angle = 45, hjust=1))
+                                ) + 
+    theme(axis.text.x = element_text(angle = 45, hjust=1)) + 
+    scale_color_gradient2(midpoint=0, low="royalblue4", mid="grey80", high="firebrick2", space ="Lab")
     # save plot
     ggsave_new(filename=feature_list,
                results_path=result_dir, 

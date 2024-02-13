@@ -12,14 +12,10 @@ snakemake@source("./utils.R")
 metadata_path <- snakemake@input[["metadata"]]
 
 # outputs
-result_dir <- dirname(file.path(snakemake@output[["metadata_plots"]][1]))
-
-# parameters
-# step <- snakemake@params[["step"]] #"NORMALIZED"
-
+result_dir <- snakemake@output[["metadata_plots"]]
+stats_dir <- snakemake@output[["metadata_stats"]]
 
 # load data
-# metadata <- read.csv(metadata_path, row.names = 1, header= TRUE)
 metadata <- data.frame(fread(file.path(metadata_path), header=TRUE), row.names=1)
 metadata <- as_tibble(metadata)
 
@@ -28,8 +24,8 @@ metadata_type_stats <- inspect_types(metadata)
 tmp_plot <- show_plot(metadata_type_stats)
 
 # plots specs
-width <- 10
-height <- 10
+width <- 5
+height <- 5
 
 # save plot
 ggsave_new(filename="types", 
@@ -48,6 +44,7 @@ tmp_plot <- metadata_cat_stats %>% show_plot(label_thresh=0.01)
 
 # plots specs
 height <- nrow(metadata_cat_stats)*0.5
+width <- 10
 
 # save plot
 ggsave_new(filename="categorical", 
@@ -78,20 +75,12 @@ ggsave_new(filename="numerical",
 
 
 ### save all statistics as CSV files
-# make result directory if not exist
-result_dir <- file.path(dirname(metadata_path), 'stats')
-
-if (!dir.exists(result_dir)){
-    dir.create(result_dir, recursive = TRUE)
-}
+dir.create(stats_dir, recursive = TRUE)
 
 for (cat in names(metadata_cat_stats$levels)){
-#     write.csv(metadata_cat_stats$levels[[cat]], file=file.path(result_dir, paste0(step,"_metadata_",cat,".csv")), row.names=FALSE)
-    fwrite(as.data.frame(metadata_cat_stats$levels[[cat]]), file=file.path(result_dir, paste0("metadata_",cat,".csv")), row.names=FALSE)
+#     write.csv(metadata_cat_stats$levels[[cat]], file=file.path(stats_dir, paste0(step,"_metadata_",cat,".csv")), row.names=FALSE)
+    fwrite(as.data.frame(metadata_cat_stats$levels[[cat]]), file=file.path(stats_dir, paste0("metadata_",cat,".csv")), row.names=FALSE)
 }
 
-# write.csv(metadata_num_stats[,-ncol(metadata_num_stats)], file=file.path(result_dir, paste0(step,"_metadata_","numerical",".csv")), row.names=FALSE)
-fwrite(as.data.frame(metadata_num_stats[,-ncol(metadata_num_stats)]), file=file.path(result_dir, "metadata_numerical.csv"), row.names=FALSE)
-
-# library(openxlsx)
-# write.xlsx(metadata_cat_stats$levels, file = file.path(result_dir, paste0(step,"_metadata_stats",".xlsx")))
+# write.csv(metadata_num_stats[,-ncol(metadata_num_stats)], file=file.path(stats_dir, paste0(step,"_metadata_","numerical",".csv")), row.names=FALSE)
+fwrite(as.data.frame(metadata_num_stats[,-ncol(metadata_num_stats)]), file=file.path(stats_dir, "metadata_numerical.csv"), row.names=FALSE)

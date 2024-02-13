@@ -3,7 +3,7 @@ rule metadata_plots:
     input:
         metadata = os.path.join(result_path,'{split}','{step}','metadata.csv'),
     output:
-        metadata_plots = report(directory(os.path.join(result_path,'{{split}}','{{step}}','plots','metadata')),
+        metadata_plots = report(directory(os.path.join(result_path,'{split}','{step}','plots','metadata')),
                                 patterns=["{datatype}.png"],
                                 caption="../report/metadata_vis.rst", 
                                 category="{}_scrnaseq_processing_seurat".format(config["project_name"]), 
@@ -15,6 +15,7 @@ rule metadata_plots:
                                 "list": "Metadata",
                                 "feature": "",
                                 }),
+        metadata_stats = directory(os.path.join(result_path,'{split}','{step}','stats')),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 1)
