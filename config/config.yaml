@@ -67,6 +67,13 @@ split_by:
 # example: "pass_QC == 'True'"
 filter_expression: "mitoPercent <= 20"
 
+##### PSEUDOBULK #####
+# configure pseudobulking by metadata columns and aggregation method
+# leave method empty "" to skip
+pseudobulk:
+    by: ['patient', 'cellType', 'treatment'] # have to be metadata columns
+    method: "sum" # options: "sum", "mean", or "median"
+
 ##### NORMALIZATION #####
 # using SCTransform defaults https://satijalab.org/seurat/reference/sctransform
 

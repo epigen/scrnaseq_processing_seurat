@@ -6,7 +6,7 @@ rule prepare:
         sample_object = os.path.join(result_path,'batch_{sample}','PREP','object.rds'),
         metadata = report(os.path.join(result_path,'batch_{sample}','PREP','metadata.csv'), 
                           caption="../report/metadata_sample.rst", 
-                          category="{}_scrnaseq_processing_seurat".format(config["project_name"]), 
+                          category="{}_{}".format(config["project_name"], module_name),
                           subcategory="{sample}",
                           labels={
                               "step": "PREP",
@@ -45,7 +45,7 @@ rule merge:
         merged_object = os.path.join(result_path,'merged','RAW','object.rds'),
         metadata = report(os.path.join(result_path,'merged','RAW','metadata.csv'), 
                           caption="../report/metadata_merged.rst", 
-                          category="{}_scrnaseq_processing_seurat".format(config["project_name"]), 
+                          category="{}_{}".format(config["project_name"], module_name),
                           subcategory="merged",
                           labels={
                               "step": "RAW",
@@ -80,7 +80,7 @@ rule split:
         split_object = os.path.join(result_path,'{split}','RAW','object.rds'),
         metadata = report(os.path.join(result_path,'{split}','RAW','metadata.csv'), 
                           caption="../report/metadata.rst", 
-                          category="{}_scrnaseq_processing_seurat".format(config["project_name"]), 
+                          category="{}_{}".format(config["project_name"], module_name),
                           subcategory="{split}",
                           labels={
                               "step": "RAW",
@@ -115,7 +115,7 @@ rule filter_cells:
         filtered_object = os.path.join(result_path,'{split}','FILTERED','object.rds'),
         metadata = report(os.path.join(result_path,'{split}','FILTERED','metadata.csv'), 
                           caption="../report/metadata.rst", 
-                          category="{}_scrnaseq_processing_seurat".format(config["project_name"]), 
+                          category="{}_{}".format(config["project_name"], module_name),
                           subcategory="{split}",
                           labels={
                               "step": "FILTERED",
@@ -140,8 +140,36 @@ rule filter_cells:
         custom_flag = config["modality_flags"]['Custom'],
     script:
         "../scripts/filter.R"
-        
-        
+
+# pseudobulk cells into samples
+rule pseudobulk:
+    input:
+        filtered_object = os.path.join(result_path,'{split}','FILTERED','object.rds'),
+    output:
+        pseudobulk_counts = os.path.join(result_path,'{split}','PSEUDOBULK','RNA.csv'),
+        metadata = report(os.path.join(result_path,'{split}','PSEUDOBULK','metadata.csv'), 
+                          caption="../report/metadata.rst", 
+                          category="{}_{}".format(config["project_name"], module_name),
+                          subcategory="{split}",
+                          labels={
+                              "step": "PSEUDOBULK",
+                              "type": "CSV",
+                              "category": "All",
+                              "list": "Metadata",
+                              "feature": "",
+                                }),
+    resources:
+        mem_mb=config.get("mem", "16000"),
+    threads: config.get("threads", 1)
+    conda:
+        "../envs/seurat.yaml"
+    log:
+        os.path.join("logs","rules","pseudobulk_{split}.log"),
+    params:
+        partition=config.get("partition"),
+    script:
+        "../scripts/pseudobulk.R"
+
 # save counts as CSV of seurat object
 rule save_counts:
     input:

@@ -6,3 +6,4 @@ dependencies:
   - r-seurat=4.0.6
   - bioconductor-glmgampoi=1.6.0
   - r-data.table=1.14.2
+  - r-dplyr=1.1.2

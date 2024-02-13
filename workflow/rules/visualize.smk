@@ -6,7 +6,7 @@ rule metadata_plots:
         metadata_plots = report(directory(os.path.join(result_path,'{split}','{step}','plots','metadata')),
                                 patterns=["{datatype}.png"],
                                 caption="../report/metadata_vis.rst", 
-                                category="{}_scrnaseq_processing_seurat".format(config["project_name"]), 
+                                category="{}_{}".format(config["project_name"], module_name), 
                                 subcategory="{split}",
                                 labels={
                                 "step": "{step}",
@@ -37,7 +37,7 @@ rule seurat_plots:
             directory(os.path.join(result_path,'{split}','{step}','plots','{plot_type}','{category}','{feature_list}')),
             patterns=["{feature}.png"],
             caption="../report/seurat_plot.rst",
-            category="{}_scrnaseq_processing_seurat".format(config["project_name"]),
+            category="{}_{}".format(config["project_name"], module_name),
             subcategory="{split}",
             labels={
                 "step": "{step}",

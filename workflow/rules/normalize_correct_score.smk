@@ -7,7 +7,7 @@ rule normalize:
         norm_object = os.path.join(result_path,'{split}','NORMALIZED','object.rds'),
         metadata = report(os.path.join(result_path,'{split}','NORMALIZED','metadata.csv'), 
                           caption="../report/metadata.rst", 
-                          category="{}_scrnaseq_processing_seurat".format(config["project_name"]), 
+                          category="{}_{}".format(config["project_name"], module_name),
                           subcategory="{split}",
                           labels={
                               "step": "NORMALIZED",
@@ -48,7 +48,7 @@ rule correct:
         norm_object = os.path.join(result_path,'{split}','CORRECTED','object.rds'),
         metadata = report(os.path.join(result_path,'{split}','CORRECTED','metadata.csv'), 
                           caption="../report/metadata.rst", 
-                          category="{}_scrnaseq_processing_seurat".format(config["project_name"]), 
+                          category="{}_{}".format(config["project_name"], module_name),
                           subcategory="{split}",
                           labels={
                               "step": "CORRECTED",
