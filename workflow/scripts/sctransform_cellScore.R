@@ -1,6 +1,7 @@
 
 #### load libraries & utility function 
 library("Seurat")
+library("sctransform")
 
 # source utility functions
 # source("workflow/scripts/utils.R")
@@ -55,7 +56,8 @@ norm_object <- SCTransform(filtered_object,
                            variable.features.n=NULL,
                            return.only.var.genes=FALSE,
                            min_cells = min_cells_per_gene,
-                           seed.use = 42
+                           seed.use = 42,
+                           vst.flavor = "v2"
                           )
 
 # normalize AB data (margin=2 -> normalization across cells)
@@ -108,9 +110,9 @@ for (gene_list_name in names(gene_lists)){
 # higlhy variable genes (HVG)
 if(length(confounders)==0){
     # get higlhy variable genes (HVG)
-    HVG_df <- HVFInfo(object = norm_object, assay = "SCT")
+    HVG_df <- HVFInfo(object = norm_object[["SCT"]], selection.method = "sct")
     # save highly variable genes
-    write(rownames(HVG_df), file.path(dirname(file.path(norm_object_path)),"highly_variable_genes.txt"))
+    write(rownames(HVG_df)[order(-HVG_df$residual_variance)], file.path(dirname(file.path(norm_object_path)),"highly_variable_genes.txt"))
     fwrite(as.data.frame(HVG_df), file=file.path(dirname(file.path(norm_object_path)),"highly_variable_genes.csv"), row.names=TRUE)
 }
 

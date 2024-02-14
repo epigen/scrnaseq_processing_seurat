@@ -92,7 +92,7 @@ if (step=="CORRECTED"){
     slot <- "scale.data"
     
     if (feature_list=="HVG"){
-        HVG_df <- HVFInfo(object = data_object, assay = "SCT")
+        HVG_df <- HVFInfo(object = data_object[["SCT"]], selection.method = "sct")
         features <- rownames(HVG_df[order(-HVG_df$residual_variance),])[1:100]
     }else{
         # load plotting gene list
