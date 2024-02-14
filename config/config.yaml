@@ -68,11 +68,12 @@ split_by:
 filter_expression: "mitoPercent <= 20"
 
 ##### PSEUDOBULK #####
-# configure pseudobulking by metadata columns and aggregation method
+# configure pseudobulking by metadata columns, aggregation method and cell count threshold
 # leave method empty "" to skip
 pseudobulk:
     by: ['patient', 'cellType', 'treatment'] # have to be metadata columns
     method: "sum" # options: "sum", "mean", or "median"
+    cell_count_th: 20 # pseudomqbulked samples with less cells than cell_count_th are removed
 
 ##### NORMALIZATION #####
 # using SCTransform defaults https://satijalab.org/seurat/reference/sctransform

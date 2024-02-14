@@ -158,6 +158,17 @@ rule pseudobulk:
                               "list": "Metadata",
                               "feature": "",
                                 }),
+        cell_count_plot = report(os.path.join(result_path,'{split}','PSEUDOBULK','cell_count_histogram_density.png'), 
+                          caption="../report/pseudobulk_cell_count.rst", 
+                          category="{}_{}".format(config["project_name"], module_name),
+                          subcategory="{split}",
+                          labels={
+                              "step": "PSEUDOBULK",
+                              "type": "Histogram",
+                              "category": "All",
+                              "list": "Cell count",
+                              "feature": "",
+                                }),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 1)

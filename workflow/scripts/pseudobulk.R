@@ -1,18 +1,26 @@
 
 #### load libraries & utility function 
 library("Seurat")
-library("data.table")
+# library("data.table")
+library("ggplot2")
 library("dplyr")
 
 # source utility functions
 # source("workflow/scripts/utils.R")
-# snakemake@source("./utils.R")
+snakemake@source("./utils.R")
+
+# helper function to check if all values in a group are the same
+all_equal <- function(x) {
+  if(length(unique(x)) == 1) unique(x) else NA
+}
 
 # inputs
 filtered_object_path <- snakemake@input[["filtered_object"]]
 
 # outputs
 pseudobulk_counts_path <- snakemake@output[["pseudobulk_counts"]]
+metadata_path <- snakemake@output[["metadata"]]
+cell_count_plot_path <- snakemake@output[["cell_count_plot"]]
 
 # parameters
 ab_flag <- snakemake@config[["modality_flags"]][['Antibody_Capture']]
@@ -21,6 +29,7 @@ custom_flag <- snakemake@config[["modality_flags"]][['Custom']]
 
 pseudobulk_by <- snakemake@config[["pseudobulk"]][["by"]]
 pseudobulk_method <- match.fun(snakemake@config[["pseudobulk"]][["method"]]) # can be "sum", "mean", or "median"
+pseudobulk_th <- snakemake@config[["pseudobulk"]][["cell_count_th"]]
 
 ### load filtered data
 seurat_object <- readRDS(file = file.path(filtered_object_path))
@@ -28,6 +37,19 @@ seurat_object <- readRDS(file = file.path(filtered_object_path))
 # get metadata
 metadata <- as.data.frame(seurat_object[[]])
 metadata$ID <- rownames(metadata)
+
+# generate aggregated metadata sheet
+metadata_aggregated <- metadata %>%
+  group_by(across(all_of(pseudobulk_by))) %>%
+  summarise(across(everything(), all_equal), cell_count = n(), .groups = "drop") %>% # retain all columns that have the same value within a group
+  select(-where(~ any(is.na(.)))) # Remove columns that have NAs
+# format metadata
+metadata_aggregated <- as.data.frame(metadata_aggregated)
+rownames(metadata_aggregated) <- apply(metadata_aggregated[, pseudobulk_by], 1, function(x) paste(x, collapse = "_"))
+# filter by cell_count_th
+metadata_aggregated <- metadata_aggregated[metadata_aggregated$cell_count>=pseudobulk_th, ]
+# save metadata
+fwrite(as.data.frame(metadata_aggregated), file=file.path(metadata_path), row.names=TRUE)
 
 # pseudobulk per modality (RNA, ...)
 for (modality in c("RNA", ab_flag, crispr_flag, custom_flag)){
@@ -54,17 +76,27 @@ for (modality in c("RNA", ab_flag, crispr_flag, custom_flag)){
     tmp_pseudobulk[,pseudobulk_by] <- NULL
     tmp_pseudobulk <- as.data.frame(t(tmp_pseudobulk))
 
+    # filter by cell_count_th
+    tmp_pseudobulk <- tmp_pseudobulk[,rownames(metadata_aggregated)]
+
     # save pseudobulked data frame
     fwrite(as.data.frame(tmp_pseudobulk), file=file.path(dirname(pseudobulk_counts_path),paste0(modality,".csv")), row.names=TRUE)
 }
 
-
-# generate aggregated metadata sheet
-metadata_aggregated <- metadata %>%
-  group_by(across(all_of(pseudobulk_by))) %>%
-  summarise(cell_count = n(), .groups = "drop")
-# format metadata
-metadata_aggregated <- as.data.frame(metadata_aggregated)
-rownames(metadata_aggregated) <- apply(metadata_aggregated[, pseudobulk_by], 1, function(x) paste(x, collapse = "_"))
-# save metadata
-fwrite(as.data.frame(metadata_aggregated), file=file.path(dirname(pseudobulk_counts_path),"metadata.csv"), row.names=TRUE)
+# visualize pseudobulk cell counts    
+cell_count_plot <- ggplot(metadata_aggregated, aes(x = cell_count)) +
+                                      geom_histogram(aes(y = after_stat(density)), binwidth = 1, fill = "blue", color = NA, alpha = 0.5) +
+                                      geom_density(color = "red") +
+                                      theme_minimal() +
+                                      labs(title = "Histogram and Density Plot of Pseudobulk Cell Counts", x = "Cell counts", y = "Density/Frequency")+
+  theme(plot.title = element_text(size = 10), # Reduce title font size
+        axis.title = element_text(size = 10), # Reduce axis titles font size
+        axis.text = element_text(size = 10)) # Reduce axis text font size
+                                      
+# save plot
+ggsave_new(filename=sub("\\.[[:alnum:]]+$", "", basename(cell_count_plot_path)),
+           results_path=dirname(cell_count_plot_path), 
+           plot=cell_count_plot, 
+           width=4, 
+           height=4
+          )
