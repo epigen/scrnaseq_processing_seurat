@@ -17,7 +17,8 @@ rule normalize:
                               "feature": "",
                                 }),
     resources:
-        mem_mb=config.get("mem", "16000"),
+#         mem_mb=config.get("mem", "16000"),
+        mem_mb = lambda wc, attempt: attempt*int(config.get("mem", "16000")),
     threads: config.get("threads", 1)
     conda:
         "../envs/seurat.yaml"
@@ -58,7 +59,8 @@ rule correct:
                               "feature": "",
                           }),
     resources:
-        mem_mb=config.get("mem", "16000"),
+        #         mem_mb=config.get("mem", "16000"),
+        mem_mb = lambda wc, attempt: attempt*int(config.get("mem", "16000")),
     threads: config.get("threads", 1)
     conda:
         "../envs/seurat.yaml"
