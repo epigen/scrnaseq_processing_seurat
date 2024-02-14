@@ -25,14 +25,6 @@ rule prepare:
     params:
         partition=config.get("partition"),
         metadata = lambda w: "" if pd.isna(annot.loc["{}".format(w.sample),'metadata']) else annot.loc["{}".format(w.sample),'metadata'],
-        sample = lambda w: "{}".format(w.sample),
-        ab_flag = config["modality_flags"]['Antibody_Capture'],
-        crispr_flag = config["modality_flags"]['CRISPR_Guide_Capture'],
-        custom_flag = config["modality_flags"]['Custom'],
-        crispr_umi_threshold = config["crispr_umi_threshold"],
-        grna_regex = config["grna_regex"],
-        percentage_regex = config["percentage_regex"],
-        metadata_eval = config["metadata_eval"],
     script:
         "../scripts/prepare.R"
 
