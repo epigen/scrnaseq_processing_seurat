@@ -1,11 +1,11 @@
 
-# process output of: https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/feature-bc-analysis, will be loaded with Seurat::Read10X
+# processed output of: https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/feature-bc-analysis, will be loaded with Seurat::Read10X
 
 # alwayse use absolute paths
 
 ##### RESOURCES #####
 mem: '32000'
-threads: 2
+threads: 1
 partition: 'shortq'
 
 ##### GENERAL #####
@@ -61,7 +61,6 @@ extra_metadata: ""
 split_by:
     batch: ['sampleA','sampleB']
 
-
 ##### FILTER #####
 # logical expression for filtering, all variables need to be in metadata (leave empty "" if not applicable)
 # example: "pass_QC == 'True'"
@@ -73,7 +72,7 @@ filter_expression: "mitoPercent <= 20"
 pseudobulk:
     by: ['patient', 'cellType', 'treatment'] # have to be metadata columns
     method: "sum" # options: "sum", "mean", or "median"
-    cell_count_th: 20 # pseudomqbulked samples with less cells than cell_count_th are removed
+    cell_count_th: 20 # pseudobulked samples with less cells than cell_count_th are removed
 
 ##### NORMALIZATION #####
 # using SCTransform defaults https://satijalab.org/seurat/reference/sctransform

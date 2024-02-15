@@ -109,7 +109,7 @@ if (step=="CORRECTED"){
         features <- snakemake@config[["vis_features"]][[feature_list]]
     }else{
         if (feature_list=="HVG"){
-            HVG_df <- HVFInfo(object = data_object, assay = "SCT")
+            HVG_df <- HVFInfo(object = data_object[["SCT"]], selection.method = "sct")
             features <- rownames(HVG_df[order(-HVG_df$residual_variance),])[1:100]
         }else{
             # load plotting gene list
@@ -153,6 +153,15 @@ if(plot_type=="Heatmap" & feature_list=="Metadata"){
 if (plot_type=="Heatmap"){
     # Heatmap specs
     height <- max(5, height_row*length(features) + 1)
+    
+    ### downsample for efficient hierarchical clustering and plotting of the same number of cells per group (ident)
+    if (ncol(data_object)>30000){
+        # captures count of cells for the ident with the fewest (but at least 100)
+        maxcells  <- min(100,table(Idents(data_object)))
+        # downsample
+        set.seed(42)
+        data_object <- subset(data_object, downsample = maxcells)
+    }
     
     # cluster features (rows) using hclust
     tmp_data <- as.data.frame(GetAssayData(object = data_object, slot = slot, assay = assay))
