@@ -61,13 +61,14 @@ Idents(object = data_object) <- factor(x = Idents(data_object), levels = sort(le
 
 # check if categorical metadata is all NA (can happen on data subset that does not contain the visualization category)
 if(all(is.na(levels(data_object))) | ((plot_type=="DotPlot" | plot_type=="Heatmap")&(any(is.na(Idents(object = data_object)))))){
-    ggsave_new(filename=paste0(cat,"_is_NA"),
+    ggsave_new(filename=paste0(category,"_is_NA"),
                results_path=result_dir, 
                plot=ggplot() + theme_void(), 
-               width=width, 
-               height=height
+               width=1, 
+               height=1
               )
-    return()   
+    print("Metadata is all NA.")
+    quit(save = "no", status = 0)
 }
 
 # handle empy levels in DotPlots and Heatmaps
@@ -126,7 +127,8 @@ if (step=="CORRECTED"){
 print(feature_list)
 # extract all features from the object
 if(feature_list=="Metadata"){
-    data_features <- colnames(data_object[[]])
+    # select only numeric columns
+    data_features <- colnames(data_object[[]])[sapply(data_object[[]], is.numeric)]
 }else{
     data_features <- rownames(GetAssayData(data_object, slot = slot, assay = assay))
 }
@@ -145,13 +147,22 @@ features <- sort(features)
 
 # check if there are any features to plot
 if(length(features)==0){
-    return ()
+    ggsave_new(filename=paste0(category,"_no_features"),
+               results_path=result_dir, 
+               plot=ggplot() + theme_void(), 
+               width=1, 
+               height=1
+              )
+    print("No features provided or present in the data.")
+    quit(save = "no", status = 0)
 }
 
 # workaround for Metadata Heatmap from here: https://github.com/satijalab/seurat/issues/3366
 if(plot_type=="Heatmap" & feature_list=="Metadata"){
     data_object[['metadata']] <- CreateAssayObject(data = t(x = FetchData(object = data_object, vars = features)))
     assay <- 'metadata'
+    # reformat feature names due to R: “Feature names cannot have underscores ('_'), replacing with dashes ('-')”
+    features <- gsub("_", "-", features)
 }
 
 # make and save Seurat plots
@@ -173,7 +184,7 @@ if (plot_type=="Heatmap"){
     # subset by features
     tmp_data <- tmp_data[features,]
     # cluster using hclust
-    hc <- hclust(dist(tmp_data)) 
+    hc <- hclust(dist(tmp_data))
     
     # make Heatmap
     tmp_plot <- DoHeatmap(object = data_object,
@@ -196,7 +207,8 @@ if (plot_type=="Heatmap"){
                                   group.bar.height = 0.02,
                                   combine = TRUE
                                 ) + guides(colour="none") + 
-    scale_fill_gradientn(colors = c("royalblue4", "white", "firebrick2"), na.value = "white")
+    scale_fill_gradient2(low = "royalblue4", mid = "white", high = "firebrick2", midpoint = 0, space ="Lab")
+#     scale_fill_gradientn(colors = c("royalblue4", "white", "firebrick2"), na.value = "white")
 
     # save plot
     ggsave_new(filename=feature_list,
