@@ -73,7 +73,7 @@ if(all(is.na(levels(data_object))) | ((plot_type=="DotPlot" | plot_type=="Heatma
 # handle empy levels in DotPlots and Heatmaps
 if ((plot_type=="DotPlot"  | plot_type=="Heatmap")&(any(levels(data_object)==""))){
     cells.use <- WhichCells(data_object, idents = '')
-    data_object <- SetIdent(data_object, cells = cells.use, value = 'Unknown')
+    data_object <- SetIdent(data_object, cells = cells.use, value = 'unknown')
 }
 
 # dynamic plot specs
@@ -142,6 +142,11 @@ if (length(features)==1){
 features <- intersect(features, data_features)
 # sort features
 features <- sort(features)
+
+# check if there are any features to plot
+if(length(features)==0){
+    return ()
+}
 
 # workaround for Metadata Heatmap from here: https://github.com/satijalab/seurat/issues/3366
 if(plot_type=="Heatmap" & feature_list=="Metadata"){

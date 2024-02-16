@@ -52,4 +52,6 @@ resources
 results
 data
 
+*.mtx
+
 snakejob_conductor.sh

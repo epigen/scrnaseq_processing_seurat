@@ -6,26 +6,26 @@
 ##### RESOURCES #####
 mem: '32000'
 threads: 1
-partition: 'shortq'
+partition: 'tinyq'
 
 ##### GENERAL #####
-sample_annotation: /research/lab_bock/projects/macroIC/metadata/AKsmall_metadata.csv
-result_path: /nobackup/lab_bock/projects/macroIC/results/AKsmall/
-project_name: AKsmall
+sample_annotation: test/config/Lee2020NatGenet/Lee2020NatGenet_scrnaseq_processing_seurat_annotation.csv
+result_path: test/results/Lee2020NatGenet/
+project_name: Lee2020NatGenet
 
 # flag if counts after each processing steps (of all modalities) should be saved as CSV, which is time and storage intense options are: RAW, FILTERED, NORMALIZED, CORRECTED, if no count matrices are desired leave empty []
-save_counts: ['RAW', 'FILTERED', 'NORMALIZED', 'CORRECTED']
+save_counts: ['RAW', 'FILTERED', 'NORMALIZED']
     
 # stop flag, options are: RAW, FILTERED, NORMALIZED, CORRECTED (-> only if variables_to_regress is provided!)
-stop_after: 'CORRECTED'
+stop_after: 'NORMALIZED'
 
 ##### PREPARE #####
 
 # names for the Seurat Assays mapped to 10X genomics features (leave empty "" if not applicable)
 modality_flags:
-    Antibody_Capture: "AB"
-    CRISPR_Guide_Capture: "gRNA"
-    Custom: "HTO"
+    Antibody_Capture: ""
+    CRISPR_Guide_Capture: ""
+    Custom: ""
 
 # CRISPR UMI background treshold for gRNA assignment (gRNA counts <= crispr_umi_threshold will be set 0)
 crispr_umi_threshold: 1
@@ -35,42 +35,42 @@ grna_regex: "\\-."
 
 # REGEX-based metadata extension used with Seurat::PercentageFeatureSet
 # every entry is a new metadata column (use Camel case eg mitoPercent, no underlines '_')
-# https://satijalab.org/seurat/reference/percentagefeatureset
-# example: riboPercent: "^RP[SL][[:digit:]]|^RPLP[[:digit:]]|^RPSA"
+# https://satijalab.org/seurat/reference/percentagefeatureset  
 percentage_regex:
     mitoPercent: "^MT-"
+    riboPercent: "^RP[SL][[:digit:]]|^RPLP[[:digit:]]|^RPSA"
 
 # eval based metadata column transformations -> eval(parse(text=" ")) -> escape \\ has to be \\\\
 # every entry is a new metadata column (use Camel case eg mitoPercent, no underlines '_')
 # metadata dataframe is called "metadata"
-# example: condKO: "paste0(metadata$condition,'+', metadata$KOcall)"
+# example: condition: "gsub('HTO-THP1_._','',metadata$hto_demux)"
 metadata_eval:
-    patient: "gsub('HTO-THP1_._','',metadata$hto_demux)"
-    
+    patient: "metadata$sample"
 
 ##### MERGE #####
 # specify additional metadata file path (CSV) with rows as cells/barcodes (as first column) and columns as metadata. eg clustering results emerged from downstream analyses
 # (leave empty "" if not applicable) this will trigger a rerun starting from the merge step to include the new metadata downstream (only if the metadata file is newer than the previous results)
-extra_metadata: ""
+extra_metadata: "test/data/Lee2020NatGenet/Lee2020NatGenet_clinical_metadata.csv"
+
 
 ##### SPLIT #####
 # needs to be categorical variable in metadata
 # data subsets are only generated for the indicated groups, because we are not always interested in all possible subsets eg negatives/doublets
 # 'batch' denotes samples (ie sample_names from sample_annotation)
-# example: replicate: ['A','B'] OR condition: ['untreated','treated']
 split_by:
-    batch: ['sampleA','sampleB']
+    batch: []
+    cell_type: ['T_cell']
 
 ##### FILTER #####
 # logical expression for filtering, all variables need to be in metadata (leave empty "" if not applicable)
 # example: "pass_QC == 'True'"
-filter_expression: "mitoPercent <= 20"
+filter_expression: ""
 
 ##### PSEUDOBULK #####
 # configure pseudobulking by metadata columns, aggregation method and cell count threshold
 # leave method empty "" to skip
 pseudobulk:
-    by: ['patient', 'cellType', 'treatment'] # have to be metadata columns
+    by: ['patient', 'cell_type'] # have to be metadata columns
     method: "sum" # options: "sum", "mean", or "median"
     cell_count_th: 20 # pseudobulked samples with less cells than cell_count_th are removed
 
@@ -92,16 +92,25 @@ cell_cycle:
     g2m_phase_genes: 'tirosh2015'
 
 # provide paths to gene lists in plain .txt to perform scoring using https://satijalab.org/seurat/reference/addmodulescore
-# names have to be in CamelCase e.g., TcellMarkers and not T_cell_markers
 module_gene_lists:
-    Cytokines: ""
+    Epithelial: "test/data/gene_lists/Epithelial.txt"
+    Tcell: "test/data/gene_lists/Tcell.txt"
+    Macrophage: "test/data/gene_lists/Macrophage.txt"
+    Malignant: "test/data/gene_lists/Malignant.txt"
+    Mast: "test/data/gene_lists/Mast.txt"
+    Fibroblast: "test/data/gene_lists/Fibroblast.txt"
+    Bcell: "test/data/gene_lists/Bcell.txt"
+    Endothelial: "test/data/gene_lists/Endothelial.txt"
+    CMS1: "test/data/gene_lists/CMS1.txt"
+    CMS2: "test/data/gene_lists/CMS2.txt"
+    CMS3: "test/data/gene_lists/CMS3.txt"
+    CMS4: "test/data/gene_lists/CMS4.txt"
 
 
 ##### CORRECTION #####
 # performed on filtered raw data (includes normalization) and stores the corrected data in assay="SCT", slot="scale.data" of the Seurat object
 
 # need to be variables in metadata post cell scoring (ie normalization step)
-# example: ["mitoPercent"]
 variables_to_regress: []
 
 ##### VISUALIZATION #####
@@ -111,16 +120,27 @@ variables_to_regress: []
 # heatmaps: always use data from slot="scale.data"
 
 # categorical metadata variables to group cells in plots eg condition
-vis_categories: ['batch']
+vis_categories: ['cell_type','patient','nearestCMS', 'anatomicRegion']
 
 # provide paths to gene lists in plain .txt to plot expression individually (Ridge plots, Violin plots) and grouped (eg Heatmap, Dot plots)
-# names have to be in CamelCase e.g., TcellMarkers and not T_cell_markers
 vis_gene_lists:
-    Cytokines: ""
+    CellTypeMarkers: "test/data/gene_lists/CellTypeMarkers.txt"
+    Epithelial: "test/data/gene_lists/Epithelial.txt"
+    Tcell: "test/data/gene_lists/Tcell.txt"
+    Macrophage: "test/data/gene_lists/Macrophage.txt"
+    Malignant: "test/data/gene_lists/Malignant.txt"
+    Mast: "test/data/gene_lists/Mast.txt"
+    Fibroblast: "test/data/gene_lists/Fibroblast.txt"
+    Bcell: "test/data/gene_lists/Bcell.txt"
+    Endothelial: "test/data/gene_lists/Endothelial.txt"
+    CMS1: "test/data/gene_lists/CMS1.txt"
+    CMS2: "test/data/gene_lists/CMS2.txt"
+    CMS3: "test/data/gene_lists/CMS3.txt"
+    CMS4: "test/data/gene_lists/CMS4.txt"
 
 # features per modality (if not applicable, leave empty []), which expression should be plotted, ['all'] plots every feature
 vis_features:
-    Antibody_Capture: ['all']
-    CRISPR_Guide_Capture: ['all']
-    Custom: ['all']
+    Antibody_Capture: []
+    CRISPR_Guide_Capture: []
+    Custom: []
     Metadata: ['all']

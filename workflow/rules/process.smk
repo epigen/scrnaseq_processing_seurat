@@ -32,7 +32,6 @@ rule prepare:
 rule merge:
     input:
         expand(os.path.join(result_path,'batch_{sample}','PREP','object.rds'), sample=annot.index.tolist()),
-        config["extra_metadata"] if config["extra_metadata"]!="" else [],
     output:
         merged_object = os.path.join(result_path,'merged','RAW','object.rds'),
         metadata = report(os.path.join(result_path,'merged','RAW','metadata.csv'), 
@@ -56,12 +55,6 @@ rule merge:
         os.path.join("logs","rules","merge.log"),
     params:
         partition=config.get("partition"),
-        step = "RAW",
-        project_name = config["project_name"],
-        ab_flag = config["modality_flags"]['Antibody_Capture'],
-        crispr_flag = config["modality_flags"]['CRISPR_Guide_Capture'],
-        custom_flag = config["modality_flags"]['Custom'],
-        extra_metadata = config["extra_metadata"],
     script:
         "../scripts/merge.R"
 
@@ -91,12 +84,6 @@ rule split:
         os.path.join("logs","rules","split_{split}.log"),
     params:
         partition=config.get("partition"),
-        step = "RAW",
-        result_dir = lambda w, input: os.path.splitext(input[0])[0],
-        split = lambda w: "{}".format(w.split),
-        ab_flag = config["modality_flags"]['Antibody_Capture'],
-        crispr_flag = config["modality_flags"]['CRISPR_Guide_Capture'],
-        custom_flag = config["modality_flags"]['Custom'],
     script:
         "../scripts/split.R"
 

@@ -9,30 +9,20 @@ snakemake@source("./utils.R")
 
 # inputs
 sample_object_paths <- snakemake@input
+extra_metadata_path <- snakemake@config[["extra_metadata"]]
 
 # outputs
 merged_object <- snakemake@output[["merged_object"]]
 
 # parameters
-project_name <- snakemake@params[["project_name"]] #"test" 
+project_name <- snakemake@config[["project_name"]] #"test" 
 result_dir <- dirname(merged_object)
-extra_metadata_path <- snakemake@params[["extra_metadata"]]
-
-# remove last entry if extra metadata is provided
-if (extra_metadata_path != ""){
-    sample_object_paths <- sample_object_paths[-length(sample_object_paths)]
-}
 
 # 'flags' for modalities
-ab_flag <- snakemake@params[["ab_flag"]]#'AB'
-crispr_flag <- snakemake@params[["crispr_flag"]]#'gRNA'
-custom_flag <- snakemake@params[["custom_flag"]]#'HTO'
+ab_flag <- snakemake@config[["modality_flags"]][['Antibody_Capture']]
+crispr_flag <- snakemake@config[["modality_flags"]][['CRISPR_Guide_Capture']]
+custom_flag <- snakemake@config[["modality_flags"]][['Custom']]
 
-
-# make result directory if not exist
-if (!dir.exists(result_dir)){
-    dir.create(result_dir, recursive = TRUE)
-}
 
 ### load data
 sample_objects = c()
@@ -64,6 +54,9 @@ if (extra_metadata_path != ""){
         # check if categorical (heuristic: less than 50 unique values) and make factor
         if (length(unique(metadata_tmp[[col]]))<50){
             metadata_tmp[, col] <- as.factor(metadata_tmp[, col])
+            
+            # check if any entry is an empty string i.e., "" and replace with "unknown"
+            metadata_tmp[[col]][metadata_tmp[[col]] == ""] <- "unknown"
         }
         
         merged_data[[col]] <- metadata_tmp[colnames(merged_data), col]
@@ -71,6 +64,4 @@ if (extra_metadata_path != ""){
 }
 
 ### save merged data
-save_seurat_object(seurat_obj=merged_data,
-                   result_dir=result_dir
-                  )
+save_seurat_object(seurat_obj=merged_data,result_dir=dirname(merged_object))

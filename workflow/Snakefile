@@ -21,15 +21,17 @@ annot = pd.read_csv(config['sample_annotation'], index_col='sample_name')
 
 result_path = os.path.join(config["result_path"],'scrnaseq_processing_seurat')
 
-# gene list dictionary
+# gene list dictionary (filter empty strings)
 gene_list_dict = config["module_gene_lists"] | config["vis_gene_lists"]
+gene_list_dict = {key: value for key, value in gene_list_dict.items() if value != ""}
 
-
+# data split list
 data_splits = ['merged']
 if config["split_by"] is not None:
     for split in config["split_by"]:
-        data_splits.extend(["{}_{}".format(split, value) for value in config["split_by"][split]])
+        data_splits.extend(["{}__{}".format(split, value) for value in config["split_by"][split]])
 
+# processing steps
 all_steps = ['RAW','FILTERED','NORMALIZED','CORRECTED']
 
 if config["stop_after"]=="CORRECTED":
@@ -77,7 +79,7 @@ rule all:
                                        plot_type=['VlnPlot', 'RidgePlot', 'DotPlot', 'Heatmap'],
                                        category=config["vis_categories"],
                                        feature_list=vis_features_normalized,
-                      )) if (config["stop_after"]=="CORRECTED") else [],
+                      )) if (config["stop_after"]=="NORMALIZED") else [],
         corrected_plot_dirs = (expand(os.path.join(result_path,'{split}','{step}','plots','{plot_type}','{category}','{feature_list}'), 
                                       split=data_splits,
                                       step=["CORRECTED"],

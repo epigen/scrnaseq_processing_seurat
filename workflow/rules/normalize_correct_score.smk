@@ -26,14 +26,10 @@ rule normalize:
         os.path.join("logs","rules","filter_{split}.log"),
     params:
         partition=config.get("partition"),
-        step = "NORMALIZED",
         min_cells_per_gene = config["min_cells_per_gene"],
         confounders = [],
         module_gene_lists = config["module_gene_lists"],
         cell_cycle = config["cell_cycle"],
-        ab_flag = config["modality_flags"]['Antibody_Capture'],
-        crispr_flag = config["modality_flags"]['CRISPR_Guide_Capture'],
-        custom_flag = config["modality_flags"]['Custom'],
     script:
         "../scripts/sctransform_cellScore.R"
         
@@ -68,13 +64,9 @@ rule correct:
         os.path.join("logs","rules","correct_{split}.log"),
     params:
         partition=config.get("partition"),
-        step = "CORRECTED",
         min_cells_per_gene = config["min_cells_per_gene"],
         confounders = config["variables_to_regress"],
         module_gene_lists = config["module_gene_lists"],
         cell_cycle = config["cell_cycle"],
-        ab_flag = config["modality_flags"]['Antibody_Capture'],
-        crispr_flag = config["modality_flags"]['CRISPR_Guide_Capture'],
-        custom_flag = config["modality_flags"]['Custom'],
     script:
         "../scripts/sctransform_cellScore.R"

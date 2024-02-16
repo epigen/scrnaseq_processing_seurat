@@ -20,9 +20,10 @@ min_cells_per_gene <- snakemake@params[["min_cells_per_gene"]]
 module_gene_lists <- snakemake@params[["module_gene_lists"]]
 cell_cycle <- snakemake@params[["cell_cycle"]]
 
-ab_flag <- snakemake@params[["ab_flag"]]
-crispr_flag <- snakemake@params[["crispr_flag"]]
-custom_flag <- snakemake@params[["custom_flag"]]
+# 'flags' for modalities
+ab_flag <- snakemake@config[["modality_flags"]][['Antibody_Capture']]
+crispr_flag <- snakemake@config[["modality_flags"]][['CRISPR_Guide_Capture']]
+custom_flag <- snakemake@config[["modality_flags"]][['Custom']]
 
 
 ### load filtered data
@@ -40,9 +41,11 @@ if (cell_cycle['s_phase_genes']=="tirosh2015"){
 # load cell scoring gene list
 gene_lists <- list()
 for (gene_list_name in names(module_gene_lists)){
-    gene_lists[[gene_list_name]] <- scan(file.path(module_gene_lists[gene_list_name]), character())
+    tmp_genes <- scan(file.path(module_gene_lists[gene_list_name]), character())
+    if(length(tmp_genes)>0){
+        gene_lists[[gene_list_name]] <- tmp_genes
+    }
 }
-
 
 ### Normalization of all assays
 

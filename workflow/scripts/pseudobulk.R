@@ -63,7 +63,7 @@ for (modality in c("RNA", ab_flag, crispr_flag, custom_flag)){
     tmp_data$ID <- rownames(tmp_data)
 
     # join with metadata
-    tmp_data <- inner_join(tmp_data, metadata, by = "ID")
+    tmp_data <- inner_join(tmp_data, metadata[,c("ID",pseudobulk_by)], by = "ID")
 
     # pseudobulk by method
     tmp_pseudobulk <- tmp_data %>%
