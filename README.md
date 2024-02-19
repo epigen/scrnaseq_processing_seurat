@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/468752490.svg)](https://zenodo.org/doi/10.5281/zenodo.10679327)
+
 # Single-cell RNA sequencing (scRNA-seq) Data Processing & Visualization Snakemake Workflow
 
 sc/snRNA-seq Data Processing & Visualization Snakemake Workflow powered by Seurat
@@ -7,6 +9,8 @@ A [Snakemake](https://snakemake.readthedocs.io/en/stable/) workflow for processi
 This workflow adheres to the module specifications of [MR.PARETO](https://github.com/epigen/mr.pareto), an effort to augment research by modularizing (biomedical) data science. For more details, instructions and modules check out the project's repository. Please consider starring and sharing modules that are useful to you, this helps me in prioritizing my efforts!
 
 **If you use this workflow in a publication, don't forget to give credits to the authors by citing the URL of this (original) repository (and its DOI, see Zenodo badge above -> coming soon).**
+
+**If you use this workflow in a publication, please don't forget to give credits to the authors by citing it using this DOI [10.5281/zenodo.10679327](https://zenodo.org/doi/10.5281/zenodo.10679327).**
 
 ![Workflow Rulegraph](./workflow/dags/rulegraph.svg)
 
@@ -65,7 +69,7 @@ The outlined analyses were performed using the R package Seurat (ver) [ref] unle
 
 **Visualization.** To visualize the metadata after each processing step inspectdf (ver) [ref] was used. For the visualization of expression, multimodal [X] data and calculated metadata like module scores, the Seurat functions RidgePlot for ridge plots, VlnPlot for violin plots, DotPlot for dot plots and DoHeatmap for heatmaps were used.
 
-**The processing, analysis and visualizations described here were performed using a publicly available Snakemake [ver] (ref) workflow [ref - cite this workflow here].**
+**The processing, analysis and visualizations described here were performed using a publicly available Snakemake [ver] (ref) workflow [[10.5281/zenodo.10679327](https://zenodo.org/doi/10.5281/zenodo.10679327)].**
 
 
 # Features
@@ -186,7 +190,7 @@ Beyond this the workflow was tested on multimodal scCRISPR-seq data sets with >3
 # Links
 - [GitHub Repository](https://github.com/epigen/scrnaseq_processing_seurat/)
 - [GitHub Page](https://epigen.github.io/scrnaseq_processing_seurat/)
-- [Zenodo Repository (coming soon)]()
+- [Zenodo Repository](https://zenodo.org/doi/10.5281/zenodo.10679327)
 - [Snakemake Workflow Catalog Entry](https://snakemake.github.io/snakemake-workflow-catalog?usage=epigen/scrnaseq_processing_seurat)
 
 # Resources

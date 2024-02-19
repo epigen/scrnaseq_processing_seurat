@@ -1,0 +1,41 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  Single-cell RNA sequencing (scRNA-seq) Data Processing &
+  Visualization Workflow
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Stephan
+    family-names: Reichl
+    orcid: 'https://orcid.org/0000-0001-8555-7198'
+    affiliation: CeMM Research Center for Molecular Medicine
+  - given-names: Christoph
+    family-names: Bock
+    orcid: 'https://orcid.org/0000-0001-6091-3088'
+    affiliation: CeMM Research Center for Molecular Medicine
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.10679327
+    description: >-
+      This DOI represents all versions, and will always
+      resolve to the latest one.
+repository-code: 'https://github.com/epigen/scrnaseq_processing_seurat/'
+url: 'https://epigen.github.io/scrnaseq_processing_seurat/'
+abstract: >-
+  A Snakemake workflow for processing and visualizing
+  (multimodal) sc/snRNA-seq data generated with 10X Genomics
+  Kits or in the MTX matrix file format powered by the R
+  package Seurat.
+keywords:
+  - scRNA-seq
+  - Visualization
+  - Multimodal
+  - Bioinformatics
+  - Workflow
+  - Snakemake
+license: MIT
