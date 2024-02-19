@@ -153,6 +153,10 @@ We selected a scRNA-seq data set consisting of 15 CRC samples from [Lee et al (2
 - features (genes): 22276
 - total runtime on HPC w/ SLURM (32GB RAM): <24 minutes for 551 jobs in total
 
+A comparison of the cell type marker expression split by cell types visualized as a dot plot from the [data source/authors](https://www.weizmann.ac.il/sites/3CA/study-data/cell-types/20086) (left) and workflow output (right):
+![Cell Type Marker Dot plot](./test/data/Lee2020NatGenet/CellType_DotPlot.png)
+![Cell Type Marker Dot plot](./test/results/Lee2020NatGenet/scrnaseq_processing_seurat/merged/NORMALIZED/plots/DotPlot/cell_type/CellTypeMarkers/CellTypeMarkers.png)
+
 We provide metadata, annotation and configuration files for this data set in ./test. The UMI count martix has to be downloaded by following the instructions below.
 ```bash
 ### Download example CRC scRNA-seq data from Lee 2020 Nature Genetics
