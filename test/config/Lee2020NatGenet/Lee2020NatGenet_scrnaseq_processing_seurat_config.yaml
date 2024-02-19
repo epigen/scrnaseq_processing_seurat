@@ -1,8 +1,4 @@
 
-# processed output of: https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/feature-bc-analysis, will be loaded with Seurat::Read10X
-
-# alwayse use absolute paths
-
 ##### RESOURCES #####
 mem: '32000'
 threads: 1
@@ -57,6 +53,7 @@ extra_metadata: "test/data/Lee2020NatGenet/Lee2020NatGenet_clinical_metadata.csv
 # needs to be categorical variable in metadata
 # data subsets are only generated for the indicated groups, because we are not always interested in all possible subsets eg negatives/doublets
 # 'batch' denotes samples (ie sample_names from sample_annotation)
+# example: replicate: ['A','B'] OR condition: ['untreated','treated']
 split_by:
     batch: []
     cell_type: ['T_cell']

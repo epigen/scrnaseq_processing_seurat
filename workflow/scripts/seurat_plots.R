@@ -147,7 +147,7 @@ features <- sort(features)
 
 # check if there are any features to plot
 if(length(features)==0){
-    ggsave_new(filename=paste0(category,"_no_features"),
+    ggsave_new(filename=paste0(feature_list,"_NoFeatures"),
                results_path=result_dir, 
                plot=ggplot() + theme_void(), 
                width=1, 
@@ -200,14 +200,14 @@ if (plot_type=="Heatmap"){
                                   label = TRUE,
                                   size = 2,
                                   hjust = 0.5,
-                                  angle = 45,
+                                  angle = 0,
                                   raster = TRUE,
                                   draw.lines = TRUE,
-                                  lines.width = NULL,
+                                  lines.width = 20,
                                   group.bar.height = 0.02,
                                   combine = TRUE
                                 ) + guides(colour="none") + 
-    scale_fill_gradient2(low = "royalblue4", mid = "white", high = "firebrick2", midpoint = 0, space ="Lab")
+    scale_fill_gradient2(low = "royalblue4", mid = "white", high = "firebrick2", midpoint = 0, space ="Lab", na.value = "white")
 #     scale_fill_gradientn(colors = c("royalblue4", "white", "firebrick2"), na.value = "white")
 
     # save plot

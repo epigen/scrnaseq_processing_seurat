@@ -3,8 +3,8 @@ rule prepare:
     input:
         get_sample_paths,
     output:
-        sample_object = os.path.join(result_path,'batch_{sample}','PREP','object.rds'),
-        metadata = report(os.path.join(result_path,'batch_{sample}','PREP','metadata.csv'), 
+        sample_object = os.path.join(result_path,'batch__{sample}','PREP','object.rds'),
+        metadata = report(os.path.join(result_path,'batch__{sample}','PREP','metadata.csv'), 
                           caption="../report/metadata_sample.rst", 
                           category="{}_{}".format(config["project_name"], module_name),
                           subcategory="{sample}",
@@ -31,7 +31,7 @@ rule prepare:
 # merge into one dataset
 rule merge:
     input:
-        expand(os.path.join(result_path,'batch_{sample}','PREP','object.rds'), sample=annot.index.tolist()),
+        expand(os.path.join(result_path,'batch__{sample}','PREP','object.rds'), sample=annot.index.tolist()),
     output:
         merged_object = os.path.join(result_path,'merged','RAW','object.rds'),
         metadata = report(os.path.join(result_path,'merged','RAW','metadata.csv'), 
