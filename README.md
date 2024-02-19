@@ -8,8 +8,6 @@ A [Snakemake](https://snakemake.readthedocs.io/en/stable/) workflow for processi
 
 This workflow adheres to the module specifications of [MR.PARETO](https://github.com/epigen/mr.pareto), an effort to augment research by modularizing (biomedical) data science. For more details, instructions and modules check out the project's repository. Please consider starring and sharing modules that are useful to you, this helps me in prioritizing my efforts!
 
-**If you use this workflow in a publication, don't forget to give credits to the authors by citing the URL of this (original) repository (and its DOI, see Zenodo badge above -> coming soon).**
-
 **If you use this workflow in a publication, please don't forget to give credits to the authors by citing it using this DOI [10.5281/zenodo.10679327](https://zenodo.org/doi/10.5281/zenodo.10679327).**
 
 ![Workflow Rulegraph](./workflow/dags/rulegraph.svg)
