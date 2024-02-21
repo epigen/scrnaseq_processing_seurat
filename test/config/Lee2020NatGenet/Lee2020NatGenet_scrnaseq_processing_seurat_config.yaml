@@ -61,7 +61,7 @@ split_by:
 ##### FILTER #####
 # logical expression for filtering, all variables need to be in metadata (leave empty "" if not applicable)
 # example: "pass_QC == 'True'"
-filter_expression: ""
+filter_expression: "cell_type != '' & cell_type != 'Mast'"
 
 ##### PSEUDOBULK #####
 # configure pseudobulking by metadata columns, aggregation method and cell count threshold
