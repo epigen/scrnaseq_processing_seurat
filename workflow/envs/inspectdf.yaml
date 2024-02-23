@@ -2,5 +2,5 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - r-inspectdf=0.0.11
-  - r-data.table=1.14.8
+  - r-inspectdf=0.0.12
+  - r-data.table=1.14.10
