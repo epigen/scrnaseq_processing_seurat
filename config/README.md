@@ -12,3 +12,5 @@ You need one configuration file and one annotation file to run the complete work
             - barcodes.tsv containing the cell barcodes in the first column without header (TSV)
             - features.tsv containing the feature/gene names in the first column without header (TSV)
     -  metadata (optional): path to sample metadata as CSV with the first column being cell barcodes and every other coloumn metadata for the respective barcode/cell
+
+Set workflow-specific `resources` or command line arguments (CLI) in the workflow profile `workflow/profiles/default.config.yaml`, which supersedes global Snakemake profiles.

@@ -23,7 +23,6 @@ rule prepare:
     log:
         os.path.join("logs","rules","PREP_{sample}.log"),
     params:
-        partition=config.get("partition"),
         metadata = lambda w: "" if pd.isna(annot.loc["{}".format(w.sample),'metadata']) else annot.loc["{}".format(w.sample),'metadata'],
     script:
         "../scripts/prepare.R"
@@ -53,8 +52,6 @@ rule merge:
         "../envs/seurat.yaml"
     log:
         os.path.join("logs","rules","merge.log"),
-    params:
-        partition=config.get("partition"),
     script:
         "../scripts/merge.R"
 
@@ -82,8 +79,6 @@ rule split:
         "../envs/seurat.yaml"
     log:
         os.path.join("logs","rules","split_{split}.log"),
-    params:
-        partition=config.get("partition"),
     script:
         "../scripts/split.R"
 
@@ -112,7 +107,6 @@ rule filter_cells:
     log:
         os.path.join("logs","rules","filter_{split}.log"),
     params:
-        partition=config.get("partition"),
         step = "FILTERED",
         filter_expression = config["filter_expression"],
         ab_flag = config["modality_flags"]['Antibody_Capture'],
@@ -156,8 +150,6 @@ rule pseudobulk:
         "../envs/seurat.yaml"
     log:
         os.path.join("logs","rules","pseudobulk_{split}.log"),
-    params:
-        partition=config.get("partition"),
     script:
         "../scripts/pseudobulk.R"
 
@@ -176,7 +168,6 @@ rule save_counts:
     log:
         os.path.join("logs","rules","save_counts_{split}_{step}.log"),
     params:
-        partition=config.get("partition"),
         step = lambda w: "{}".format(w.step),
         ab_flag = config["modality_flags"]['Antibody_Capture'],
         crispr_flag = config["modality_flags"]['CRISPR_Guide_Capture'],

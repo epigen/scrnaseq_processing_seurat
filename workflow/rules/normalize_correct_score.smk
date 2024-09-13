@@ -17,7 +17,6 @@ rule normalize:
                               "feature": "",
                                 }),
     resources:
-#         mem_mb=config.get("mem", "16000"),
         mem_mb = lambda wc, attempt: attempt*int(config.get("mem", "16000")),
     threads: config.get("threads", 1)
     conda:
@@ -25,7 +24,6 @@ rule normalize:
     log:
         os.path.join("logs","rules","filter_{split}.log"),
     params:
-        partition=config.get("partition"),
         min_cells_per_gene = config["min_cells_per_gene"],
         confounders = [],
         module_gene_lists = config["module_gene_lists"],
@@ -55,7 +53,6 @@ rule correct:
                               "feature": "",
                           }),
     resources:
-        #         mem_mb=config.get("mem", "16000"),
         mem_mb = lambda wc, attempt: attempt*int(config.get("mem", "16000")),
     threads: config.get("threads", 1)
     conda:
@@ -63,7 +60,6 @@ rule correct:
     log:
         os.path.join("logs","rules","correct_{split}.log"),
     params:
-        partition=config.get("partition"),
         min_cells_per_gene = config["min_cells_per_gene"],
         confounders = config["variables_to_regress"],
         module_gene_lists = config["module_gene_lists"],

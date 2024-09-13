@@ -2,7 +2,6 @@
 ##### RESOURCES #####
 mem: '16000'
 threads: 1
-partition: 'shortq'
 
 ##### GENERAL #####
 sample_annotation: /path/to/scrnaseq_processing_annotation.csv

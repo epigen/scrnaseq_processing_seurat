@@ -1,10 +1,7 @@
 [![DOI](https://zenodo.org/badge/468752490.svg)](https://zenodo.org/doi/10.5281/zenodo.10679327)
 
-# Single-cell RNA sequencing (scRNA-seq) Data Processing & Visualization Snakemake Workflow
-
-sc/snRNA-seq Data Processing & Visualization Snakemake Workflow powered by Seurat
-
-A [Snakemake](https://snakemake.readthedocs.io/en/stable/) workflow for processing and visualizing (multimodal) sc/snRNA-seq data generated with [10X Genomics Kits](https://www.10xgenomics.com/) or in the MTX file format powered by the R package [Seurat](https://satijalab.org/seurat/index.html).
+# Single-cell RNA sequencing (scRNA-seq) Data Processing & Visualization Workflow
+A [Snakemake 8](https://snakemake.readthedocs.io/en/stable/) workflow for processing and visualizing (multimodal) sc/snRNA-seq data generated with [10X Genomics Kits](https://www.10xgenomics.com/) or in the MTX file format powered by the R package [Seurat](https://satijalab.org/seurat/index.html).
 
 This workflow adheres to the module specifications of [MR.PARETO](https://github.com/epigen/mr.pareto), an effort to augment research by modularizing (biomedical) data science. For more details, instructions and modules check out the project's repository. Please consider starring and sharing modules that are useful to you, this helps me in prioritizing my efforts!
 

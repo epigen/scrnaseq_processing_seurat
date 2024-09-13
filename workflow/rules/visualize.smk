@@ -23,8 +23,6 @@ rule metadata_plots:
         "../envs/inspectdf.yaml"
     log:
         os.path.join("logs","rules","metadata_plot_{split}_{step}.log"),
-    params:
-        partition=config.get("partition"),
     script:
         "../scripts/metadata_plot.R"
 
@@ -53,7 +51,5 @@ rule seurat_plots:
         "../envs/seurat.yaml"
     log:
         os.path.join("logs","rules","plot_{split}_{step}_{plot_type}_{category}_{feature_list}.log"),
-    params:
-        partition=config.get("partition"),
     script:
         "../scripts/seurat_plots.R"

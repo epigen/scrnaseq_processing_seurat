@@ -1,3 +1,7 @@
+
+##### global workflow dependencies #####
+conda: "envs/global.yaml"
+
 ##### libraries #####
 import os
 import sys
@@ -5,8 +9,8 @@ import pandas as pd
 import yaml
 from snakemake.utils import min_version
 
-min_version("7.15.2")
-# shell.prefix(f"set -eo pipefail;")
+##### set minimum snakemake version #####
+min_version("8.20.1")
 
 ##### module name #####
 module_name = "scrnaseq_processing_seurat"
@@ -87,17 +91,15 @@ rule all:
                                       category=config["vis_categories"],
                                       feature_list=vis_features_corrected,
                       )) if (config["stop_after"]=="CORRECTED") else [],
-        envs = expand(os.path.join(config["result_path"],'envs','scrnaseq_processing_seurat','{env}.yaml'),env=['seurat','inspectdf']),
-        gene_lists = expand(os.path.join(config["result_path"],'configs','scrnaseq_processing_seurat','{gene_list}.txt'),gene_list=list(gene_list_dict.keys())),
-        configs = os.path.join(config["result_path"],'configs','scrnaseq_processing_seurat','{}_config.yaml'.format(config["project_name"])),
-        annotations = os.path.join(config["result_path"],'configs','scrnaseq_processing_seurat','{}_annot.csv'.format(config["project_name"])),
+        envs = expand(os.path.join(result_path,'envs','{env}.yaml'),env=['seurat','inspectdf']),
+        gene_lists = expand(os.path.join(result_path,'configs','{gene_list}.txt'),gene_list=list(gene_list_dict.keys())),
+        configs = os.path.join(result_path,'configs','{}_config.yaml'.format(config["project_name"])),
+        annotations = os.path.join(result_path,'configs','{}_annot.csv'.format(config["project_name"])),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 1)
     log:
         os.path.join("logs","rules","all.log"),
-    params:
-        partition=config.get("partition"),
 
         
 ##### load rules #####
