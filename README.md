@@ -1,33 +1,30 @@
+[![MR.PARETO](https://img.shields.io/badge/MR.PARETO-red)](https://github.com/epigen/mr.pareto/)
 [![DOI](https://zenodo.org/badge/468752490.svg)](https://zenodo.org/doi/10.5281/zenodo.10679327)
+[![](https://tokei.rs/b1/github/epigen/scrnaseq_processing_seurat?category=code)]() 
+[![](https://tokei.rs/b1/github/epigen/scrnaseq_processing_seurat?category=files)]()
+[![GitHub license](https://img.shields.io/github/license/epigen/scrnaseq_processing_seurat)](https://github.com/epigen/scrnaseq_processing_seurat/blob/master/LICENSE)
+![GitHub Release](https://img.shields.io/github/v/release/epigen/scrnaseq_processing_seurat)
+[![Snakemake](https://img.shields.io/badge/Snakemake->=8.20.1-green)](https://snakemake.readthedocs.io/en/stable/)
 
 # Single-cell RNA sequencing (scRNA-seq) Data Processing & Visualization Workflow
 A [Snakemake 8](https://snakemake.readthedocs.io/en/stable/) workflow for processing and visualizing (multimodal) sc/snRNA-seq data generated with [10X Genomics Kits](https://www.10xgenomics.com/) or in the MTX file format powered by the R package [Seurat](https://satijalab.org/seurat/index.html).
 
-This workflow adheres to the module specifications of [MR.PARETO](https://github.com/epigen/mr.pareto), an effort to augment research by modularizing (biomedical) data science. For more details, instructions and modules check out the project's repository. Please consider starring and sharing modules that are useful to you, this helps me in prioritizing my efforts!
+> [!NOTE]  
+> This workflow adheres to the module specifications of [MR.PARETO](https://github.com/epigen/mr.pareto), an effort to augment research by modularizing (biomedical) data science. For more details, instructions, and modules check out the project's repository.
+>
+> ⭐️ **Star and share modules you find valuable** 📤 - help others discover them, and guide our future work!
 
-**If you use this workflow in a publication, please don't forget to give credits to the authors by citing it using this DOI [10.5281/zenodo.10679327](https://zenodo.org/doi/10.5281/zenodo.10679327).**
+> [!IMPORTANT]  
+> **If you use this workflow in a publication, please don't forget to give credit to the authors by citing it using this DOI [10.5281/zenodo.10679327](https://zenodo.org/doi/10.5281/zenodo.10679327).**
 
 ![Workflow Rulegraph](./workflow/dags/rulegraph.svg)
 
-Table of contents
-----------------
-  * [Authors](#authors)
-  * [Software](#software)
-  * [Methods](#methods)
-  * [Features](#features)
-  * [Usage](#usage)
-  * [Configuration](#configuration)
-  * [Examples](#examples)
-  * [Links](#links)
-  * [Resources](#resources)
-  * [Publications](#publications)
-
-# Authors
+# 🖋️ Authors
 - [Stephan Reichl](https://github.com/sreichl)
 - [Christoph Bock](https://github.com/chrbock)
 
-# Software
-This project wouldn't be possible without the following software
+# 💿 Software
+This project wouldn't be possible without the following software and their dependencies.
 
 | Software       | Reference (DOI)                                   |
 | :------------: | :-----------------------------------------------: |
@@ -37,8 +34,8 @@ This project wouldn't be possible without the following software
 | Seurat         | https://doi.org/10.1016/j.cell.2021.04.048        |
 | Snakemake      | https://doi.org/10.12688/f1000research.29032.2    |
 
-# Methods
-This is a template for the Methods section of a scientific publication and is intended to serve as a starting point. Only retain paragraphs relevant to your analysis. References [ref] to the respective publications are curated in the software table above. Versions (ver) have to be read out from the respective conda environment specifications (workflow/envs/\*.yaml file) or post execution in the result directory (/envs/scrnaseq_processing_seurat/\*.yaml). Parameters that have to be adapted depending on the data or workflow configurations are denoted in squared brackets e.g., [X].
+# 🔬 Methods
+This is a template for the Methods section of a scientific publication and is intended to serve as a starting point. Only retain paragraphs relevant to your analysis. References [ref] to the respective publications are curated in the software table above. Versions (ver) have to be read out from the respective conda environment specifications (`workflow/envs/*.yaml file`) or post-execution in the result directory (`scrnaseq_processing_seurat/envs/*.yaml`). Parameters that have to be adapted depending on the data or workflow configurations are denoted in squared brackets e.g., [X].
 
 The outlined analyses were performed using the R package Seurat (ver) [ref] unless stated otherwise.
 
@@ -67,7 +64,7 @@ The outlined analyses were performed using the R package Seurat (ver) [ref] unle
 **The processing, analysis and visualizations described here were performed using a publicly available Snakemake [ver] (ref) workflow [[10.5281/zenodo.10679327](https://zenodo.org/doi/10.5281/zenodo.10679327)].**
 
 
-# Features
+# 🚀 Features
 The workflow perfroms the following steps. Outputs are always in the respective folder `{split}/{step}`.
 - Preparation (PREP)
   - Load (mutlimodal) data specified in the annotation file and create a Seurat object.
@@ -136,7 +133,7 @@ The following steps are performed on each data split separately (including the "
      -  `plots/{plot_type}/{category}/{feature_list}/*.png` for all visualizations.
      -  `stats/` for all metadata derived statistics.
 
-# Usage
+# 🛠️ Usage
 Here are some tips for the usage of this workflow:
 - Use short sample names in sample_annotation sheet, because they will be the prefix for each barcode/cell in the merged & split datasets.
 - Run the workflow for each step of processing (with the stop_after parameter) and investigate the results (e.g., using the Snakemake report function).
@@ -144,10 +141,10 @@ Here are some tips for the usage of this workflow:
 - Try to finish the analysis of the "merged" data set first, and later split the data by using the split_by parameter.
 - In case you want to repeat your analysis based on metadata that emerged from downstream analyses (e.g., clustering, cell-type annotation, perturbation classification) you can provide an incomplete metadatafile in the configuration (i.e., not all cells/barcodes hvae to be present in the metadata). Changes in this file will trigger a rerun of the workflow starting with the merging step to ensure the added metadta is considered in all downstream steps (e.g., splitting, visualization, etc.).
 
-# Configuration
+# ⚙️ Configuration
 Detailed specifications can be found here [./config/README.md](./config/README.md)
 
-# Example
+# 📖 Examples
 We selected a scRNA-seq data set consisting of 15 CRC samples from [Lee et al (2020) Lineage-dependent gene expression programs influence the immune landscape of colorectal cancer. Nature Genetics](https://doi.org/10.1038/s41588-020-0636-z). Downloaded from the [Weizmann Institute - Curated Cancer Cell Atlas (3CA) - Colorectal Cancer](https://www.weizmann.ac.il/sites/3CA/colorectal) section.
 - samples/patients: 15
 - cells: 21657
@@ -182,29 +179,34 @@ rm -r Data_Lee2020_Colorectal
 
 Beyond this the workflow was tested on multimodal scCRISPR-seq data sets with >350,000 cells and 340 different KO groups (<4h; 99 jobs; 256GB RAM).
 
-# Links
+# 🔗 Links
 - [GitHub Repository](https://github.com/epigen/scrnaseq_processing_seurat/)
 - [GitHub Page](https://epigen.github.io/scrnaseq_processing_seurat/)
 - [Zenodo Repository](https://zenodo.org/doi/10.5281/zenodo.10679327)
 - [Snakemake Workflow Catalog Entry](https://snakemake.github.io/snakemake-workflow-catalog?usage=epigen/scrnaseq_processing_seurat)
 
-# Resources
+# 📚 Resources
 - Data Resources for scRNA-seq data in compatible MTX format
   - [10X Genomics Datasets](https://www.10xgenomics.com/datasets)
   - [CELLxGENE](https://cellxgene.cziscience.com/)
   - [HCA Data Portal](https://data.humancellatlas.org/)
   - [Weizmann Curated Cancer Cell Atlas](https://www.weizmann.ac.il/sites/3CA/)
 - Recommended [MR.PARETO](https://github.com/epigen/mr.pareto) modules for downstream analyses (in that order):
-  - [Unsupervised Analysis](https://github.com/epigen/unsupervised_analysis) to understand and visualize similarities and variations between cells/samples, including dimensionality reduction and cluster analysis. Useful for both single-cell and pseudbulked data.
+  - [Unsupervised Analysis](https://github.com/epigen/unsupervised_analysis) to understand and visualize similarities and variations between cells/samples, including dimensionality reduction and cluster analysis. Useful for all tabular data including single-cell and bulk sequencing data.
+  - [Genome Browser Track Visualization](https://github.com/epigen/genome_tracks/) for quality control and visual inspection/analysis of genomic regions/genes of interest or top hits.
   - Single-cell analysis using Seurat
-    - [Differential Analysis using Seurat](https://github.com/epigen/dea_seurat) to identify and visualize statistically significantly differentially expressed genes between groups.
+    - [Differential Analysis using Seurat](https://github.com/epigen/dea_seurat) to identify and visualize statistically significantly different features (e.g., genes or proteins) between groups.
     - [Perturbation Analysis using Mixscape from Seurat](https://github.com/epigen/mixscape_seurat) to identify perturbed cells from pooled (multimodal) CRISPR screens with sc/snRNA-seq read-out (scCRISPR-seq).
-  - Pseudobulked data/samples:
-    - [<ins>Sp</ins>lit, F<ins>ilter</ins>, Norma<ins>lize</ins> and <ins>Integrate</ins> Sequencing Data](https://github.com/epigen/spilterlize_integrate/) pseudobulked samples post processing.
-    - [Differential Analysis with limma](https://github.com/epigen/dea_limma) to identify and visualize statistically significantly differentially expressed genes between sample groups.
-  - [Enrichment Analysis](https://github.com/epigen/enrichment_analysis) for biomedical interpretation of differential analysis results using prior knoweledge.
+  - Pseudobulked data/samples analysis:
+    - [<ins>Sp</ins>lit, F<ins>ilter</ins>, Norma<ins>lize</ins> and <ins>Integrate</ins> Sequencing Data](https://github.com/epigen/spilterlize_integrate/) after count quantification.
+    - [Differential Analysis with limma](https://github.com/epigen/dea_limma) to identify and visualize statistically significantly different features (e.g., genes or genomic regions) between sample groups.
+  - [Enrichment Analysis](https://github.com/epigen/enrichment_analysis) for biomedical interpretation of (differential) analysis results using prior knowledge.
 
-
-# Publications
+# 📑 Publications
 The following publications successfully used this module for their analyses.
+- [FirstAuthors et al. (202X) Journal Name - Paper Title.](https://doi.org/10.XXX/XXXX)
 - ...
+
+# ⭐ Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=epigen/scrnaseq_processing_seurat&type=Date)](https://star-history.com/#epigen/scrnaseq_processing_seurat&Date)
