@@ -48,8 +48,7 @@ metadata_aggregated <- as.data.frame(metadata_aggregated)
 rownames(metadata_aggregated) <- apply(metadata_aggregated[, pseudobulk_by], 1, function(x) paste(x, collapse = "_"))
 # filter by cell_count_th
 metadata_aggregated <- metadata_aggregated[metadata_aggregated$cell_count>=pseudobulk_th, ]
-# save metadata
-fwrite(as.data.frame(metadata_aggregated), file=file.path(metadata_path), row.names=TRUE)
+
 
 # pseudobulk per modality (RNA, ...)
 for (modality in c("RNA", ab_flag, crispr_flag, custom_flag)){
@@ -70,7 +69,11 @@ for (modality in c("RNA", ab_flag, crispr_flag, custom_flag)){
       group_by(across(all_of(pseudobulk_by))) %>%
       summarise(across(all_of(features), pseudobulk_method, .names = "{.col}"), .groups = "drop")
 
-    # reformat df and create metadata
+    # convert to integers
+    numeric_cols <- sapply(tmp_pseudobulk, is.numeric)
+    tmp_pseudobulk[, numeric_cols] <- lapply(tmp_pseudobulk[, numeric_cols], function(x) as.integer(round(x)))
+
+    # reformat df
     tmp_pseudobulk <- as.data.frame(tmp_pseudobulk)
     rownames(tmp_pseudobulk) <- apply(tmp_pseudobulk[, pseudobulk_by], 1, function(x) paste(x, collapse = "_"))
     tmp_pseudobulk[,pseudobulk_by] <- NULL
@@ -79,9 +82,15 @@ for (modality in c("RNA", ab_flag, crispr_flag, custom_flag)){
     # filter by cell_count_th
     tmp_pseudobulk <- tmp_pseudobulk[,rownames(metadata_aggregated)]
 
+    # add total counts for modality to metadata
+    metadata_aggregated[[paste0("total_counts_",modality)]] <- colSums(tmp_pseudobulk)[rownames(metadata_aggregated)]
+
     # save pseudobulked data frame
     fwrite(as.data.frame(tmp_pseudobulk), file=file.path(dirname(pseudobulk_counts_path),paste0(modality,".csv")), row.names=TRUE)
 }
+
+# save metadata
+fwrite(as.data.frame(metadata_aggregated), file=file.path(metadata_path), row.names=TRUE)
 
 # visualize pseudobulk cell counts    
 cell_count_plot <- ggplot(metadata_aggregated, aes(x = cell_count)) +

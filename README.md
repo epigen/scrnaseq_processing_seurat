@@ -91,7 +91,8 @@ The following steps are performed on each data split separately (including the "
 - Filtering (FILTERED)
   - Filter cells by a combination of logical-expressions using the metadata.
 - Pseudobulking (PSEUDOBULK)
-  - Pseudobulking is performed based on metadata columns specified by the user, with options for aggregation methods including sum, mean, or median.
+  - Pseudobulking is performed based on metadata columns specified by the user, with options for aggregation methods including `sum`, `mean`, or `median`.
+  - The pseudobulked values are rounded to integers.
   - A cell count threshold is applied to remove pseudobulked samples with fewer cells than specified.
   - The aggregated metadata and pseudobulked data are saved as CSV files to be used for downstream bulk analyses.
   - A histogram and density plot visualizing the distribution of cell counts in pseudobulked samples are provided.
