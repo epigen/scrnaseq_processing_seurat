@@ -30,12 +30,14 @@ custom_flag <- snakemake@config[["modality_flags"]][['Custom']]
 filtered_object <- readRDS(file = file.path(filtered_object_path))
 
 # load cell cycle scoring genes
-if (cell_cycle['s_phase_genes']=="tirosh2015"){
-    s_genes <- cc.genes$s.genes
-    g2m_genes <- cc.genes$g2m.genes
-}else{
-    s_genes <- scan(file.path(cell_cycle['s_phase_genes']), character())
-    g2m_genes <- scan(file.path(cell_cycle['g2m_phase_genes']), character())
+if (cell_cycle['s_phase_genes']!=""){
+    if (cell_cycle['s_phase_genes']=="tirosh2015"){
+        s_genes <- cc.genes$s.genes
+        g2m_genes <- cc.genes$g2m.genes
+    }else{
+        s_genes <- scan(file.path(cell_cycle['s_phase_genes']), character())
+        g2m_genes <- scan(file.path(cell_cycle['g2m_phase_genes']), character())
+    }
 }
 
 # load cell scoring gene list
@@ -81,6 +83,9 @@ if(custom_flag!=''){
 
 ### Cell Scoring on normalized data (ie assay="SCT", slot="data")
 
+# extract all features from the object
+data_features <- rownames(GetAssayData(norm_object, slot = "data", assay = "SCT"))
+
 # Cell Cycle scoring with Seurat function
 # (presumably) running on SCT assay, as it is the default Assay post normalization
 if (cell_cycle['s_phase_genes']!=""){
@@ -89,6 +94,13 @@ if (cell_cycle['s_phase_genes']!=""){
 
 # Cell Scoring by gene list
 for (gene_list_name in names(gene_lists)){
+    
+    # skip if no features in the data, to avoid Error
+    if(length(intersect(gene_lists[[gene_list_name]], data_features)==0)){
+        print(paste0("None of ",gene_list_name," features are present in the data."))
+        next
+    }
+
     norm_object <- AddModuleScore(
         object=norm_object,
         features=list(gene_lists[[gene_list_name]]),
