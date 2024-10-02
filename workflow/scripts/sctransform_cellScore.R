@@ -16,6 +16,7 @@ norm_object_path <- snakemake@output[["norm_object"]]
 # parameters
 confounders <- snakemake@params[["confounders"]]
 min_cells_per_gene <- snakemake@params[["min_cells_per_gene"]]
+variable_features_n <- snakemake@params[["variable_features_n"]]
 
 module_gene_lists <- snakemake@params[["module_gene_lists"]]
 cell_cycle <- snakemake@params[["cell_cycle"]]
@@ -51,6 +52,21 @@ for (gene_list_name in names(module_gene_lists)){
 
 ### Normalization of all assays
 
+# set parameters for HVF selection
+if(variable_features_n==0){
+    variable.features.n <- NULL
+    variable.features.rv.th <- NULL
+    return.only.var.genes <- FALSE
+} else if(variable_features_n=="auto"){
+    variable.features.n <- NULL
+    variable.features.rv.th <- 1.3
+    return.only.var.genes <- TRUE
+} else {
+    variable.features.n <- variable_features_n
+    variable.features.rv.th <- NULL
+    return.only.var.genes <- TRUE
+}
+
 # run SCTransform to normalize (& correct ie regress confounders) on RNA assay
 norm_object <- SCTransform(filtered_object,
                            vars.to.regress = confounders,
@@ -58,8 +74,9 @@ norm_object <- SCTransform(filtered_object,
                            new.assay.name = 'SCT',
                            verbose = TRUE,
                            method="glmGamPoi",
-                           variable.features.n=NULL,
-                           return.only.var.genes=FALSE,
+                           variable.features.n=variable.features.n,
+                           variable.features.rv.th=variable.features.rv.th,
+                           return.only.var.genes=return.only.var.genes,
                            min_cells = min_cells_per_gene,
                            seed.use = 42,
                            vst.flavor = "v2"

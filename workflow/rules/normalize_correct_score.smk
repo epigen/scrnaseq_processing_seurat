@@ -25,6 +25,7 @@ rule normalize:
         os.path.join("logs","rules","filter_{split}.log"),
     params:
         min_cells_per_gene = config["min_cells_per_gene"],
+        variable_features_n = config["variable_features_n"],
         confounders = [],
         module_gene_lists = config["module_gene_lists"],
         cell_cycle = config["cell_cycle"],
@@ -61,6 +62,7 @@ rule correct:
         os.path.join("logs","rules","correct_{split}.log"),
     params:
         min_cells_per_gene = config["min_cells_per_gene"],
+        variable_features_n = config["variable_features_n"],
         confounders = config["variables_to_regress"],
         module_gene_lists = config["module_gene_lists"],
         cell_cycle = config["cell_cycle"],

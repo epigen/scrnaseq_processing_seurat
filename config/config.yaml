@@ -74,6 +74,11 @@ pseudobulk:
 ##### NORMALIZATION #####
 # using SCTransform v2 defaults https://satijalab.org/seurat/reference/sctransform
 
+# Use this many features (integer) as variable features after ranking by residual variance for all downstream steps.
+# Use "auto" to instead of setting a fixed number of variable features, a residual variance cutoff of 1.3 is used.
+# Use 0 to use all features for downstream analysis.
+variable_features_n: "auto" # options: "auto", 0, integer
+
 # filter for genes that have been detected in at least min_cells_per_gene cells (default: 5)
 min_cells_per_gene: 5
 
