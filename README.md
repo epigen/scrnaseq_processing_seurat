@@ -98,15 +98,15 @@ The following steps are performed on each data split separately (including the "
   - A histogram and density plot visualizing the distribution of cell counts in pseudobulked samples are provided.
   - Other modalities are also pseudobulked, if applicable.
 - Normalization (NORMALIZED)
-  - Normalization of gene expression data using [SCTransform v2 (vst.flavor = "v2")](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-021-02584-9), returning normalized values for all expressed genes, filtered by minimum cells per gene parameter.
+  - Normalization of gene expression data using [SCTransform v2 (vst.flavor = "v2")](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-021-02584-9), returning normalized values for all or highly variably expressed genes, filtered by minimum cells per gene parameter.
   - Normalization of all multimodal data using Centered Log-Ratio (CLR) with margin 2.
-  - Dynamic highly variable gene (HVG) determination using a residual variance threshold of 1.3 (default). Returning bot a table with statistics and a sorted list of all HVGs.
+  - Configurable highly variable gene (HVG) selection for downstream analysis using either all genes, top `n` genes or a residual variance threshold of 1.3 (default) (`variable_features_n`). Returning both a table with statistics and a sorted list of all HVGs.
 - Cell Scoring
   - Cell cycle scoring using Seurat::CellCycleScoring and provided S2- and G2M genes.
   - Gene module scoring using Seurat::AddModuleScore and provided gene lists.
-  - All scores and HVGs are determined based on normalized data, not corrected. To avoid redundancy, HVGs are only provided in the NORMALIZED step.
+  - All scores and HVGs are determined based on normalized data, not corrected. To avoid redundancy, HVGs are only provided in the NORMALIZED step as output.
 - Correction (CORRECTED)
-  - Normalization and correction for the list of provided confounders using [SCTransform v2 (vst.flavor = "v2")](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-021-02584-9), returning scaled values for all expressed genes.
+  - Normalization and correction for the list of provided confounders using [SCTransform v2 (vst.flavor = "v2")](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-021-02584-9), returning scaled values for all or highly variably expressed genes.
   - The correction is only present in the scaled values (slot="scale.data"), hence only scaled values are saved as CSV, if configured.
   - Corrected data is useful for downstream analyses like dimensionality redcution and clustering, not differential gene expression analysis.
 - Visualization using Ridge-, Violin-, Dot-plots and Heatmaps `{split}/{step}/plots/{plot_type}/{category}/{feature_list}/*.png`
