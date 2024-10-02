@@ -13,7 +13,7 @@ rule env_export:
     conda:
         "../envs/{env}.yaml"
     resources:
-        mem_mb=config.get("mem", "16000"),
+        mem_mb=8000,
     threads: config.get("threads", 1)
     log:
         os.path.join("logs","rules","env_{env}.log"),
@@ -35,7 +35,7 @@ rule config_export:
                              "type": "config"
                          })
     resources:
-        mem_mb=config.get("mem", "16000"),
+        mem_mb=1000,
     threads: config.get("threads", 1)
     log:
         os.path.join("logs","rules","config_export.log"),
@@ -58,7 +58,7 @@ rule annot_export:
                            "type": "annotation",
                        })
     resources:
-        mem_mb=1000, #config.get("mem_small", "16000"),
+        mem_mb=1000,
     threads: config.get("threads", 1)
     log:
         os.path.join("logs","rules","annot_export.log"),
@@ -82,7 +82,7 @@ rule gene_list_export:
                                 "type": "{gene_list} genes",
                             }),
     resources:
-        mem_mb=1000, #config.get("mem_small", "16000"),config.get("mem", "16000"),
+        mem_mb=1000,
     threads: config.get("threads", 1)
     log:
         os.path.join("logs","rules","gene_list_export_{gene_list}.log"),
