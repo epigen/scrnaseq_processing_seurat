@@ -1,4 +1,4 @@
-[![MR.PARETO](https://img.shields.io/badge/MR.PARETO-red)](https://github.com/epigen/mr.pareto/)
+[![MrBiomics](https://img.shields.io/badge/MrBiomics-red)](https://github.com/epigen/MrBiomics/)
 [![DOI](https://zenodo.org/badge/468752490.svg)](https://zenodo.org/doi/10.5281/zenodo.10679327)
 [![](https://tokei.rs/b1/github/epigen/scrnaseq_processing_seurat?category=code)]() 
 [![](https://tokei.rs/b1/github/epigen/scrnaseq_processing_seurat?category=files)]()
@@ -10,7 +10,7 @@
 A [Snakemake 8](https://snakemake.readthedocs.io/en/stable/) workflow for processing and visualizing (multimodal) sc/snRNA-seq data generated with [10X Genomics Kits](https://www.10xgenomics.com/) or in the MTX file format powered by the R package [Seurat](https://satijalab.org/seurat/index.html).
 
 > [!NOTE]  
-> This workflow adheres to the module specifications of [MR.PARETO](https://github.com/epigen/mr.pareto), an effort to augment research by modularizing (biomedical) data science. For more details, instructions, and modules check out the project's repository.
+> This workflow adheres to the module specifications of [MrBiomics](https://github.com/epigen/MrBiomics), an effort to augment research by modularizing (biomedical) data science. For more details, instructions, and modules check out the project's repository.
 >
 > ⭐️ **Star and share modules you find valuable** 📤 - help others discover them, and guide our future work!
 
@@ -192,7 +192,7 @@ Beyond this the workflow was tested on multimodal scCRISPR-seq data sets with >3
   - [CELLxGENE](https://cellxgene.cziscience.com/)
   - [HCA Data Portal](https://data.humancellatlas.org/)
   - [Weizmann Curated Cancer Cell Atlas](https://www.weizmann.ac.il/sites/3CA/)
-- Recommended [MR.PARETO](https://github.com/epigen/mr.pareto) modules for downstream analyses (in that order):
+- Recommended [MrBiomics](https://github.com/epigen/MrBiomics) modules for downstream analyses (in that order):
   - [Unsupervised Analysis](https://github.com/epigen/unsupervised_analysis) to understand and visualize similarities and variations between cells/samples, including dimensionality reduction and cluster analysis. Useful for all tabular data including single-cell and bulk sequencing data.
   - [Genome Browser Track Visualization](https://github.com/epigen/genome_tracks/) for quality control and visual inspection/analysis of genomic regions/genes of interest or top hits.
   - Single-cell analysis using Seurat
