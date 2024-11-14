@@ -178,7 +178,7 @@ if (plot_type=="Heatmap"){
         set.seed(42)
         data_object <- subset(data_object, downsample = maxcells)
         # update heatmap width accordingly
-        width <- length(colnames(data_object))*width_col + 2
+        width <- length(colnames(data_object))*width_col + 4
     }
     
     # cluster features (rows) using hclust

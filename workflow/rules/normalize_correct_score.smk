@@ -35,7 +35,6 @@ rule normalize:
         
         
 # correct data
-#if len(config["variables_to_regress"])>0:
 rule correct:
     input:
         # NORMALIZED object as input as only it contains post-normalization calculated scores to be regressed out e.g., cell-cycle scores

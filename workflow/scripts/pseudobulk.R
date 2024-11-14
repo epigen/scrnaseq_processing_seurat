@@ -45,7 +45,7 @@ metadata_aggregated <- metadata %>%
   select(-where(~ any(is.na(.)))) # Remove columns that have NAs
 # format metadata
 metadata_aggregated <- as.data.frame(metadata_aggregated)
-rownames(metadata_aggregated) <- apply(metadata_aggregated[, pseudobulk_by], 1, function(x) paste(x, collapse = "_"))
+rownames(metadata_aggregated) <- apply(metadata_aggregated[, pseudobulk_by, drop = FALSE], 1, function(x) paste(x, collapse = "_"))
 # filter by cell_count_th
 metadata_aggregated <- metadata_aggregated[metadata_aggregated$cell_count>=pseudobulk_th, ]
 
@@ -75,7 +75,7 @@ for (modality in c("RNA", ab_flag, crispr_flag, custom_flag)){
 
     # reformat df
     tmp_pseudobulk <- as.data.frame(tmp_pseudobulk)
-    rownames(tmp_pseudobulk) <- apply(tmp_pseudobulk[, pseudobulk_by], 1, function(x) paste(x, collapse = "_"))
+    rownames(tmp_pseudobulk) <- apply(tmp_pseudobulk[, pseudobulk_by, drop = FALSE], 1, function(x) paste(x, collapse = "_"))
     tmp_pseudobulk[,pseudobulk_by] <- NULL
     tmp_pseudobulk <- as.data.frame(t(tmp_pseudobulk))
 

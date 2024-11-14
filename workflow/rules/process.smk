@@ -52,6 +52,8 @@ rule merge:
         "../envs/seurat.yaml"
     log:
         os.path.join("logs","rules","merge.log"),
+    params:
+        extra_metadata = config["extra_metadata"]
     script:
         "../scripts/merge.R"
 

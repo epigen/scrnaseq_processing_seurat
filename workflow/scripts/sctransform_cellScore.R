@@ -113,8 +113,8 @@ if (cell_cycle['s_phase_genes']!=""){
 for (gene_list_name in names(gene_lists)){
     
     # skip if no features in the data, to avoid Error
-    if(length(intersect(gene_lists[[gene_list_name]], data_features)==0)){
-        print(paste0("None of ",gene_list_name," features are present in the data."))
+    if(length(intersect(gene_lists[[gene_list_name]], data_features))<3){
+        print(paste0("Less than 3 of ",gene_list_name," features are present in the data."))
         next
     }
 

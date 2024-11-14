@@ -9,7 +9,7 @@ snakemake@source("./utils.R")
 
 # inputs
 sample_object_paths <- snakemake@input
-extra_metadata_path <- snakemake@config[["extra_metadata"]]
+extra_metadata_path <- snakemake@params[["extra_metadata"]]
 
 # outputs
 merged_object <- snakemake@output[["merged_object"]]
