@@ -187,6 +187,9 @@ Beyond this the workflow was tested on multimodal scCRISPR-seq data sets with >3
 - [Snakemake Workflow Catalog Entry](https://snakemake.github.io/snakemake-workflow-catalog?usage=epigen/scrnaseq_processing_seurat)
 
 # 📚 Resources
+- Helper scripts
+  - [Converting Parse Bioscience scRNA-seq data to (expected) 10x Genomics/MTX format](./helpers/parse_to_10x_conversion.R)
+  - [Converting Seurat object to scanpy compatible anndata object in `h5ad` format](./helpers/Seurat_to_h5ad_conversion.R)
 - Data Resources for scRNA-seq data in compatible MTX format
   - [10X Genomics Datasets](https://www.10xgenomics.com/datasets)
   - [CELLxGENE](https://cellxgene.cziscience.com/)
