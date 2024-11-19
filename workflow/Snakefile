@@ -62,6 +62,9 @@ if len(config["vis_features"]["Metadata"])>0:
 # corrected plots (only plots of scale.data i.e., gene expression)
 vis_features_corrected = list(config["vis_gene_lists"].keys())
 
+# to handle AmbiguousRuleException in case of PSEUDOBULK generation
+ruleorder: homeostatic_scrnaseq_processing_seurat_pseudobulk > homeostatic_scrnaseq_processing_seurat_save_counts:
+
 rule all:
     input:
         final_objects = expand(os.path.join(result_path,'{split}','{step}','object.rds'), 
