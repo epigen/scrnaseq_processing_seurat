@@ -63,7 +63,7 @@ if len(config["vis_features"]["Metadata"])>0:
 vis_features_corrected = list(config["vis_gene_lists"].keys())
 
 # to handle AmbiguousRuleException in case of PSEUDOBULK generation
-ruleorder: homeostatic_scrnaseq_processing_seurat_pseudobulk > homeostatic_scrnaseq_processing_seurat_save_counts:
+ruleorder: pseudobulk > save_counts
 
 rule all:
     input:
