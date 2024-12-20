@@ -5,7 +5,8 @@ library("ggplot2")
 
 # source utility functions
 # source("workflow/scripts/utils.R")
-snakemake@source("./utils.R")
+# snakemake@source("./utils.R") # does not work when loaded as module (https://github.com/snakemake/snakemake/issues/2205)
+source(snakemake@params[["utils_path"]])
 
 # inputs
 object_path <- snakemake@input[["norm_object"]]

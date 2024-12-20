@@ -1,7 +1,7 @@
 channels:
   - conda-forge
   - bioconda
-  - defaults
+  - nodefaults
 dependencies:
   - r-seurat=4.4.0
   - bioconductor-glmgampoi=1.14.0

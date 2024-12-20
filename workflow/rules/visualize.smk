@@ -1,3 +1,4 @@
+
 # visualize metadata
 rule metadata_plots:
     input:
@@ -16,6 +17,8 @@ rule metadata_plots:
                                 "feature": "",
                                 }),
         metadata_stats = directory(os.path.join(result_path,'{split}','{step}','stats')),
+    params:
+        utils_path = workflow.source_path("../scripts/utils.R"),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 1)
@@ -44,6 +47,8 @@ rule seurat_plots:
                 "list": "{feature_list}",
                 "feature": "{feature}",
             }),
+    params:
+        utils_path = workflow.source_path("../scripts/utils.R"),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 1)

@@ -4,7 +4,8 @@ library("Seurat")
 
 # source utility functions
 # source("workflow/scripts/utils.R")
-snakemake@source("./utils.R")
+# snakemake@source("./utils.R") # does not work when loaded as module (https://github.com/snakemake/snakemake/issues/2205)
+source(snakemake@params[["utils_path"]])
 
 # helper function to assign each cell's gRNA and KO calls
 assign_grna_KO <- function(col) {

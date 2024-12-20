@@ -1,3 +1,4 @@
+
 # load & generate Seurat object per sample including metadata
 rule prepare:
     input:
@@ -24,6 +25,7 @@ rule prepare:
         os.path.join("logs","rules","PREP_{sample}.log"),
     params:
         metadata = lambda w: "" if pd.isna(annot.loc["{}".format(w.sample),'metadata']) else annot.loc["{}".format(w.sample),'metadata'],
+        utils_path = workflow.source_path("../scripts/utils.R"),
     script:
         "../scripts/prepare.R"
 
@@ -53,7 +55,8 @@ rule merge:
     log:
         os.path.join("logs","rules","merge.log"),
     params:
-        extra_metadata = config["extra_metadata"]
+        extra_metadata = config["extra_metadata"],
+        utils_path = workflow.source_path("../scripts/utils.R"),
     script:
         "../scripts/merge.R"
 
@@ -74,6 +77,8 @@ rule split:
                               "list": "Metadata",
                               "feature": "",
                                 }),
+    params:
+        utils_path = workflow.source_path("../scripts/utils.R"),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 1)
@@ -114,6 +119,7 @@ rule filter_cells:
         ab_flag = config["modality_flags"]['Antibody_Capture'],
         crispr_flag = config["modality_flags"]['CRISPR_Guide_Capture'],
         custom_flag = config["modality_flags"]['Custom'],
+        utils_path = workflow.source_path("../scripts/utils.R"),
     script:
         "../scripts/filter.R"
 
@@ -145,6 +151,8 @@ rule pseudobulk:
                               "list": "Cell count",
                               "feature": "",
                                 }),
+    params:
+        utils_path = workflow.source_path("../scripts/utils.R"),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 1)

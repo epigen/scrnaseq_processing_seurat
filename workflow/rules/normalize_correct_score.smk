@@ -29,6 +29,7 @@ rule normalize:
         confounders = [],
         module_gene_lists = config["module_gene_lists"],
         cell_cycle = config["cell_cycle"],
+        utils_path = workflow.source_path("../scripts/utils.R"),
     script:
         "../scripts/sctransform_cellScore.R"
         
@@ -65,5 +66,6 @@ rule correct:
         confounders = config["variables_to_regress"],
         module_gene_lists = config["module_gene_lists"],
         cell_cycle = config["cell_cycle"],
+        utils_path = workflow.source_path("../scripts/utils.R"),
     script:
         "../scripts/sctransform_cellScore.R"
