@@ -22,7 +22,7 @@ ab_flag <- snakemake@params[["ab_flag"]]
 crispr_flag <- snakemake@params[["crispr_flag"]]
 custom_flag <- snakemake@params[["custom_flag"]]
 
-vis_gene_lists <- snakemake@config[["vis_gene_lists"]]
+vis_gene_lists <- snakemake@params[["vis_gene_lists"]]
 feature_list <- snakemake@wildcards[["feature_list"]]
 category <- snakemake@wildcards[["category"]]
 

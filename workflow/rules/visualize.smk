@@ -33,6 +33,7 @@ rule metadata_plots:
 rule seurat_plots:
     input:
         norm_object = os.path.join(result_path,'{split}','{step}','object.rds'),
+        config["vis_gene_lists"], # for tracking inputs
     output:
         plot_dir = report(
             directory(os.path.join(result_path,'{split}','{step}','plots','{plot_type}','{category}','{feature_list}')),
@@ -48,6 +49,7 @@ rule seurat_plots:
                 "feature": "{feature}",
             }),
     params:
+        vis_gene_lists = config["vis_gene_lists"],
         utils_path = workflow.source_path("../scripts/utils.R"),
     resources:
         mem_mb=config.get("mem", "16000"),

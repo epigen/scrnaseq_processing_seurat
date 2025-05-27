@@ -10,6 +10,9 @@ source(snakemake@params[["utils_path"]])
 
 # inputs
 filtered_object_path <- snakemake@input[["filtered_object"]]
+s_phase_genes_path <- snakemake@input[["s_phase_genes"]]
+g2m_phase_genes_path <- snakemake@input[["g2m_phase_genes"]]
+
 
 # outputs
 norm_object_path <- snakemake@output[["norm_object"]]
@@ -18,27 +21,26 @@ norm_object_path <- snakemake@output[["norm_object"]]
 confounders <- snakemake@params[["confounders"]]
 min_cells_per_gene <- snakemake@params[["min_cells_per_gene"]]
 variable_features_n <- snakemake@params[["variable_features_n"]]
-
+s_phase_genes <- snakemake@params[["s_phase_genes"]]
+g2m_phase_genes <- snakemake@params[["g2m_phase_genes"]]
 module_gene_lists <- snakemake@params[["module_gene_lists"]]
-cell_cycle <- snakemake@params[["cell_cycle"]]
-
 # 'flags' for modalities
-ab_flag <- snakemake@config[["modality_flags"]][['Antibody_Capture']]
-crispr_flag <- snakemake@config[["modality_flags"]][['CRISPR_Guide_Capture']]
-custom_flag <- snakemake@config[["modality_flags"]][['Custom']]
+ab_flag <- snakemake@params[['ab_flag']]
+crispr_flag <- snakemake@params[['crispr_flag']]
+custom_flag <- snakemake@params[['custom_flag']]
 
 
 ### load filtered data
 filtered_object <- readRDS(file = file.path(filtered_object_path))
 
 # load cell cycle scoring genes
-if (cell_cycle['s_phase_genes']!=""){
-    if (cell_cycle['s_phase_genes']=="tirosh2015"){
+if (s_phase_genes!=""){
+    if (s_phase_genes=="tirosh2015"){
         s_genes <- cc.genes$s.genes
         g2m_genes <- cc.genes$g2m.genes
     }else{
-        s_genes <- scan(file.path(cell_cycle['s_phase_genes']), character())
-        g2m_genes <- scan(file.path(cell_cycle['g2m_phase_genes']), character())
+        s_genes <- scan(file.path(s_phase_genes), character())
+        g2m_genes <- scan(file.path(g2m_phase_genes), character())
     }
 }
 
@@ -106,7 +108,7 @@ data_features <- rownames(GetAssayData(norm_object, slot = "data", assay = "SCT"
 
 # Cell Cycle scoring with Seurat function
 # (presumably) running on SCT assay, as it is the default Assay post normalization
-if (cell_cycle['s_phase_genes']!=""){
+if (s_phase_genes!=""){
     norm_object <- CellCycleScoring(object = norm_object, s.features = s_genes, g2m.features = g2m_genes, search=TRUE) 
 }
 

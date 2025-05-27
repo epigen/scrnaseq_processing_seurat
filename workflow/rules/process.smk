@@ -33,6 +33,7 @@ rule prepare:
 rule merge:
     input:
         expand(os.path.join(result_path,'batch__{sample}','PREP','object.rds'), sample=annot.index.tolist()),
+        extra_metadata = config["extra_metadata"],
     output:
         merged_object = os.path.join(result_path,'merged','RAW','object.rds'),
         metadata = report(os.path.join(result_path,'merged','RAW','metadata.csv'), 
@@ -47,7 +48,6 @@ rule merge:
                               "feature": "",
                                 }),
     resources:
-#         mem_mb=config.get("mem", "16000"),
         mem_mb = lambda wc, attempt: attempt*int(config.get("mem", "16000")),
     threads: config.get("threads", 1)
     conda:
@@ -55,7 +55,6 @@ rule merge:
     log:
         os.path.join("logs","rules","merge.log"),
     params:
-        extra_metadata = config["extra_metadata"],
         utils_path = workflow.source_path("../scripts/utils.R"),
     script:
         "../scripts/merge.R"

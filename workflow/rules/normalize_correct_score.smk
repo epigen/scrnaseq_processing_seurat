@@ -3,6 +3,9 @@
 rule normalize:
     input:
         filtered_object = os.path.join(result_path,'{split}','FILTERED','object.rds'),
+        s_phase_genes = get_cell_cycle_s_phase_genes, # for tracking inputs
+        g2m_phase_genes = get_cell_cycle_g2m_phase_genes, # for tracking inputs
+        config["module_gene_lists"], # for tracking inputs
     output:
         norm_object = os.path.join(result_path,'{split}','NORMALIZED','object.rds'),
         metadata = report(os.path.join(result_path,'{split}','NORMALIZED','metadata.csv'), 
@@ -28,7 +31,11 @@ rule normalize:
         variable_features_n = config["variable_features_n"],
         confounders = [],
         module_gene_lists = config["module_gene_lists"],
-        cell_cycle = config["cell_cycle"],
+        s_phase_genes = ["cell_cycle"]["s_phase_genes"],
+        g2m_phase_genes = config["cell_cycle"]["g2m_phase_genes"],
+        ab_flag = config["modality_flags"]['Antibody_Capture'],
+        crispr_flag = config["modality_flags"]['CRISPR_Guide_Capture'],
+        custom_flag = config["modality_flags"]['Custom'],
         utils_path = workflow.source_path("../scripts/utils.R"),
     script:
         "../scripts/sctransform_cellScore.R"
@@ -39,7 +46,10 @@ rule normalize:
 rule correct:
     input:
         # NORMALIZED object as input as only it contains post-normalization calculated scores to be regressed out e.g., cell-cycle scores
-        filtered_object = os.path.join(result_path,'{split}','NORMALIZED','object.rds'), 
+        filtered_object = os.path.join(result_path,'{split}','NORMALIZED','object.rds'),
+        s_phase_genes = get_cell_cycle_s_phase_genes,# for tracking inputs
+        g2m_phase_genes = get_cell_cycle_g2m_phase_genes,# for tracking inputs
+        config["module_gene_lists"], # for tracking inputs
     output:
         norm_object = os.path.join(result_path,'{split}','CORRECTED','object.rds'),
         metadata = report(os.path.join(result_path,'{split}','CORRECTED','metadata.csv'), 
@@ -65,7 +75,11 @@ rule correct:
         variable_features_n = config["variable_features_n"],
         confounders = config["variables_to_regress"],
         module_gene_lists = config["module_gene_lists"],
-        cell_cycle = config["cell_cycle"],
+        s_phase_genes = ["cell_cycle"]["s_phase_genes"],
+        g2m_phase_genes = config["cell_cycle"]["g2m_phase_genes"],
+        ab_flag = config["modality_flags"]['Antibody_Capture'],
+        crispr_flag = config["modality_flags"]['CRISPR_Guide_Capture'],
+        custom_flag = config["modality_flags"]['Custom'],
         utils_path = workflow.source_path("../scripts/utils.R"),
     script:
         "../scripts/sctransform_cellScore.R"

@@ -87,6 +87,7 @@ min_cells_per_gene: 5
 
 # perform cell cycle analysis with given gene lists of S and G2/M phase respectively using https://satijalab.org/seurat/reference/cellcyclescoring
 # to use markers loaded with Seurat from Tirosh et al 2015 -> put 'tirosh2015'
+# to use your own markers provide paths TXT files with one gene per line
 # if not applicable -> leave empty ''
 # adds 3 columns to metadata: S.Score, G2M.Score, and Phase
 cell_cycle:
