@@ -147,9 +147,6 @@ Detailed specifications can be found here [./config/README.md](./config/README.m
 
 # 📖 Examples
 Explore detailed examples showcasing module usage in our comprehensive end-to-end [MrBiomics Recipes](https://github.com/epigen/MrBiomics?tab=readme-ov-file#-recipes), including data, configuration, annotation and results:
-- [ATAC-seq Analysis Recipe](https://github.com/epigen/MrBiomics/wiki/ATAC%E2%80%90seq-Analysis-Recipe)
-- [RNA-seq Analysis Recipe](https://github.com/epigen/MrBiomics/wiki/RNA%E2%80%90seq-Analysis-Recipe)
-- [Integrative Analysis Recipe](https://github.com/epigen/MrBiomics/wiki/Integrative-Analysis-Recipe)
 - [scRNA-seq Analysis Recipe](https://github.com/epigen/MrBiomics/wiki/scRNA%E2%80%90seq-Analysis-Recipe)
 - [scCRISPR-seq Analysis Recipe](https://github.com/epigen/MrBiomics/wiki/scCRISPR%E2%80%90seq-Analysis-Recipe)
 
