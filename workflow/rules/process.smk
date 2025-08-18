@@ -61,6 +61,8 @@ rule merge:
 
 # split into subsets by metadata
 rule split:
+    wildcard_constraints:
+        split=r"(?!merged$)[^/]+"
     input:
         merged_object = os.path.join(result_path,'merged','RAW','object.rds'),
     output:
