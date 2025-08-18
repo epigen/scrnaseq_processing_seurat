@@ -31,9 +31,13 @@ gene_list_dict = {key: value for key, value in gene_list_dict.items() if value !
 
 # data split list
 data_splits = ['merged']
-if config["split_by"] is not None:
-    for split in config["split_by"]:
-        data_splits.extend(["{}__{}".format(split, value) for value in config["split_by"][split]])
+# if config["split_by"] is not None:
+#     for split in config["split_by"]:
+#         data_splits.extend(["{}__{}".format(split, value) for value in config["split_by"][split]])
+if config.get("split_by"):  # handles None or {}
+    for split, values in config["split_by"].items():
+        if values:  # skip if [] or None
+            data_splits.extend(f"{split}__{value}" for value in values)
 
 # processing steps
 all_steps = ['RAW','FILTERED','NORMALIZED','CORRECTED']
