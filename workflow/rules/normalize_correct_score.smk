@@ -5,7 +5,7 @@ rule normalize:
         filtered_object = os.path.join(result_path,'{split}','FILTERED','object.rds'),
         s_phase_genes = get_cell_cycle_s_phase_genes, # for tracking inputs
         g2m_phase_genes = get_cell_cycle_g2m_phase_genes, # for tracking inputs
-        config["module_gene_lists"], # for tracking inputs
+        module_gene_lists = config["module_gene_lists"], # for tracking inputs
     output:
         norm_object = os.path.join(result_path,'{split}','NORMALIZED','object.rds'),
         metadata = report(os.path.join(result_path,'{split}','NORMALIZED','metadata.csv'), 
