@@ -17,3 +17,11 @@ def get_cell_cycle_g2m_phase_genes(wildcards):
         return []
     else:
         return config["cell_cycle"]["g2m_phase_genes"]
+
+
+def get_module_gene_lists(wildcards):
+    return [v for v in config.get("module_gene_lists", {}).values() if v != ""]
+
+
+def get_vis_gene_lists(wildcards):
+    return [v for v in config.get("vis_gene_lists", {}).values() if v != ""]

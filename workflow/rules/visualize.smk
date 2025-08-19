@@ -33,7 +33,7 @@ rule metadata_plots:
 rule seurat_plots:
     input:
         norm_object = os.path.join(result_path,'{split}','{step}','object.rds'),
-        vis_gene_lists = config["vis_gene_lists"], # for tracking inputs
+        vis_gene_lists = get_vis_gene_lists, # for tracking inputs
     output:
         plot_dir = report(
             directory(os.path.join(result_path,'{split}','{step}','plots','{plot_type}','{category}','{feature_list}')),

@@ -24,16 +24,19 @@ custom_flag <- snakemake@config[["modality_flags"]][['Custom']]
 merged_object <- readRDS(file = file.path(merged_object_path))
 metadata <- merged_object[[]]
 
-
-### split data
-split_list <- unlist(regmatches(split_by, regexpr("__", split_by), invert = TRUE))
-split <- split_list[1]
-cat <- split_list[2]
-
-split_expr <- parse(text=paste0(split,'==',deparse(cat)))
-
-tmp_metadata <- subset(metadata, subset= eval(split_expr))
-tmp_object <- merged_object[,rownames(tmp_metadata)]
+if(split_by=="merged"){
+    tmp_object <- merged_object
+}else{
+    ### split data
+    split_list <- unlist(regmatches(split_by, regexpr("__", split_by), invert = TRUE))
+    split <- split_list[1]
+    cat <- split_list[2]
+    
+    split_expr <- parse(text=paste0(split,'==',deparse(cat)))
+    
+    tmp_metadata <- subset(metadata, subset= eval(split_expr))
+    tmp_object <- merged_object[,rownames(tmp_metadata)]
+}
 
 ### save data
 save_seurat_object(seurat_obj=tmp_object, result_dir=dirname(split_object_path))

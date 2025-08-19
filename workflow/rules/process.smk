@@ -33,10 +33,10 @@ rule prepare:
 rule merge:
     input:
         expand(os.path.join(result_path,'batch__{sample}','PREP','object.rds'), sample=annot.index.tolist()),
-        extra_metadata = config["extra_metadata"],
+        extra_metadata = config["extra_metadata"] if config["extra_metadata"]!="" else [],
     output:
-        merged_object = os.path.join(result_path,'merged','RAW','object.rds'),
-        metadata = report(os.path.join(result_path,'merged','RAW','metadata.csv'), 
+        merged_object = os.path.join(result_path,'merged','PREP','object.rds'),
+        metadata = report(os.path.join(result_path,'merged','PREP','metadata.csv'), 
                           caption="../report/metadata_merged.rst", 
                           category="{}_{}".format(config["project_name"], module_name),
                           subcategory="merged",
@@ -64,7 +64,7 @@ rule split:
     wildcard_constraints:
         split=r"(?!merged$|batch__)[^/]+"
     input:
-        merged_object = os.path.join(result_path,'merged','RAW','object.rds'),
+        merged_object = os.path.join(result_path,'merged','PREP','object.rds'),
     output:
         split_object = os.path.join(result_path,'{split}','RAW','object.rds'),
         metadata = report(os.path.join(result_path,'{split}','RAW','metadata.csv'), 
@@ -171,7 +171,6 @@ rule save_counts:
     output:
         counts = os.path.join(result_path,'{split}','{step}','RNA.csv'),
     resources:
-#         mem_mb=config.get("mem", "16000"),
         mem_mb = lambda wc, attempt: attempt*int(config.get("mem", "16000")),
     threads: config.get("threads", 1)
     conda:
