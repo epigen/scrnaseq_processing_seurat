@@ -56,10 +56,12 @@ metadata_eval <- snakemake@config[["metadata_eval"]]
 #### load data & Initialize the Seurat object with the raw data
 if (dir.exists(file.path(sample_dir, "filtered_feature_bc_matrix"))){
     print("Load 10X data")
+    is10x <- TRUE
     data <- Read10X(data.dir = file.path(sample_dir, "filtered_feature_bc_matrix"))
     seurat_obj <- CreateSeuratObject(counts = data$'Gene Expression', project=sample_name)
 }else{
     print("Load mtx data")
+    is10x <- FALSE
     data <- ReadMtx(
         mtx = file.path(sample_dir, "matrix.mtx"),
         cells = file.path(sample_dir, "barcodes.tsv"),
@@ -74,26 +76,60 @@ if (dir.exists(file.path(sample_dir, "filtered_feature_bc_matrix"))){
         unique.features = TRUE,
         strip.suffix = FALSE
     )
-    seurat_obj <- CreateSeuratObject(counts = data, project=sample_name)
+    # read the features file again to get our modality 'type' column
+    features <- read.table(
+        file.path(sample_dir, "features.tsv"),
+        sep = "\t",
+        header = FALSE,
+        col.names = c("id", "name", "type")
+    )
+    # The features read by ReadMtx become the rownames, so we use them to align
+    rownames(features) <- rownames(data)
+    rna_features <- features[features$type == "Gene Expression", ]
+    rna_counts <- data[rownames(rna_features), ]
+    
+    seurat_obj <- CreateSeuratObject(counts = rna_counts, project = sample_name)
 }
 
 print(seurat_obj)
 
-if(ab_flag!=''){
-    # create a new assay to store Antibody information
-    seurat_obj[[ab_flag]] <- CreateAssayObject(counts = data$'Antibody Capture')
+if(is10x){
+    if(ab_flag!=''){
+        # create a new assay to store Antibody information
+        seurat_obj[[ab_flag]] <- CreateAssayObject(counts = data$'Antibody Capture')
+    }
+    
+    if(crispr_flag!=''){
+        # create a new assay to store CRISPR guide information
+        seurat_obj[[crispr_flag]] <- CreateAssayObject(counts = data$'CRISPR Guide Capture')
+    }
+    
+    if(custom_flag!=''){
+        # create a new assay to store Custom information
+        seurat_obj[[custom_flag]] <- CreateAssayObject(counts = data$'Custom')
+    }
+}else{
+    if(ab_flag!=''){
+        # create a new assay to store Antibody information
+        ab_features <- features[features$type == "Antibody Capture", ]
+        ab_counts <- data[rownames(ab_features), , drop = FALSE]
+        seurat_obj[[ab_flag]] <- CreateAssayObject(counts = ab_counts)
+    }
+    
+    if(crispr_flag!=''){
+        # create a new assay to store CRISPR guide information
+        gdo_features <- features[features$type == "CRISPR Guide Capture", ]
+        gdo_counts <- data[rownames(gdo_features), , drop = FALSE]
+        seurat_obj[[crispr_flag]] <- CreateAssayObject(counts = gdo_counts)
+    }
+    
+    if(custom_flag!=''){
+        # create a new assay to store Custom information
+        custom_features <- features[features$type == "Custom", ]
+        custom_counts <- data[rownames(custom_features), , drop = FALSE]
+        seurat_obj[[custom_flag]] <- CreateAssayObject(counts = custom_counts)
+    }
 }
-
-if(crispr_flag!=''){
-    # create a new assay to store CRISPR guide information
-    seurat_obj[[crispr_flag]] <- CreateAssayObject(counts = data$'CRISPR Guide Capture')
-}
-
-if(custom_flag!=''){
-    # create a new assay to store Custom information
-    seurat_obj[[custom_flag]] <- CreateAssayObject(counts = data$'Custom')
-}
-
 
 #### load & add metadata (if exists)
 if (length(metadata_path) > 0 ){
@@ -122,24 +158,30 @@ if(crispr_flag!=''){
     # gRNA and KO assignment
     grna_data <- GetAssayData(object = seurat_obj, slot = "counts", assay = crispr_flag)
 
-    # load threshold data from cellranger
-#     thresholds <- read.csv(file.path(sample_dir, "crispr_analysis", "protospacer_umi_thresholds.csv"), row.names = 1, header= TRUE)
-    thresholds <- data.frame(fread(file.path(sample_dir, "crispr_analysis", "protospacer_umi_thresholds.csv"), header=TRUE), row.names=1)
-
-    # substitute '_' with '-' (R constraint: “Feature names cannot have underscores ('_'), replacing with dashes ('-')”)
-    rownames(thresholds) <- gsub("_", "-", rownames(thresholds))
-
-    # apply cellranger and configured thresholds
-    for (grna in rownames(grna_data)){
-        
-        if (grna %in% rownames(thresholds)){
-            grna_data[grna, grna_data[grna,] < thresholds[grna,'UMI.threshold']] <- 0
-        } else{
-            grna_data[grna, ] <- 0
-            sprintf("in sample %s no UMI threshold for guide RNA %s was found -> setting it to zero", sample_name, grna)
+    if(is10x){
+        # load threshold data from cellranger output
+        thresholds <- data.frame(fread(file.path(sample_dir, "crispr_analysis", "protospacer_umi_thresholds.csv"), header=TRUE), row.names=1)
+    
+        # substitute '_' with '-' (R constraint: “Feature names cannot have underscores ('_'), replacing with dashes ('-')”)
+        rownames(thresholds) <- gsub("_", "-", rownames(thresholds))
+    
+        # apply cellranger and configured thresholds
+        for (grna in rownames(grna_data)){
+            
+            if (grna %in% rownames(thresholds)){
+                grna_data[grna, grna_data[grna,] < thresholds[grna,'UMI.threshold']] <- 0
+            } else{
+                grna_data[grna, ] <- 0
+                sprintf("in sample %s no UMI threshold for guide RNA %s was found -> setting it to zero", sample_name, grna)
+            }
+            # apply configured UMI threshold
+            grna_data[grna, grna_data[grna,] <= crispr_umi_threshold] <- 0
         }
-        # apply configured UMI threshold
-        grna_data[grna, grna_data[grna,] <= crispr_umi_threshold] <- 0
+    }else{
+        # apply only the configured thresholds
+        for (grna in rownames(grna_data)){
+             grna_data[grna, grna_data[grna,] <= crispr_umi_threshold] <- 0
+        }
     }
 
     # perfrom gRNA and KO target assignment
