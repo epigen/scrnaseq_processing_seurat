@@ -3,7 +3,10 @@ channels:
   - bioconda
   - nodefaults
 dependencies:
+  - r-base=4.3.1
+  - r-matrix=1.6.1.1
   - r-seurat=4.4.0
+  - r-seuratobject=4.1.4
   - bioconductor-glmgampoi=1.14.0
   - r-data.table=1.14.10
   - r-dplyr=1.1.4

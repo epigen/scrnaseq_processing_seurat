@@ -9,7 +9,7 @@ source(snakemake@params[["utils_path"]])
 #### configs
 
 # inputs
-sample_object_paths <- snakemake@input
+sample_object_paths <- snakemake@input[["samples"]]
 extra_metadata_path <- snakemake@input[["extra_metadata"]]
 
 # outputs
@@ -43,7 +43,7 @@ if (length(sample_objects)>1){
 }
 
 # if extra metadata is provided add it to the merged object
-if (extra_metadata_path != ""){
+if (length(extra_metadata_path)!=0){
     print("extra metadata is added")
     extra_metadata <- data.frame(fread(file.path(extra_metadata_path), header=TRUE), row.names=1)
     

@@ -8,6 +8,10 @@ library("sctransform")
 # snakemake@source("./utils.R") # does not work when loaded as module (https://github.com/snakemake/snakemake/issues/2205)
 source(snakemake@params[["utils_path"]])
 
+# Set the future.globals.maxSize option to  90% of allocated memory, converting MB to bytes.
+mem_mb <- as.numeric(snakemake@resources[["mem_mb"]])
+options(future.globals.maxSize = (mem_mb * 0.9) * 1024^2)
+
 # inputs
 filtered_object_path <- snakemake@input[["filtered_object"]]
 s_phase_genes_path <- snakemake@input[["s_phase_genes"]]

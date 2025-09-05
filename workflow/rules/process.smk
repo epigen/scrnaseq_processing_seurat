@@ -32,7 +32,7 @@ rule prepare:
 # merge into one dataset
 rule merge:
     input:
-        expand(os.path.join(result_path,'batch__{sample}','PREP','object.rds'), sample=annot.index.tolist()),
+        samples = expand(os.path.join(result_path,'batch__{sample}','PREP','object.rds'), sample=annot.index.tolist()),
         extra_metadata = config["extra_metadata"] if config["extra_metadata"]!="" else [],
     output:
         merged_object = os.path.join(result_path,'merged','PREP','object.rds'),
