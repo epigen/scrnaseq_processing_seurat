@@ -1,6 +1,6 @@
 ##### utility functions #####
 
-def get_sample_paths(wildcards):
+def get_sample_path(wildcards):
     return annot.loc[wildcards.sample,'path']
 
 def get_gene_list_path(wildcards):

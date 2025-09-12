@@ -30,8 +30,8 @@ assign_grna_KO <- function(col) {
 #### configs
 
 # inputs
-sample_dir <- snakemake@input[[1]]
-metadata_path <- snakemake@params[["metadata"]]
+sample_dir <- snakemake@input[["sample_dir"]]
+metadata_path <- snakemake@input[["metadata"]]
 
 # outputs
 result_object <- snakemake@output[["sample_object"]]

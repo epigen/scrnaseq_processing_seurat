@@ -2,7 +2,8 @@
 # load & generate Seurat object per sample including metadata
 rule prepare:
     input:
-        get_sample_paths,
+        sample_dir = lambda w: annot.loc["{}".format(w.sample),'path'], # get_sample_path,
+        metadata = lambda w: [] if pd.isna(annot.loc["{}".format(w.sample),'metadata']) else annot.loc["{}".format(w.sample),'metadata']
     output:
         sample_object = os.path.join(result_path,'batch__{sample}','PREP','object.rds'),
         metadata = report(os.path.join(result_path,'batch__{sample}','PREP','metadata.csv'), 
@@ -24,7 +25,7 @@ rule prepare:
     log:
         os.path.join("logs","rules","PREP_{sample}.log"),
     params:
-        metadata = lambda w: "" if pd.isna(annot.loc["{}".format(w.sample),'metadata']) else annot.loc["{}".format(w.sample),'metadata'],
+        # metadata = lambda w: "" if pd.isna(annot.loc["{}".format(w.sample),'metadata']) else annot.loc["{}".format(w.sample),'metadata'],
         utils_path = workflow.source_path("../scripts/utils.R"),
     script:
         "../scripts/prepare.R"
