@@ -10,7 +10,9 @@ You need one configuration file and one annotation file to run the complete work
         - MTX files: path to the directory containing the following 3 files:
             - matrix.mtx containing the counts
             - barcodes.tsv containing the cell barcodes in the first column without header (TSV)
-            - features.tsv containing the feature/gene names in the first column without header (TSV)
+            - features.tsv containing three columns without header: the feature/gene `id`, feature/gene `name`, feature/gene `type` (TSV)
+                - `id` and 'name' can be and are often the same e.g., `IFNGR1`
+                - `type` has to be one of: `Gene Expression` for RNA quantification, `Antibody Capture` for "Antibody derived tags" (ADTs), `CRISPR Guide Capture` for "Guide derived oligos" (GDOs), or `Custom` for miscellaneous custom quantification.
     -  metadata (optional): path to sample metadata as CSV with the first column being cell barcodes and every other coloumn metadata for the respective barcode/cell
 
 Set workflow-specific `resources` or command line arguments (CLI) in the workflow profile `workflow/profiles/default.config.yaml`, which supersedes global Snakemake profiles.
