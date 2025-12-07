@@ -170,7 +170,10 @@ rule save_counts:
     input:
         seurat_object = os.path.join(result_path,'{split}','{step}','object.rds'),
     output:
-        counts = os.path.join(result_path,'{split}','{step}','RNA.csv'),
+        rna = os.path.join(result_path,'{split}','{step}','RNA.csv'),
+        ab = [] if (config["modality_flags"]['Antibody_Capture'] == "") else os.path.join(result_path, '{split}', '{step}', f'{config["modality_flags"]["Antibody_Capture"]}.csv'),
+        crispr = [] if (config["modality_flags"]['CRISPR_Guide_Capture'] == "") else os.path.join(result_path, '{split}', '{step}', f'{config["modality_flags"]["CRISPR_Guide_Capture"]}.csv'),
+        custom = [] if (config["modality_flags"]['Custom'] == "") else os.path.join(result_path, '{split}', '{step}', f'{config["modality_flags"]["Custom"]}.csv'),
     resources:
         mem_mb = lambda wc, attempt: attempt*int(config.get("mem", "16000")),
     threads: config.get("threads", 1)
