@@ -3,6 +3,7 @@
 rule metadata_plots:
     input:
         metadata = os.path.join(result_path,'{split}','{step}','metadata.csv'),
+        utils_path = workflow.source_path("../scripts/utils.R"),
     output:
         metadata_plots = report(directory(os.path.join(result_path,'{split}','{step}','plots','metadata')),
                                 patterns=["{datatype}.png"],
@@ -17,8 +18,6 @@ rule metadata_plots:
                                 "feature": "",
                                 }),
         metadata_stats = directory(os.path.join(result_path,'{split}','{step}','stats')),
-    params:
-        utils_path = workflow.source_path("../scripts/utils.R"),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 1)
@@ -34,6 +33,7 @@ rule seurat_plots:
     input:
         norm_object = os.path.join(result_path,'{split}','{step}','object.rds'),
         vis_gene_lists = get_vis_gene_lists, # for tracking inputs
+        utils_path = workflow.source_path("../scripts/utils.R"),
     output:
         plot_dir = report(
             directory(os.path.join(result_path,'{split}','{step}','plots','{plot_type}','{category}','{feature_list}')),
@@ -50,7 +50,6 @@ rule seurat_plots:
             }),
     params:
         vis_gene_lists = config["vis_gene_lists"],
-        utils_path = workflow.source_path("../scripts/utils.R"),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 1)

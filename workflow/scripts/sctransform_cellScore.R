@@ -6,7 +6,7 @@ library("sctransform")
 # source utility functions
 # source("workflow/scripts/utils.R")
 # snakemake@source("./utils.R") # does not work when loaded as module (https://github.com/snakemake/snakemake/issues/2205)
-source(snakemake@params[["utils_path"]])
+source(snakemake@input[["utils_path"]])
 
 # Set the future.globals.maxSize option to  90% of allocated memory, converting MB to bytes.
 mem_mb <- as.numeric(snakemake@resources[["mem_mb"]])

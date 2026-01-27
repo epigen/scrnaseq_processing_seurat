@@ -3,7 +3,8 @@
 rule prepare:
     input:
         sample_dir = lambda w: annot.loc["{}".format(w.sample),'path'], # get_sample_path,
-        metadata = lambda w: [] if pd.isna(annot.loc["{}".format(w.sample),'metadata']) else annot.loc["{}".format(w.sample),'metadata']
+        metadata = lambda w: [] if pd.isna(annot.loc["{}".format(w.sample),'metadata']) else annot.loc["{}".format(w.sample),'metadata'],
+        utils_path = workflow.source_path("../scripts/utils.R"),
     output:
         sample_object = os.path.join(result_path,'batch__{sample}','PREP','object.rds'),
         metadata = report(os.path.join(result_path,'batch__{sample}','PREP','metadata.csv'), 
@@ -26,7 +27,6 @@ rule prepare:
         os.path.join("logs","rules","PREP_{sample}.log"),
     params:
         # metadata = lambda w: "" if pd.isna(annot.loc["{}".format(w.sample),'metadata']) else annot.loc["{}".format(w.sample),'metadata'],
-        utils_path = workflow.source_path("../scripts/utils.R"),
     script:
         "../scripts/prepare.R"
 
@@ -35,6 +35,7 @@ rule merge:
     input:
         samples = expand(os.path.join(result_path,'batch__{sample}','PREP','object.rds'), sample=annot.index.tolist()),
         extra_metadata = config["extra_metadata"] if config["extra_metadata"]!="" else [],
+        utils_path = workflow.source_path("../scripts/utils.R"),
     output:
         merged_object = os.path.join(result_path,'merged','PREP','object.rds'),
         metadata = report(os.path.join(result_path,'merged','PREP','metadata.csv'), 
@@ -55,8 +56,6 @@ rule merge:
         "../envs/seurat.yaml"
     log:
         os.path.join("logs","rules","merge.log"),
-    params:
-        utils_path = workflow.source_path("../scripts/utils.R"),
     script:
         "../scripts/merge.R"
 
@@ -66,6 +65,7 @@ rule split:
         split=r"(?!merged$|batch__)[^/]+"
     input:
         merged_object = os.path.join(result_path,'merged','PREP','object.rds'),
+        utils_path = workflow.source_path("../scripts/utils.R"),
     output:
         split_object = os.path.join(result_path,'{split}','RAW','object.rds'),
         metadata = report(os.path.join(result_path,'{split}','RAW','metadata.csv'), 
@@ -79,8 +79,6 @@ rule split:
                               "list": "Metadata",
                               "feature": "",
                                 }),
-    params:
-        utils_path = workflow.source_path("../scripts/utils.R"),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 1)
@@ -95,6 +93,7 @@ rule split:
 rule filter_cells:
     input:
         raw_object = os.path.join(result_path,'{split}','RAW','object.rds'),
+        utils_path = workflow.source_path("../scripts/utils.R"),
     output:
         filtered_object = os.path.join(result_path,'{split}','FILTERED','object.rds'),
         metadata = report(os.path.join(result_path,'{split}','FILTERED','metadata.csv'), 
@@ -121,7 +120,6 @@ rule filter_cells:
         ab_flag = config["modality_flags"]['Antibody_Capture'],
         crispr_flag = config["modality_flags"]['CRISPR_Guide_Capture'],
         custom_flag = config["modality_flags"]['Custom'],
-        utils_path = workflow.source_path("../scripts/utils.R"),
     script:
         "../scripts/filter.R"
 
@@ -129,6 +127,7 @@ rule filter_cells:
 rule pseudobulk:
     input:
         filtered_object = os.path.join(result_path,'{split}','FILTERED','object.rds'),
+        utils_path = workflow.source_path("../scripts/utils.R"),
     output:
         pseudobulk_counts = os.path.join(result_path,'{split}','PSEUDOBULK','RNA.csv'),
         metadata = report(os.path.join(result_path,'{split}','PSEUDOBULK','metadata.csv'), 
@@ -153,8 +152,6 @@ rule pseudobulk:
                               "list": "Cell count",
                               "feature": "",
                                 }),
-    params:
-        utils_path = workflow.source_path("../scripts/utils.R"),
     resources:
         mem_mb=config.get("mem", "16000"),
     threads: config.get("threads", 1)

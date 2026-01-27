@@ -6,6 +6,7 @@ rule normalize:
         s_phase_genes = get_cell_cycle_s_phase_genes, # for tracking inputs
         g2m_phase_genes = get_cell_cycle_g2m_phase_genes, # for tracking inputs
         module_gene_lists = get_module_gene_lists, # for tracking inputs
+        utils_path = workflow.source_path("../scripts/utils.R"),
     output:
         norm_object = os.path.join(result_path,'{split}','NORMALIZED','object.rds'),
         metadata = report(os.path.join(result_path,'{split}','NORMALIZED','metadata.csv'), 
@@ -36,7 +37,6 @@ rule normalize:
         ab_flag = config["modality_flags"]['Antibody_Capture'],
         crispr_flag = config["modality_flags"]['CRISPR_Guide_Capture'],
         custom_flag = config["modality_flags"]['Custom'],
-        utils_path = workflow.source_path("../scripts/utils.R"),
     script:
         "../scripts/sctransform_cellScore.R"
         
@@ -50,6 +50,7 @@ rule correct:
         s_phase_genes = get_cell_cycle_s_phase_genes,# for tracking inputs
         g2m_phase_genes = get_cell_cycle_g2m_phase_genes,# for tracking inputs
         module_gene_lists = get_module_gene_lists, # for tracking inputs
+        utils_path = workflow.source_path("../scripts/utils.R"),
     output:
         norm_object = os.path.join(result_path,'{split}','CORRECTED','object.rds'),
         metadata = report(os.path.join(result_path,'{split}','CORRECTED','metadata.csv'), 
@@ -80,6 +81,5 @@ rule correct:
         ab_flag = config["modality_flags"]['Antibody_Capture'],
         crispr_flag = config["modality_flags"]['CRISPR_Guide_Capture'],
         custom_flag = config["modality_flags"]['Custom'],
-        utils_path = workflow.source_path("../scripts/utils.R"),
     script:
         "../scripts/sctransform_cellScore.R"
