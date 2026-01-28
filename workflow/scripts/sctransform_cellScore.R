@@ -125,18 +125,52 @@ for (gene_list_name in names(gene_lists)){
         next
     }
 
-    norm_object <- AddModuleScore(
-        object=norm_object,
-        features=list(gene_lists[[gene_list_name]]),
-        pool = NULL,
-        nbin = 24,
-        ctrl = 100,
-        k = FALSE,
-        assay = "SCT",
-        name = gene_list_name,
-        seed = 42,
-        search = TRUE, #Search for symbol synonyms for features in features that don't match features in object (ie gene symbol synonyms) using HUGO Gene Nomenclature Committee (HGNC)
-    )
+    # Try AddModuleScore with progressively smaller nbin values to handle
+    # "Insufficient data values to produce N bins" error
+    nbin_options <- c(24, 12, 6, 3)
+    score_success <- FALSE
+    
+    for (nbin_value in nbin_options) {
+        result <- tryCatch({
+            norm_object <- AddModuleScore(
+                object=norm_object,
+                features=list(gene_lists[[gene_list_name]]),
+                pool = NULL,
+                nbin = nbin_value,
+                ctrl = 100,
+                k = FALSE,
+                assay = "SCT",
+                name = gene_list_name,
+                seed = 42,
+                search = TRUE, #Search for symbol synonyms for features in features that don't match features in object (ie gene symbol synonyms) using HUGO Gene Nomenclature Committee (HGNC)
+            )
+            list(success = TRUE, object = norm_object)
+        }, error = function(e) {
+            if (grepl("Insufficient data values to produce", e$message)) {
+                list(success = FALSE, error = e$message)
+            } else {
+                stop(e)  # Re-throw unexpected errors
+            }
+        })
+        
+        if (result$success) {
+            norm_object <- result$object
+            score_success <- TRUE
+            if (nbin_value != 24) {
+                warning(paste0("AddModuleScore for '", gene_list_name, 
+                              "' succeeded with reduced nbin=", nbin_value,
+                              " (default 24 failed due to insufficient data)."))
+            }
+            break
+        }
+    }
+    
+    if (!score_success) {
+        warning(paste0("Skipping AddModuleScore for '", gene_list_name, 
+                      "': insufficient data values even for nbin=3. ",
+                      "Dataset may be too small for reliable module scoring."))
+        next
+    }
     
     # remove post-fix '1' from metadata column
     norm_object[[gene_list_name]] <- norm_object[[paste0(gene_list_name,'1')]]
