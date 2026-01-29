@@ -113,7 +113,44 @@ data_features <- rownames(GetAssayData(norm_object, slot = "data", assay = "SCT"
 # Cell Cycle scoring with Seurat function
 # (presumably) running on SCT assay, as it is the default Assay post normalization
 if (s_phase_genes!=""){
-    norm_object <- CellCycleScoring(object = norm_object, s.features = s_genes, g2m.features = g2m_genes, search=TRUE) 
+    # Try CellCycleScoring with progressively smaller nbin values to handle
+    # "Insufficient data values to produce N bins" error (uses AddModuleScore internally)
+    nbin_options <- c(24, 12, 6, 3)
+    cc_score_success <- FALSE
+    
+    for (nbin_value in nbin_options) {
+        result <- tryCatch({
+            norm_object <- CellCycleScoring(
+                object = norm_object, 
+                s.features = s_genes, 
+                g2m.features = g2m_genes, 
+                search = TRUE,
+                nbin = nbin_value
+            )
+            list(success = TRUE, object = norm_object)
+        }, error = function(e) {
+            if (grepl("Insufficient data values to produce", e$message)) {
+                list(success = FALSE, error = e$message)
+            } else {
+                stop(e)  # Re-throw unexpected errors
+            }
+        })
+        
+        if (result$success) {
+            norm_object <- result$object
+            cc_score_success <- TRUE
+            if (nbin_value != 24) {
+                warning(paste0("CellCycleScoring succeeded with reduced nbin=", nbin_value,
+                              " (default 24 failed due to insufficient data)."))
+            }
+            break
+        }
+    }
+    
+    if (!cc_score_success) {
+        warning("Skipping CellCycleScoring: insufficient data values even for nbin=3. ",
+                "Dataset may be too small for reliable cell cycle scoring.")
+    }
 }
 
 # Cell Scoring by gene list
